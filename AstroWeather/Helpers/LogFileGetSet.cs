@@ -13,42 +13,41 @@ namespace AstroWeather.Helpers
         {
             try
             {
-                // Load existing data or create a new dictionary
+                string directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppInfo.Current.Name);
+                string filePath = Path.Combine(directoryPath, "data.json");
+
+                // Upewnij się, że katalog istnieje
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
                 Dictionary<string, T> data;
 
-                string filePath = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppInfo.Current.Name), "data.json");
-
-                if (!Directory.Exists(Path.Combine(
-                        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                        AppInfo.Current.Name)))
-
+                // Wczytaj istniejące dane, jeśli plik istnieje i nie jest pusty
+                if (File.Exists(filePath) && new FileInfo(filePath).Length > 0)
                 {
-                    Directory.CreateDirectory(Path.Combine(
-                        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                        AppInfo.Current.Name));
+                    string existingJson = File.ReadAllText(filePath);
+                    data = JsonSerializer.Deserialize<Dictionary<string, T>>(existingJson) ?? new Dictionary<string, T>();
+                }
+                else
+                {
+                    data = new Dictionary<string, T>();
                 }
 
-                if (!File.Exists(filePath))
-                {
-                    File.Create(filePath);
-                }
-                data = new Dictionary<string, T>();
+                // Dodaj lub zaktualizuj klucz
                 data[key] = value;
 
-                // Add or update the value associated with the key
-
-                // Serialize and save the updated data to the file
-                using (StreamWriter writer = new StreamWriter(filePath))
-                {
-                    string json = JsonSerializer.Serialize(data);
-                    writer.Write(json);
-                }
+                // Zapisz zaktualizowane dane do pliku
+                string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(filePath, json);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to save data: {ex.Message}");
+                Console.WriteLine($"Error storing data: {ex.Message}");
             }
         }
+
 
         // Load data based on a key as an identifier
         public static T LoadData<T>(string key, T defaultValue = default)

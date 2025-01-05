@@ -3,7 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="AstroWeather.Pages.SettingsPage"
              Title="SettingsPage">
-    <VerticalStackLayout Spacing="20">
+    <AbsoluteLayout                             HorizontalOptions="Center"
+VerticalOptions="Center">
+        <VerticalStackLayout Spacing="20"
+                             HorizontalOptions="Center"
+VerticalOptions="Center">
 
         <Entry x:Name="APIkeyInput"
                WidthRequest="400"
@@ -28,7 +32,7 @@
                 </FormattedString>
             </Label.FormattedText>
         </Label>
-        <Button Text="Add new localisation" WidthRequest="200">
+        <Button Text="Add new localisation" WidthRequest="200" Clicked="OnComputeClicked" x:Name="locButton">
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroupList>
                     <VisualStateGroup x:Name="CommonStates">
@@ -52,4 +56,37 @@
 
 
     </VerticalStackLayout>
+
+        <ContentView x:Name="PopupView"
+                     BackgroundColor="Black"
+                     Opacity="0"
+                     
+                     AbsoluteLayout.LayoutFlags="All"
+                     AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
+                     IsVisible="False">
+            <Border BackgroundColor="White"
+                   
+                   Padding="20"
+                   
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center">
+                <VerticalStackLayout Spacing="20">
+                    <Label Text="This is a popup!"
+                           HorizontalOptions="Center" />
+                    <Entry x:Name="LatitudeInput"
+        WidthRequest="200"
+                           TextColor="Black"
+Placeholder="Enter your Latitude"
+/>
+                    <Entry x:Name="LongitudeInput"
+                           TextColor="Black"
+        WidthRequest="200"
+Placeholder="Enter your Longitude"
+/>
+                    <Button Text="Close"
+                            Clicked="OnClosePopupClicked" />
+                </VerticalStackLayout>
+            </Border>
+        </ContentView>
+    </AbsoluteLayout>
 </ContentPage>
