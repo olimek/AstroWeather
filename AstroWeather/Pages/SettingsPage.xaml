@@ -3,12 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="AstroWeather.Pages.SettingsPage"
              Title="SettingsPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Settings here"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+    <VerticalStackLayout Spacing="20">
+
         <Entry x:Name="APIkeyInput"
+               WidthRequest="400"
        Placeholder="Enter your api key"
        TextChanged="OnEntryTextChanged"
        Completed="OnEntryCompleted" />
@@ -22,12 +20,36 @@
                         <Span.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding TapCommand}"
                                           CommandParameter="https://www.visualcrossing.com/weather-api" />
+                            
                         </Span.GestureRecognizers>
+                        
                     </Span>
                     
                 </FormattedString>
             </Label.FormattedText>
         </Label>
+        <Button Text="Add new localisation" WidthRequest="200">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="Scale"
+                                Value="1" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Pressed">
+                            <VisualState.Setters>
+                                <Setter Property="Scale"
+                                Value="0.95" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="PointerOver" />
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </VisualStateManager.VisualStateGroups>
+        </Button>
+
 
     </VerticalStackLayout>
 </ContentPage>
