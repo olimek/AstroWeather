@@ -23,8 +23,8 @@ public partial class SettingsPage : ContentPage
     }
     void OnEntryCompleted(object sender, EventArgs e)
     {
-        string text = ((Entry)sender).Text;
-        LogFileGetSet.StoreData("APIkey", text);
+        string APIkeyTextfield = ((Entry)sender).Text;
+        LogFileGetSet.StoreData("APIkey", new List<string>(new string[] { APIkeyTextfield }));
     }
     private async void OnComputeClicked(object sender, EventArgs e)
     {
@@ -35,10 +35,14 @@ public partial class SettingsPage : ContentPage
     }
     private async void OnClosePopupClicked(object sender, EventArgs e)
     {
+        string name = nameInput.Text;
+
         string Lat = LatitudeInput.Text;
-    LogFileGetSet.StoreData("Latitude", Lat);
+
         string Lon = LongitudeInput.Text;
-    LogFileGetSet.StoreData("Longitude", Lon);
+
+        LogFileGetSet.StoreData($"Localisation_{name}", new List<string>(new string[] { Lat, Lon }));
+
         // Animacja fade-out
         await PopupView.FadeTo(0, 250, Easing.CubicInOut);
 

@@ -13,40 +13,45 @@ namespace AstroWeather.Helpers
         {
             try
             {
+                if (string.IsNullOrEmpty(key)) throw new ArgumentException("Key cannot be null or empty.");
+                if (value == null) throw new ArgumentNullException(nameof(value));
+
                 string directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppInfo.Current.Name);
                 string filePath = Path.Combine(directoryPath, "data.json");
 
-                // Upewnij się, że katalog istnieje
                 if (!Directory.Exists(directoryPath))
                 {
                     Directory.CreateDirectory(directoryPath);
                 }
 
-                Dictionary<string, T> data;
-
-                // Wczytaj istniejące dane, jeśli plik istnieje i nie jest pusty
-                if (File.Exists(filePath) && new FileInfo(filePath).Length > 0)
-                {
-                    string existingJson = File.ReadAllText(filePath);
-                    data = JsonSerializer.Deserialize<Dictionary<string, T>>(existingJson) ?? new Dictionary<string, T>();
-                }
-                else
-                {
-                    data = new Dictionary<string, T>();
-                }
-
-                // Dodaj lub zaktualizuj klucz
+                Dictionary<string, T> data = ReadData<T>(filePath);
                 data[key] = value;
 
-                // Zapisz zaktualizowane dane do pliku
-                string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(filePath, json);
+                WriteData(filePath, data);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error storing data: {ex.Message}");
             }
         }
+
+        private static Dictionary<string, T> ReadData<T>(string filePath)
+        {
+            if (File.Exists(filePath) && new FileInfo(filePath).Length > 0)
+            {
+                string existingJson = File.ReadAllText(filePath);
+                return JsonSerializer.Deserialize<Dictionary<string, T>>(existingJson) ?? new Dictionary<string, T>();
+            }
+
+            return new Dictionary<string, T>();
+        }
+
+        private static void WriteData<T>(string filePath, Dictionary<string, T> data)
+        {
+            string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(filePath, json);
+        }
+
 
 
         // Load data based on a key as an identifier
