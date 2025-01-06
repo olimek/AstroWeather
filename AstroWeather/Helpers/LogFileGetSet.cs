@@ -87,6 +87,31 @@ namespace AstroWeather.Helpers
                 return defaultValue;
             }
         }
+
+        public static Dictionary<string, object> LoadAllData()
+        {
+            try
+            {
+                string filePath = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppInfo.Current.Name), "data.json");
+                if (File.Exists(filePath))
+                {
+                    using (StreamReader reader = new StreamReader(filePath))
+                    {
+                        string json = reader.ReadToEnd();
+                        var data = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+
+                        return data ?? new Dictionary<string, object>();
+                    }
+                }
+
+                return new Dictionary<string, object>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to load all data: {ex.Message}");
+                return new Dictionary<string, object>();
+            }
+        }
         /*
         public MainPage()
         {

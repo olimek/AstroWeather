@@ -4,10 +4,23 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     Title="LocalisationPage">
-    <VerticalStackLayout>
-        <Label
-            HorizontalOptions="Center"
-            Text="Localisation here"
-            VerticalOptions="Center" />
-    </VerticalStackLayout>
+    <StackLayout Padding="10">
+        <Label x:Name="SelectedLabel"
+               Text="Selected Localisation: None"
+               FontSize="16"
+               HorizontalOptions="Center"
+               VerticalOptions="Center" />
+
+        <ListView x:Name="LocalisationListView"
+                  ItemSelected="OnItemSelected"
+                  HorizontalOptions="FillAndExpand"
+                  VerticalOptions="FillAndExpand">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextCell Text="{Binding Key}"
+                              Detail="{Binding Value}" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
 </ContentPage>
