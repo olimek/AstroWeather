@@ -4,6 +4,7 @@ using System.Xml.Linq;
 using AstroWeather.Helpers;
 using Microsoft.Maui.Controls;
 
+
 namespace AstroWeather.Pages;
 
 public partial class LocalisationPage : ContentPage
@@ -12,6 +13,7 @@ public partial class LocalisationPage : ContentPage
     {
         InitializeComponent();
         LoadJsonData();
+        CheckDefaultLoc();
     }
     private void LoadJsonData()
     {
@@ -60,10 +62,22 @@ public partial class LocalisationPage : ContentPage
             
             SelectedLabel.Text = $"Selected Localisation: {selectedItem.Key} ({selectedItem.Value})";
 
-            //LogFileGetSet.StoreData(selectedItem.key, ));
             
+            LogFileGetSet.StoreData("DefaultLoc", new List<string>(new string[] { selectedItem.Key }));
 
             LocalisationListView.SelectedItem = null;
         }
     }
+
+    private void CheckDefaultLoc()
+    {
+        var defaultLoc = LogFileGetSet.LoadData("DefaultLoc", new List<string>());
+        Console.WriteLine(string.Join(", ", defaultLoc)); // Output: ja
+        if (defaultLoc != null)
+        {
+            var locloc = LogFileGetSet.LoadData($"Localisation_{defaultLoc[0]}", new List<string>());
+            SelectedLabel.Text = $"Selected Localisation: {defaultLoc[0]} ({locloc[0]}, {locloc[1]})";
+        }
+    }
+
 }

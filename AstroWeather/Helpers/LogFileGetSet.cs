@@ -59,27 +59,41 @@ namespace AstroWeather.Helpers
         {
             try
             {
-                // Load existing data or return the default value
-                Dictionary<string, T> data;
-                string filePath = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppInfo.Current.Name), "data.json");
+                // Define the file path
+                string filePath = Path.Combine(
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppInfo.Current.Name),
+                    "data.json");
+
+                // Check if the file exists
                 if (File.Exists(filePath))
                 {
-                    using (StreamReader reader = new StreamReader(filePath))
-                    {
-                        string json = reader.ReadToEnd();
-                        data = JsonSerializer.Deserialize<Dictionary<string, T>>(json);
+                    // Read the JSON file and deserialize it into a dictionary
+                    string json = File.ReadAllText(filePath);
+                    var rootObject = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
-                        if (data != null)
+                    // Check if the key exists
+                    if (rootObject != null && rootObject.TryGetValue(key, out JsonElement valueElement))
+                    {
+                        // Handle value types
+                        if (valueElement.ValueKind == JsonValueKind.Array)
                         {
-                            if (data.ContainsKey(key))
-                            {
-                                return data[key];
-                            }
+                            // For arrays, deserialize to the target type
+                            return valueElement.Deserialize<T>();
+                        }
+                        else if (valueElement.ValueKind == JsonValueKind.String)
+                        {
+                            // For strings, convert directly to the target type
+                            return JsonSerializer.Deserialize<T>($"\"{valueElement.GetString()}\"");
+                        }
+                        else
+                        {
+                            // For other types (e.g., objects), try deserialization
+                            return valueElement.Deserialize<T>();
                         }
                     }
                 }
 
-                return defaultValue;
+                return defaultValue; // Return default value if key not found
             }
             catch (Exception ex)
             {
