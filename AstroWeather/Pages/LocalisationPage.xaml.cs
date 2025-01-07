@@ -17,7 +17,7 @@ public partial class LocalisationPage : ContentPage
     }
     private void LoadJsonData()
     {
-        // Example usage of LoadData to retrieve all localisation data
+        
         var jsonData = LogFileGetSet.LoadAllData();
 
         var filteredData = jsonData
@@ -71,12 +71,11 @@ public partial class LocalisationPage : ContentPage
 
     private void CheckDefaultLoc()
     {
-        var defaultLoc = LogFileGetSet.LoadData("DefaultLoc", new List<string>());
-        Console.WriteLine(string.Join(", ", defaultLoc)); // Output: ja
-        if (defaultLoc != null)
+        var DefaultLatLon = LogFileGetSet.LoadDefaultLoc();
+       
+        if (DefaultLatLon != null)
         {
-            var locloc = LogFileGetSet.LoadData($"Localisation_{defaultLoc[0]}", new List<string>());
-            SelectedLabel.Text = $"Selected Localisation: {defaultLoc[0]} ({locloc[0]}, {locloc[1]})";
+            SelectedLabel.Text = $"Default Localisation:({DefaultLatLon[0]}, {DefaultLatLon[1]})";
         }
     }
 

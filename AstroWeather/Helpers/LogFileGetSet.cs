@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 
 namespace AstroWeather.Helpers
 {
@@ -52,48 +47,40 @@ namespace AstroWeather.Helpers
             File.WriteAllText(filePath, json);
         }
 
-
-
-        // Load data based on a key as an identifier
         public static T LoadData<T>(string key, T defaultValue = default)
         {
             try
             {
-                // Define the file path
+
                 string filePath = Path.Combine(
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppInfo.Current.Name),
                     "data.json");
 
-                // Check if the file exists
                 if (File.Exists(filePath))
                 {
-                    // Read the JSON file and deserialize it into a dictionary
+
                     string json = File.ReadAllText(filePath);
                     var rootObject = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
-                    // Check if the key exists
                     if (rootObject != null && rootObject.TryGetValue(key, out JsonElement valueElement))
                     {
-                        // Handle value types
+
                         if (valueElement.ValueKind == JsonValueKind.Array)
                         {
-                            // For arrays, deserialize to the target type
                             return valueElement.Deserialize<T>();
                         }
                         else if (valueElement.ValueKind == JsonValueKind.String)
                         {
-                            // For strings, convert directly to the target type
                             return JsonSerializer.Deserialize<T>($"\"{valueElement.GetString()}\"");
                         }
                         else
                         {
-                            // For other types (e.g., objects), try deserialization
                             return valueElement.Deserialize<T>();
                         }
                     }
                 }
 
-                return defaultValue; // Return default value if key not found
+                return defaultValue;
             }
             catch (Exception ex)
             {
@@ -126,22 +113,19 @@ namespace AstroWeather.Helpers
                 return new Dictionary<string, object>();
             }
         }
-        /*
-        public MainPage()
+
+        public static List<string> LoadDefaultLoc()
         {
-            InitializeComponent();
+            var defaultLoc = LogFileGetSet.LoadData("DefaultLoc", new List<string>());
+            if (defaultLoc != null)
+            {
+                var locloc = LogFileGetSet.LoadData($"Localisation_{defaultLoc[0]}", new List<string>());
+                return locloc;
+
+            }
+
+            return null;
         }
 
-        private void Button_Clicked(object sender, EventArgs e)
-        {
-            StoreData<List<string>>("hello", new List<string>() { "ASD", "AAA" });
-        }
-
-        private void Button_Clicked_1(object sender, EventArgs e)
-        {
-            var value = LoadData<List<string>>("hello", new List<string>());
-        }
-
-}*/
     }
 }

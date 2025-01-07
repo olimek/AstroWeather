@@ -29,7 +29,7 @@ public partial class SettingsPage : ContentPage
     {
         PopupView.IsVisible = true;
 
-        // Animacja fade-in
+        
         await PopupView.FadeTo(1, 250, Easing.CubicInOut);
     }
     private async void OnClosePopupClicked(object sender, EventArgs e)
@@ -42,10 +42,10 @@ public partial class SettingsPage : ContentPage
 
         LogFileGetSet.StoreData($"Localisation_{name}", new List<string>(new string[] { Lat, Lon, "0" }));
 
-        // Animacja fade-out
+        
         await PopupView.FadeTo(0, 250, Easing.CubicInOut);
 
-        // Ukryj okienko
+        
         PopupView.IsVisible = false;
     }
 }
