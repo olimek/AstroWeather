@@ -127,5 +127,19 @@ namespace AstroWeather.Helpers
             return null;
         }
 
+        public static string getAPIkey(string which)
+        {
+            string APIkey = null;
+            if (which == "astro") {
+                APIkey = LogFileGetSet.LoadData("MOONAPIkey", new List<string>())[0];
+            }
+            else if (which == "weather") {
+                 APIkey = LogFileGetSet.LoadData("APIkey", new List<string>())[0];
+            }
+
+            return APIkey;
+            
+        }
+
     }
 }

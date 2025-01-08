@@ -21,10 +21,14 @@ public partial class SettingsPage : ContentPage
         string myText = APIkeyInput.Text;
         LogFileGetSet.StoreData("APIkey", new List<string>(new string[] { myText }));
     }
-    void OnEntryCompleted(object sender, EventArgs e)
+
+    void OnEntryTextChangedMOON(object sender, TextChangedEventArgs e)
     {
-        
+
+        string myText = APIMOONkeyInput.Text;
+        LogFileGetSet.StoreData("MOONAPIkey", new List<string>(new string[] { myText }));
     }
+
     private async void OnComputeClicked(object sender, EventArgs e)
     {
         PopupView.IsVisible = true;

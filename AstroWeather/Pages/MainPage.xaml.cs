@@ -1,18 +1,43 @@
 ﻿
 
+using System.Text.Json;
 using AstroWeather.Helpers;
-using CosineKitty;
-
+using System.Net.Http;
 namespace AstroWeather
 {
 
     public partial class MainPage : ContentPage
     {
         int count = 0;
-
         public MainPage()
         {
             InitializeComponent();
+            DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+            string formattedDate = today.ToString("yyyy-MM-dd");
+            var test = GetAstroData(formattedDate);
+            moonrisel.Text = test.moonrise;
+            moonsetl.Text = test.moonset;
+
+
+
+        }
+
+        string ReadResponseFromUrl(string url)
+        {
+            var httpClientHandler = new HttpClientHandler();
+            var httpClient = new HttpClient(httpClientHandler)
+            {
+                BaseAddress = new Uri(url)
+            };
+            using (var response = httpClient.GetAsync(url))
+            {
+                string responseBody = response.Result.Content.ReadAsStringAsync().Result;
+                return responseBody;
+            }
+        }
+
+        private Astro GetAstroData(string DATE)
+        {
             TimeZoneInfo localTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
 
             var DefaultLatLon = LogFileGetSet.LoadDefaultLoc();
@@ -22,58 +47,12 @@ namespace AstroWeather
             {
                 throw new Exception("DefaultLatLon is null or incomplete.");
             }
-
-            double latitude = Convert.ToDouble(DefaultLatLon[0]);
-            double longitude = Convert.ToDouble(DefaultLatLon[1]);
-
-            
-            DateTime startDate = DateTime.Now;
-            startDate = startDate.AddDays(-1);
-
-            // Iteracja przez kilka dni
-            double elevation = 0; // Elevation above sea level in meters
-
-            Observer observer = new Observer(latitude, longitude, elevation);
-            DateTime localMoonset = DateTime.MinValue;
-            DateTime localMoonrise = DateTime.MinValue; 
-
-
-            // Loop through multiple days
-            
-                AstroTime startTime = new AstroTime(startDate);
-                
-                // Search for Moonrise
-                var moonrise = Astronomy.SearchRiseSet(
-                    Body.Moon,
-                    observer,
-                    Direction.Rise,
-                    startTime,
-                    1.0, // Limit search to 1 day
-                    0.0  // Altitude for horizon
-                );
-                if (moonrise != null)
-                {
-                    DateTime utcMoonrise = moonrise.ToUtcDateTime();
-                    localMoonrise = TimeZoneInfo.ConvertTimeFromUtc(utcMoonrise, localTimeZone);
-                }
-                // Search for Moonset
-                var moonset = Astronomy.SearchRiseSet(
-                    Body.Moon,
-                    observer,
-                    Direction.Set,
-                    startTime,
-                    1.0, // Limit search to 1 day
-                    0.0  // Altitude for horizon
-                );
-                if (moonset != null)
-                {
-                    DateTime utcMoonset = moonset.ToUtcDateTime();
-                    localMoonset = TimeZoneInfo.ConvertTimeFromUtc(utcMoonset, localTimeZone);
-                }
-                moonrisel.Text = localMoonrise.ToString();
-                moonsetl.Text = localMoonset.ToString();
-            
-
+            string APIkey = LogFileGetSet.getAPIkey("astro");
+            string LAT = DefaultLatLon[0].Replace(",", ".");
+            string LON = DefaultLatLon[1].Replace(",", ".");
+            string jsonresponse = ReadResponseFromUrl($"https://api.ipgeolocation.io/astronomy?apiKey={APIkey}&lat={LAT}&long={LON}&date={DATE}");
+            Astro? astro = JsonSerializer.Deserialize<Astro>(jsonresponse);
+            return astro;
         }
     }
 }

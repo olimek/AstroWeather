@@ -12,7 +12,7 @@
 
             <Entry
                 x:Name="APIkeyInput"
-                Completed="OnEntryCompleted"
+                
                 Placeholder="Enter your api key"
                 TextChanged="OnEntryTextChanged"
                 WidthRequest="400" />
@@ -26,6 +26,30 @@
                             TextDecorations="Underline">
                             <Span.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding TapCommand}" CommandParameter="https://www.visualcrossing.com/weather-api" />
+
+                            </Span.GestureRecognizers>
+
+                        </Span>
+
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+            <Entry
+     x:Name="APIMOONkeyInput"
+     
+     Placeholder="Enter your api key"
+     TextChanged="OnEntryTextChangedMOON"
+     WidthRequest="400" />
+            <Label HorizontalOptions="Center">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="Get your API key: " />
+                        <Span
+                 Text="here"
+                 TextColor="Blue"
+                 TextDecorations="Underline">
+                            <Span.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding TapCommand}" CommandParameter="https://app.ipgeolocation.io/signup" />
 
                             </Span.GestureRecognizers>
 
