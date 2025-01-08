@@ -26,6 +26,17 @@
    FontSize="16"
    HorizontalOptions="Center"
    VerticalOptions="Center" />
+            <ListView x:Name="weatherListView"
+           
+           HorizontalOptions="CenterAndExpand"
+           VerticalOptions="FillAndExpand">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextCell Text="{Binding Key}"
+                       Detail="{Binding Value}" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </VerticalStackLayout>
     </ScrollView>
 
