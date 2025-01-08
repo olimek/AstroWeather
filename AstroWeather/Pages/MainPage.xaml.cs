@@ -3,6 +3,7 @@
 using System.Text.Json;
 using AstroWeather.Helpers;
 using System.Net.Http;
+using static System.Net.Mime.MediaTypeNames;
 namespace AstroWeather
 {
 
@@ -17,12 +18,31 @@ namespace AstroWeather
             var test = GetAstroData(formattedDate);
             moonrisel.Text = test.moonrise;
             moonsetl.Text = test.moonset;
+            WeatherRouter weather = new WeatherRouter();
+            var test2 =  weather.WeatherInit();
 
+            var todayWeather = test2.days.FirstOrDefault(x => x.datetime == formattedDate);
 
+            if (todayWeather != null)
+            {
+                // Pobranie właściwości z pominięciem "hours"
+                var properties = todayWeather.GetType().GetProperties()
+                    .Where(p => p.Name != "hours" && p.Name != "datetimeEpoch")
+                    .ToDictionary(p => p.Name, p => p.GetValue(todayWeather)?.ToString());
 
+                // Ustawienie danych jako źródło dla ListView
+                weatherListView.ItemsSource = properties.Select(kvp => new
+                {
+                    Key = kvp.Key,
+                    Value = kvp.Value
+                }).ToList();
+            }
         }
+        
 
-        string ReadResponseFromUrl(string url)
+        
+
+        public static string ReadResponseFromUrl(string url)
         {
             var httpClientHandler = new HttpClientHandler();
             var httpClient = new HttpClient(httpClientHandler)
@@ -38,8 +58,6 @@ namespace AstroWeather
 
         private Astro GetAstroData(string DATE)
         {
-            TimeZoneInfo localTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
-
             var DefaultLatLon = LogFileGetSet.LoadDefaultLoc();
 
             // Sprawdzenie poprawności danych lokalizacji
