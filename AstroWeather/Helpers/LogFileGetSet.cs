@@ -114,10 +114,10 @@ namespace AstroWeather.Helpers
             }
         }
 
-        public static List<string> LoadDefaultLoc()
+        public static List<string>? LoadDefaultLoc()
         {
             var defaultLoc = LogFileGetSet.LoadData("DefaultLoc", new List<string>());
-            if (defaultLoc != null)
+            if (defaultLoc != null && defaultLoc.Count > 0)
             {
                 var locloc = LogFileGetSet.LoadData($"Localisation_{defaultLoc[0]}", new List<string>());
                 return locloc;
@@ -129,7 +129,7 @@ namespace AstroWeather.Helpers
 
         public static string getAPIkey(string which)
         {
-            string APIkey = null;
+            string? APIkey = null;
             if (which == "astro") {
                 APIkey = LogFileGetSet.LoadData("MOONAPIkey", new List<string>())[0];
             }
