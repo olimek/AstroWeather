@@ -92,7 +92,8 @@ namespace AstroWeather.Helpers
          {
              hour.precip = hour.precip ?? 0;
              hour.cloudcover = hour.cloudcover ?? 0;
-             hour.date = dateWithoutTime.ToString(); 
+             hour.date = dateWithoutTime.ToString();
+             hour.hour = hour.datetime.ToString().Substring(0, 2);
          }
 
          return day.hours.ToList(); // Zwróć listę godzin z dodaną datą
