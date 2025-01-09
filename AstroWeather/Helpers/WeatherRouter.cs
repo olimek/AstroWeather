@@ -80,20 +80,19 @@ namespace AstroWeather.Helpers
             List<List<AstroWeather.Helpers.Hour>> listOfHoursPerDay = new List<List<AstroWeather.Helpers.Hour>>();
                if (weatherData != null)
             {
-                // Pobranie właściwości z pominięciem "hours"
-                /*var properties = weatherData.days.GetType().GetProperties()
-                    .Where(p => p.Name != "hours" && p.Name != "datetimeEpoch")
-                    .ToDictionary(p => p.Name, p => p.GetValue(weatherData)?.ToString());*/
+                
                 listOfHoursPerDay = weatherData.days
      .Select(day =>
      {
-         // Konwersja pola datetime do DateTime
+         
          var dayDate = DateTime.ParseExact(day.datetime, "yyyy-MM-dd", CultureInfo.InvariantCulture);
          var dateWithoutTime = dayDate.ToString("dd.MM.yyyy");
-         // Modyfikacja każdej godziny w danym dniu
+         
          foreach (var hour in day.hours)
          {
-             hour.date = dateWithoutTime.ToString(); // Przypisz datę z pola datetime do każdej godziny
+             hour.precip = hour.precip ?? 0;
+             hour.cloudcover = hour.cloudcover ?? 0;
+             hour.date = dateWithoutTime.ToString(); 
          }
 
          return day.hours.ToList(); // Zwróć listę godzin z dodaną datą

@@ -11,85 +11,58 @@
             <!-- Sekcja nagłówka -->
             <StackLayout>
                 <Label Text="Current Weather"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center" 
-                   TextColor="{DynamicResource PrimaryTextColor}" />
+                       FontSize="24"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center"
+                       TextColor="{DynamicResource PrimaryTextColor}" />
                 <Label Text="City, Country"
-                   FontSize="16"
-                   HorizontalOptions="Center"
-                   TextColor="{DynamicResource SecondaryTextColor}" />
+                       FontSize="16"
+                       HorizontalOptions="Center"
+                       TextColor="{DynamicResource SecondaryTextColor}" />
             </StackLayout>
 
             <!-- Sekcja pogody aktualnej -->
-            <Frame Padding="10" CornerRadius="15" HasShadow="True" BackgroundColor="{DynamicResource CardBackgroundColor}">
+            <Border Padding="10" BackgroundColor="Gray">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="40,0,0,40" />
+                </Border.StrokeShape>
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
-                    <!-- Ikona pogody -->
-                    <Image Source="weather_icon.png"
-                       HeightRequest="50"
-                       VerticalOptions="Center" />
+                    <Image Source="weather_icon.png" HeightRequest="50" VerticalOptions="Center" />
 
-                    <!-- Dane pogodowe -->
                     <VerticalStackLayout Grid.Column="1">
-                        <Label Text="15°C"
+                        <Label Text="00 °C"
                                x:Name="ActualTemp"
-                           FontSize="32"
-                           FontAttributes="Bold"
-                           TextColor="{DynamicResource PrimaryTextColor}" />
+                               FontSize="32"
+                               FontAttributes="Bold"
+                               TextColor="{DynamicResource PrimaryTextColor}" />
                         <Label Text="Sunny"
-                           FontSize="18"
-                           TextColor="{DynamicResource SecondaryTextColor}" />
+                               FontSize="18"
+                               TextColor="{DynamicResource SecondaryTextColor}" />
                     </VerticalStackLayout>
                 </Grid>
-            </Frame>
+            </Border>
 
             <!-- Prognoza na kolejne godziny -->
-            <StackLayout>
-                <Label Text="Hourly Forecast"
-                   FontSize="20"
-                   FontAttributes="Bold"
-                   TextColor="{DynamicResource PrimaryTextColor}" />
+            <ListView x:Name="LocalisationListView"
+           
+           HorizontalOptions="FillAndExpand"
+           VerticalOptions="FillAndExpand">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextCell Text="{Binding Key}"
+                       Detail="{Binding Value}" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
 
-                <CollectionView ItemsSource="{Binding HourlyForecast}" 
-                            BackgroundColor="Transparent">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Frame Padding="10" CornerRadius="10" BackgroundColor="{DynamicResource CardBackgroundColor}" Margin="0,5">
-                                <Grid ColumnSpacing="10">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <!-- Godzina -->
-                                    <Label Text="{Binding Hour}" 
-                                       FontSize="16" 
-                                       TextColor="{DynamicResource PrimaryTextColor}" />
-
-                                    <!-- Ikona pogody -->
-                                    <Image Source="{Binding Icon}" 
-                                       HeightRequest="30" 
-                                       Grid.Column="1" 
-                                       HorizontalOptions="Center" />
-
-                                    <!-- Temperatura -->
-                                    <Label Text="{Binding Temperature}" 
-                                       FontSize="16" 
-                                       TextColor="{DynamicResource PrimaryTextColor}" 
-                                       Grid.Column="2" 
-                                       HorizontalOptions="End" />
-                                </Grid>
-                            </Frame>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </StackLayout>
         </VerticalStackLayout>
     </ScrollView>
 
