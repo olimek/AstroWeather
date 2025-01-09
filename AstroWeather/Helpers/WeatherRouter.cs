@@ -104,7 +104,7 @@ namespace AstroWeather.Helpers
             }
         public string[] getMooninfo()
         {
-            string[] mooninfoarr = new string[2];
+            string[] mooninfoarr = new string[3];
             DateOnly today = DateOnly.FromDateTime(DateTime.Now);
             string formattedDate = today.ToString("yyyy-MM-dd");
         
@@ -112,7 +112,7 @@ namespace AstroWeather.Helpers
             mooninfoarr[0] = moonInfoData.moonrise.ToString();
             mooninfoarr[1] = moonInfoData.moonset.ToString();
             mooninfoarr[2] = moonInfoData.moon_illumination_percentage.ToString();
-            mooninfoarr[2] = moonInfoData.moon_phase.ToString();
+            mooninfoarr[3] = moonInfoData.moon_phase.ToString();
             return mooninfoarr;
 
         }
