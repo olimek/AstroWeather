@@ -9,6 +9,7 @@ namespace AstroWeather.Helpers
     public class Hour
     {
         public string datetime { get; set; }
+        public string date { get; set; }
         public int datetimeEpoch { get; set; }
         public double temp { get; set; }
         public double humidity { get; set; }
