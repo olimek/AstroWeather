@@ -37,6 +37,7 @@
                     <!-- Dane pogodowe -->
                     <VerticalStackLayout Grid.Column="1">
                         <Label Text="15°C"
+                               x:Name="ActualTemp"
                            FontSize="32"
                            FontAttributes="Bold"
                            TextColor="{DynamicResource PrimaryTextColor}" />

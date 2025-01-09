@@ -12,8 +12,12 @@ namespace AstroWeather
                 public MainPage()
         {
             InitializeComponent();
-            //WeatherRouter getWeatherinfo = new();
-            //var lista = getWeatherinfo.getWeatherinfo();
+            WeatherRouter getWeatherinfo = new();
+            var lista = getWeatherinfo.getWeatherinfo();
+            DateTime currentDateTime = DateTime.Now;
+            ;
+
+            ActualTemp.Text = lista[0][Convert.ToInt32(currentDateTime.Hour)].temp.ToString() + " °C";
         }
         
 
