@@ -51,17 +51,42 @@
             </Border>
 
             <!-- Prognoza na kolejne godziny -->
-            <ListView x:Name="LocalisationListView"
-           
-           HorizontalOptions="FillAndExpand"
-           VerticalOptions="FillAndExpand">
-                <ListView.ItemTemplate>
+            <CollectionView ItemsSource="{Binding pogoda}"
+                ItemsLayout="HorizontalList">
+                <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <TextCell Text="{Binding Key}"
-                       Detail="{Binding Value}" />
+                        <Border Padding="5" BackgroundColor="Gray">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="20,20,20,20" />
+                            </Border.StrokeShape>
+                            <Grid Padding="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="100" />
+                                <RowDefinition Height="100" />
+                                </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="50" />
+                                    <ColumnDefinition Width="70" />
+                                </Grid.ColumnDefinitions>
+                            <Label Grid.Column="1"
+                                   VerticalTextAlignment="Start"
+                                   HorizontalTextAlignment="Start"
+                       Text="{Binding hour}"
+                       FontAttributes="Bold"
+                        />
+                            <Label Grid.Row="1"
+                                   HorizontalTextAlignment="Center"
+                       Grid.Column="1"
+                       Text="{Binding date}"
+                       
+                       
+                       VerticalOptions="End" />
+                        </Grid>
+                        </Border>
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
 
         </VerticalStackLayout>
     </ScrollView>
