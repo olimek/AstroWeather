@@ -134,7 +134,7 @@ namespace AstroWeather.Helpers
                 APIkey = LogFileGetSet.LoadData("MOONAPIkey", new List<string>())[0];
             }
             else if (which == "weather") {
-                 APIkey = LogFileGetSet.LoadData("APIkey", new List<string>())[0];
+                APIkey = LogFileGetSet.LoadData("APIkey", new List<string>())[0];
             }
 
             return APIkey;

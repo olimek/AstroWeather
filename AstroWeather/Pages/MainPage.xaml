@@ -59,29 +59,51 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="20,20,20,20" />
                             </Border.StrokeShape>
-                            <Grid Padding="5">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="100" />
-                                <RowDefinition Height="100" />
+                            <Grid Padding="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="100" />
+                                    <RowDefinition Height="100" />
+                                    <RowDefinition Height="100" />
                                 </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="50" />
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50" />
                                     <ColumnDefinition Width="70" />
+                                    
                                 </Grid.ColumnDefinitions>
-                            <Label Grid.Column="1"
+                                <Label Grid.Column="0"
+                                    Text="Godz.: "
+                                    FontAttributes="Bold"/>
+                                <Label Grid.Row="1"
+    Grid.Column="0"
+        Text="cloud.: "
+            VerticalOptions="End" />
+                                <Label Grid.Row="2"
+                                    Grid.Column="0"
+                                        Text="temp.: "
+                                            VerticalOptions="End" />
+                                <Label Grid.Column="1"
                                    VerticalTextAlignment="Start"
                                    HorizontalTextAlignment="Start"
                        Text="{Binding hour}"
                        FontAttributes="Bold"
                         />
-                            <Label Grid.Row="1"
-                                   HorizontalTextAlignment="Center"
+                                <Label Grid.Row="1"
+            VerticalTextAlignment="Start"
+ HorizontalTextAlignment="Start"
+Grid.Column="1"
+Text="{Binding cloudcover}"
+
+
+VerticalOptions="End" />
+                                <Label Grid.Row="2"
+                                   VerticalTextAlignment="Start"
+                        HorizontalTextAlignment="Start"
                        Grid.Column="1"
-                       Text="{Binding date}"
+                       Text="{Binding temp}"
                        
                        
                        VerticalOptions="End" />
-                        </Grid>
+                            </Grid>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
