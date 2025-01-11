@@ -79,7 +79,37 @@ namespace AstroWeather.Helpers
                     Key = kvp.Key,
                     Value = kvp.Value
                 }).ToList();
-            }*/
+            }
+        
+             // Przypisanie obrazów na podstawie fazy
+    if (phase < 0.03 || phase > 0.97)
+        return "new_moon.png"; // Nów
+    else if (phase < 0.22)
+        return "waxing_crescent.png"; // Sierp przybywający
+    else if (phase < 0.28)
+        return "first_quarter.png"; // Pierwsza kwadra
+    else if (phase < 0.47)
+        return "waxing_gibbous.png"; // Garbaty przybywający
+    else if (phase < 0.53)
+        return "full_moon.png"; // Pełnia
+    else if (phase < 0.72)
+        return "waning_gibbous.png"; // Garbaty ubywający
+    else if (phase < 0.78)
+        return "last_quarter.png"; // Ostatnia kwadra
+    else
+        return "waning_crescent.png"; // Sierp ubywający
+
+            <StackLayout>
+        <Image x:Name="MoonImage" HorizontalOptions="Center" VerticalOptions="Center" />
+    </StackLayout>
+
+                string moonPhaseImage = GetMoonPhaseImage();
+
+        // Ustaw obraz w kontrolce Image
+        MoonImage.Source = moonPhaseImage;
+         
+         
+         */
 
         public List<List<AstroWeather.Helpers.Hour>> getWeatherinfo()
         {
