@@ -16,12 +16,17 @@ namespace AstroWeather.Helpers
     {
         private WeatherAPI GetWeatherData()
         {
-            var DefaultLatLon = LogFileGetSet.LoadDefaultLoc();
-            string APIkey = LogFileGetSet.getAPIkey("weather");
-            string LAT = DefaultLatLon[0].Replace(",", ".");
-            string LON = DefaultLatLon[1].Replace(",", ".");
-            string jsonresponse = ReadResponseFromUrl($"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{LAT}%2C%20{LON}?unitGroup=metric&elements=datetime%2CdatetimeEpoch%2Ctemp%2Cdew%2Chumidity%2Cprecip%2Cprecipprob%2Cwindspeed%2Cpressure%2Ccloudcover%2Cvisibility&include=days%2Chours%2Cfcst%2Cobs&key={APIkey}&contentType=json");
-            WeatherAPI? weather = JsonSerializer.Deserialize<WeatherAPI>(jsonresponse);
+            
+                var DefaultLatLon = LogFileGetSet.LoadDefaultLoc();
+                string APIkey = LogFileGetSet.getAPIkey("weather");
+                string LAT = DefaultLatLon[0].Replace(",", ".");
+                string LON = DefaultLatLon[1].Replace(",", ".");
+                string jsonresponse = ReadResponseFromUrl($"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{LAT}%2C%20{LON}?unitGroup=metric&elements=datetime%2CdatetimeEpoch%2Ctemp%2Cdew%2Chumidity%2Cprecip%2Cprecipprob%2Cwindspeed%2Cpressure%2Ccloudcover%2Cvisibility&include=days%2Chours%2Cfcst%2Cobs&key={APIkey}&contentType=json");
+
+            jsonresponse = jsonresponse.Replace("null", "0");
+
+        WeatherAPI? weather = JsonSerializer.Deserialize<WeatherAPI>(jsonresponse);
+            
             return weather;
         }
 

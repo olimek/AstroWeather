@@ -44,7 +44,7 @@ public partial class SettingsPage : ContentPage
 
         string Lon = LongitudeInput.Text.Replace(".", ",");
 
-        LogFileGetSet.StoreData($"Localisation_{name}", new List<string>(new string[] { Lat, Lon, "0" }));
+        LogFileGetSet.StoreData($"Localisation_{name}", new List<string>(new string[] { Lat, Lon}));
 
         
         await PopupView.FadeTo(0, 250, Easing.CubicInOut);
