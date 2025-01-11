@@ -24,7 +24,7 @@
             </StackLayout>
 
             <!-- Sekcja pogody aktualnej -->
-            <Border Padding="10" BackgroundColor="Gray">
+            <Border Padding="10" BackgroundColor="{DynamicResource SecondaryColor}">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="40,0,0,40" />
                 </Border.StrokeShape>
@@ -57,7 +57,7 @@
                 ItemsLayout="HorizontalList">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Border Padding="5" BackgroundColor="Gray">
+                        <Border Padding="5" BackgroundColor="{DynamicResource SecondaryColor}" >
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="20,20,20,20" />
                             </Border.StrokeShape>
