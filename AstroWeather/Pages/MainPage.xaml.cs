@@ -11,11 +11,14 @@ namespace AstroWeather
             InitializeComponent();
             WeatherRouter getWeatherinfo = new();
             var Pogoda = getWeatherinfo.getWeatherinfo();
-            DateTime currentDateTime = DateTime.Now;
-            var result2 = Pogoda.SelectMany(i => i).Distinct();
-            var filteredWeather = result2.Skip(Convert.ToInt32(currentDateTime.Hour)).Take(12).ToList();
-            BindingContext = new { pogoda = filteredWeather };
-            ActualTemp.Text = Pogoda[0][Convert.ToInt32(currentDateTime.Hour)].temp.ToString() + " °C";
+            if (Pogoda.Count != 0)
+            {
+                DateTime currentDateTime = DateTime.Now;
+                var result2 = Pogoda.SelectMany(i => i).Distinct();
+                var filteredWeather = result2.Skip(Convert.ToInt32(currentDateTime.Hour)).Take(12).ToList();
+                BindingContext = new { pogoda = filteredWeather };
+                ActualTemp.Text = Pogoda[0][Convert.ToInt32(currentDateTime.Hour)].temp.ToString() + " °C";
+            }
            
         }
     }

@@ -1,4 +1,4 @@
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using AstroWeather.Helpers;
 using Microsoft.Maui.Controls;
 using static System.Net.Mime.MediaTypeNames;
@@ -10,8 +10,13 @@ public partial class SettingsPage : ContentPage
     public SettingsPage()
     {
         InitializeComponent();
-        string test = LogFileGetSet.LoadData<string>("APIkey");
-        Console.WriteLine(test);
+        var apiKeys = LogFileGetSet.LoadData<List<string>>("APIkey", () => new List<string>());
+
+        // Sprawdzenie, czy lista nie jest pusta, i pobranie pierwszego klucza
+        string test = apiKeys != null && apiKeys.Count > 0 ? apiKeys[0] : string.Empty;
+
+        // Wypisanie wyniku (lub informacja, że klucz nie istnieje)
+        
         BindingContext = this;
     }
 
