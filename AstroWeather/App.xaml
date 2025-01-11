@@ -16,7 +16,7 @@
             <Color x:Key="TextColor">#E0F2FE</Color>
             <Color x:Key="AccentColor">#FACC15</Color>
 
-            <!-- Style globalne -->
+            <!--  Style globalne  -->
             <Style TargetType="Label">
                 <Setter Property="TextColor" Value="{StaticResource TextColor}" />
             </Style>

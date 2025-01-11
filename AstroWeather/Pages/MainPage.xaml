@@ -6,24 +6,26 @@
     BackgroundColor="{StaticResource BackgroundColor}">
 
     <ScrollView>
-        
-        <!-- Struktura główna -->
+
+        <!--  Struktura główna  -->
         <VerticalStackLayout Padding="20" Spacing="20">
 
-            <!-- Sekcja nagłówka -->
+            <!--  Sekcja nagłówka  -->
             <StackLayout>
-                <Label Text="Current Weather"
-                       FontSize="24"
-                       FontAttributes="Bold"
-                       HorizontalOptions="Center"
-                       TextColor="{DynamicResource PrimaryTextColor}" />
-                <Label Text="City, Country"
-                       FontSize="16"
-                       HorizontalOptions="Center"
-                       TextColor="{DynamicResource SecondaryTextColor}" />
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="24"
+                    HorizontalOptions="Center"
+                    Text="Current Weather"
+                    TextColor="{DynamicResource PrimaryTextColor}" />
+                <Label
+                    FontSize="16"
+                    HorizontalOptions="Center"
+                    Text="City, Country"
+                    TextColor="{DynamicResource SecondaryTextColor}" />
             </StackLayout>
 
-            <!-- Sekcja pogody aktualnej -->
+            <!--  Sekcja pogody aktualnej  -->
             <Border Padding="10" BackgroundColor="{DynamicResource SecondaryColor}">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="40,0,0,40" />
@@ -37,27 +39,31 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <Image Source="weather_icon.png" HeightRequest="50" VerticalOptions="Center" />
+                    <Image
+                        HeightRequest="50"
+                        Source="weather_icon.png"
+                        VerticalOptions="Center" />
 
                     <VerticalStackLayout Grid.Column="1">
-                        <Label Text="00 °C"
-                               x:Name="ActualTemp"
-                               FontSize="32"
-                               FontAttributes="Bold"
-                               TextColor="{DynamicResource PrimaryTextColor}" />
-                        <Label Text="Sunny"
-                               FontSize="18"
-                               TextColor="{DynamicResource SecondaryTextColor}" />
+                        <Label
+                            x:Name="ActualTemp"
+                            FontAttributes="Bold"
+                            FontSize="32"
+                            Text="00 °C"
+                            TextColor="{DynamicResource PrimaryTextColor}" />
+                        <Label
+                            FontSize="18"
+                            Text="Sunny"
+                            TextColor="{DynamicResource SecondaryTextColor}" />
                     </VerticalStackLayout>
                 </Grid>
             </Border>
 
-            <!-- Prognoza na kolejne godziny -->
-            <CollectionView ItemsSource="{Binding pogoda}"
-                ItemsLayout="HorizontalList">
+            <!--  Prognoza na kolejne godziny  -->
+            <CollectionView ItemsLayout="HorizontalList" ItemsSource="{Binding pogoda}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Border Padding="5" BackgroundColor="{DynamicResource SecondaryColor}" >
+                        <Border Padding="5" BackgroundColor="{DynamicResource SecondaryColor}">
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="20,20,20,20" />
                             </Border.StrokeShape>
@@ -70,41 +76,42 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="50" />
                                     <ColumnDefinition Width="70" />
-                                    
+
                                 </Grid.ColumnDefinitions>
-                                <Label Grid.Column="0"
-                                    Text="Godz.: "
-                                    FontAttributes="Bold"/>
-                                <Label Grid.Row="1"
-    Grid.Column="0"
-        Text="cloud.: "
-            VerticalOptions="End" />
-                                <Label Grid.Row="2"
+                                <Label
                                     Grid.Column="0"
-                                        Text="temp.: "
-                                            VerticalOptions="End" />
-                                <Label Grid.Column="1"
-                                   VerticalTextAlignment="Start"
-                                   HorizontalTextAlignment="Start"
-                       Text="{Binding hour}"
-                       FontAttributes="Bold"
-                        />
-                                <Label Grid.Row="1"
-            VerticalTextAlignment="Start"
- HorizontalTextAlignment="Start"
-Grid.Column="1"
-Text="{Binding cloudcover}"
-
-
-VerticalOptions="End" />
-                                <Label Grid.Row="2"
-                                   VerticalTextAlignment="Start"
-                        HorizontalTextAlignment="Start"
-                       Grid.Column="1"
-                       Text="{Binding temp}"
-                       
-                       
-                       VerticalOptions="End" />
+                                    FontAttributes="Bold"
+                                    Text="Godz.: " />
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    Text="cloud.: "
+                                    VerticalOptions="End" />
+                                <Label
+                                    Grid.Row="2"
+                                    Grid.Column="0"
+                                    Text="temp.: "
+                                    VerticalOptions="End" />
+                                <Label
+                                    Grid.Column="1"
+                                    FontAttributes="Bold"
+                                    HorizontalTextAlignment="Start"
+                                    Text="{Binding hour}"
+                                    VerticalTextAlignment="Start" />
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    HorizontalTextAlignment="Start"
+                                    Text="{Binding cloudcover}"
+                                    VerticalOptions="End"
+                                    VerticalTextAlignment="Start" />
+                                <Label
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    HorizontalTextAlignment="Start"
+                                    Text="{Binding temp}"
+                                    VerticalOptions="End"
+                                    VerticalTextAlignment="Start" />
                             </Grid>
                         </Border>
                     </DataTemplate>

@@ -3,23 +3,24 @@
     x:Class="AstroWeather.Pages.LocalisationPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    BackgroundColor="{StaticResource BackgroundColor}"
-    Title="LocalisationPage">
+    Title="LocalisationPage"
+    BackgroundColor="{StaticResource BackgroundColor}">
     <StackLayout Padding="10">
-        <Label x:Name="SelectedLabel"
-               Text="Selected Localisation: None"
-               FontSize="16"
-               HorizontalOptions="Center"
-               VerticalOptions="Center" />
+        <Label
+            x:Name="SelectedLabel"
+            FontSize="16"
+            HorizontalOptions="Center"
+            Text="Selected Localisation: None"
+            VerticalOptions="Center" />
 
-        <ListView x:Name="LocalisationListView"
-                  ItemSelected="OnItemSelected"
-                  HorizontalOptions="FillAndExpand"
-                  VerticalOptions="FillAndExpand">
+        <ListView
+            x:Name="LocalisationListView"
+            HorizontalOptions="FillAndExpand"
+            ItemSelected="OnItemSelected"
+            VerticalOptions="FillAndExpand">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextCell Text="{Binding Key}"
-                              Detail="{Binding Value}" />
+                    <TextCell Detail="{Binding Value}" Text="{Binding Key}" />
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
