@@ -8,7 +8,12 @@ using AstroWeather.Helpers;
 using System.Text.Json;
 using Innovative.SolarCalculator;
 using System.Globalization;
-
+using AstroAlgo;
+using CosineKitty;
+using SolCalc;
+using SolCalc.Data;
+using NodaTime;
+using NodaTime.Extensions;
 namespace AstroWeather.Helpers
 {
     public class WeatherRouter
@@ -18,18 +23,20 @@ namespace AstroWeather.Helpers
         {
 
             var DefaultLatLon = LogFileGetSet.LoadDefaultLoc();
-            if (DefaultLatLon != null) { 
-            string APIkey = LogFileGetSet.GetAPIKey("weather");
-            string LAT = DefaultLatLon[0].Replace(",", ".");
-            string LON = DefaultLatLon[1].Replace(",", ".");
-            string jsonresponse = ReadResponseFromUrl($"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{LAT}%2C%20{LON}?unitGroup=metric&elements=datetime%2CdatetimeEpoch%2Ctemp%2Cdew%2Chumidity%2Cprecip%2Cprecipprob%2Cwindspeed%2Cpressure%2Ccloudcover%2Cvisibility&include=days%2Chours%2Cfcst%2Cobs&key={APIkey}&contentType=json");
+            if (DefaultLatLon != null)
+            {
+                string APIkey = LogFileGetSet.GetAPIKey("weather");
+                string LAT = DefaultLatLon[0].Replace(",", ".");
+                string LON = DefaultLatLon[1].Replace(",", ".");
+                string jsonresponse = ReadResponseFromUrl($"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{LAT}%2C%20{LON}?unitGroup=metric&elements=datetime%2CdatetimeEpoch%2Ctemp%2Cdew%2Chumidity%2Cprecip%2Cprecipprob%2Cwindspeed%2Cpressure%2Ccloudcover%2Cvisibility&include=days%2Chours%2Cfcst%2Cobs&key={APIkey}&contentType=json");
 
-            jsonresponse = jsonresponse.Replace("null", "0");
+                jsonresponse = jsonresponse.Replace("null", "0");
 
-            WeatherAPI? weather = JsonSerializer.Deserialize<WeatherAPI>(jsonresponse);
+                WeatherAPI? weather = JsonSerializer.Deserialize<WeatherAPI>(jsonresponse);
 
-            return weather; }
-        else{return null;}
+                return weather;
+            }
+            else { return null; }
         }
 
         private Astro GetAstroData(string DATE)
@@ -47,14 +54,15 @@ namespace AstroWeather.Helpers
             Astro? astro = JsonSerializer.Deserialize<Astro>(jsonresponse);
             return astro;
         }
-        public static string GetWeatherImage() {
+        public static string GetWeatherImage()
+        {
             double phase = 0;
             if (phase < 0.03 || phase > 0.97)
-                return "sun.png"; 
+                return "sun.png";
             else if (phase < 0.22)
-                return "night.png"; 
+                return "night.png";
             else if (phase < 0.28)
-                return "nightcloud.png"; 
+                return "nightcloud.png";
             else if (phase < 0.47)
                 return "nightrain.png";
             else if (phase < 0.53)
@@ -62,10 +70,46 @@ namespace AstroWeather.Helpers
             else if (phase < 0.72)
                 return "cloudyrain.png";
             else
-                return "heavyrain.png"; 
-            
-        }
+                return "heavyrain.png";
 
+        }
+        public static List<AstroWeather.Helpers.Hour> SetWeatherdata(List<Hour> inputList)
+        {
+            var DefaultLatLon = LogFileGetSet.LoadDefaultLoc();
+            
+
+            foreach (var result in inputList)
+            {
+                string processeddate = result.date + " " + result.datetime;
+                DateTime date = DateTime.ParseExact(processeddate, "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+                if (date.Day >= DateTime.Now.Day && date.Day <= DateTime.Now.AddDays(1).Day)
+                {
+
+
+                    // Data do obliczeń
+
+                    double lat = double.Parse(DefaultLatLon[0].Replace(",", "."), CultureInfo.InvariantCulture);
+                    double lon = double.Parse(DefaultLatLon[1].Replace(",", "."), CultureInfo.InvariantCulture);
+                    // Obliczenia dla Księżyca
+                    var moon = new AstroAlgo.SolarSystem.Moon(lat, lon, date, TimeZoneInfo.Local);
+                    var sun = new AstroAlgo.SolarSystem.Sun(lat, lon, date, TimeZoneInfo.Local);
+                    ZonedDateTime now = SystemClock.Instance.InZone(DateTimeZoneProviders.Tzdb["Europe/Warsaw"]).GetCurrentZonedDateTime();
+                    var currentSunlight = SunlightCalculator.GetSunlightChanges(now, lat, lon)
+    .First(change => change.Name == SolarTimeOfDay.NauticalDusk);
+                    var currentSusssnlight = SunlightCalculator.GetSunlightChanges(now, lat, lon)
+    .First(change => change.Name == SolarTimeOfDay.NauticalDawn);
+                    var testtt = moon.Setting.ToString();
+                    var testt22t = moon.Rising.ToString();
+                    // Wschód i zachód Księżyca
+
+
+                    if (date.Hour != null) { }
+                }
+
+            }
+            return null;
+
+        }
         /*
         TimeZoneInfo polandTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
         SolarTimes solarTimes = new SolarTimes(DateTime.Parse("2025-06-15"), 51.1080, 17.0385);
@@ -132,16 +176,16 @@ namespace AstroWeather.Helpers
         {
             var weatherData = GetWeatherData();
             List<List<AstroWeather.Helpers.Hour>> listOfHoursPerDay = new List<List<AstroWeather.Helpers.Hour>>();
-               if (weatherData != null)
+            if (weatherData != null)
             {
-                
+
                 listOfHoursPerDay = weatherData.days
      .Select(day =>
      {
-         
+
          var dayDate = DateTime.ParseExact(day.datetime, "yyyy-MM-dd", CultureInfo.InvariantCulture);
          var dateWithoutTime = dayDate.ToString("dd.MM.yyyy");
-         
+
          foreach (var hour in day.hours)
          {
              hour.precip = hour.precip ?? 0;
@@ -156,13 +200,13 @@ namespace AstroWeather.Helpers
             }
             return listOfHoursPerDay;
 
-            }
+        }
         public string[] getMooninfo()
         {
             string[] mooninfoarr = new string[3];
             DateOnly today = DateOnly.FromDateTime(DateTime.Now);
             string formattedDate = today.ToString("yyyy-MM-dd");
-        
+
             var moonInfoData = GetAstroData(formattedDate);
             mooninfoarr[0] = moonInfoData.moonrise.ToString();
             mooninfoarr[1] = moonInfoData.moonset.ToString();
@@ -184,7 +228,7 @@ namespace AstroWeather.Helpers
                 return responseBody;
             }
         }
-        
-        
+
+
     }
 }

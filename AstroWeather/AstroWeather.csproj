@@ -60,10 +60,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="AstroAlgo" Version="2.3.1" />
 		<PackageReference Include="CosineKitty.AstronomyEngine" Version="2.1.19" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.21" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
 		<PackageReference Include="SolarCalculator" Version="3.5.0" />
+		<PackageReference Include="SolCalc" Version="1.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
