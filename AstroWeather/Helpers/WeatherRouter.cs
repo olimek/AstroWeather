@@ -36,7 +36,6 @@ namespace AstroWeather.Helpers
         {
             var DefaultLatLon = LogFileGetSet.LoadDefaultLoc();
 
-            // Sprawdzenie poprawności danych lokalizacji
             if (DefaultLatLon == null || DefaultLatLon.Count < 2)
             {
                 throw new Exception("DefaultLatLon is null or incomplete.");
@@ -47,6 +46,24 @@ namespace AstroWeather.Helpers
             string jsonresponse = ReadResponseFromUrl($"https://api.ipgeolocation.io/astronomy?apiKey={APIkey}&lat={LAT}&long={LON}&date={DATE}");
             Astro? astro = JsonSerializer.Deserialize<Astro>(jsonresponse);
             return astro;
+        }
+        public static string GetWeatherImage() {
+            double phase = 0;
+            if (phase < 0.03 || phase > 0.97)
+                return "sun.png"; 
+            else if (phase < 0.22)
+                return "night.png"; 
+            else if (phase < 0.28)
+                return "nightcloud.png"; 
+            else if (phase < 0.47)
+                return "nightrain.png";
+            else if (phase < 0.53)
+                return "cloudy.png";
+            else if (phase < 0.72)
+                return "cloudyrain.png";
+            else
+                return "heavyrain.png"; 
+            
         }
 
         /*

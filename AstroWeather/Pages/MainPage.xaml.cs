@@ -18,6 +18,11 @@ namespace AstroWeather
                 var filteredWeather = result2.Skip(Convert.ToInt32(currentDateTime.Hour)).Take(12).ToList();
                 BindingContext = new { pogoda = filteredWeather };
                 ActualTemp.Text = Pogoda[0][Convert.ToInt32(currentDateTime.Hour)].temp.ToString() + " °C";
+
+                string weatherImage = WeatherRouter.GetWeatherImage();
+
+                // Ustaw obraz w kontrolce Image
+                WeatherImage.Source = weatherImage;
             }
            
         }

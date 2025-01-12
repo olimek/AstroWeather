@@ -40,9 +40,12 @@
                     </Grid.RowDefinitions>
 
                     <Image
-                        HeightRequest="50"
-                        Source="weather_icon.png"
-                        VerticalOptions="Center" />
+                        x:Name="WeatherImage"
+                        Aspect="AspectFit"
+                        HeightRequest="100"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        WidthRequest="100" />
 
                     <VerticalStackLayout Grid.Column="1">
                         <Label
