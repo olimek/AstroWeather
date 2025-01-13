@@ -1,19 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using AstroWeather.Helpers;
+﻿using System.Globalization;
 using System.Text.Json;
-using Innovative.SolarCalculator;
-using System.Globalization;
-using AstroAlgo;
-using CosineKitty;
-using SolCalc;
-using SolCalc.Data;
 using NodaTime;
 using NodaTime.Extensions;
+using SolCalc;
+using SolCalc.Data;
 namespace AstroWeather.Helpers
 {
     public class WeatherRouter
@@ -73,10 +63,39 @@ namespace AstroWeather.Helpers
                 return "heavyrain.png";
 
         }
+        private static string roundHours(string hour, string round)
+        {
+            string outHour = "";
+
+            if (TimeSpan.TryParse(hour, out TimeSpan parsedTime))
+            {
+                if (round == "UP")
+                {
+                    TimeSpan roundedUp = TimeSpan.FromHours(Math.Ceiling(parsedTime.TotalHours));
+                    outHour = $"{roundedUp.Hours:00}:00:00";
+                }
+                else if (round == "DOWN")
+                {
+                    TimeSpan roundedDown = TimeSpan.FromHours(Math.Floor(parsedTime.TotalHours));
+                    outHour = $"{roundedDown.Hours:00}:00:00";
+                }
+                else
+                {
+                    throw new ArgumentException("Invalid round value. Use 'UP' or 'DOWN'.");
+                }
+            }
+            else
+            {
+                throw new ArgumentException("Invalid hour format. Use 'HH:mm:ss'.");
+            }
+
+            return outHour;
+        }
+
         public static List<AstroWeather.Helpers.Hour> SetWeatherdata(List<Hour> inputList)
         {
             var DefaultLatLon = LogFileGetSet.LoadDefaultLoc();
-            
+
 
             foreach (var result in inputList)
             {
@@ -94,10 +113,20 @@ namespace AstroWeather.Helpers
                     var moon = new AstroAlgo.SolarSystem.Moon(lat, lon, date, TimeZoneInfo.Local);
                     var sun = new AstroAlgo.SolarSystem.Sun(lat, lon, date, TimeZoneInfo.Local);
                     ZonedDateTime now = SystemClock.Instance.InZone(DateTimeZoneProviders.Tzdb["Europe/Warsaw"]).GetCurrentZonedDateTime();
-                    var currentSunlight = SunlightCalculator.GetSunlightChanges(now, lat, lon)
+                    ZonedDateTime yesterday = now - Duration.FromDays(1);
+                    var today = now.Date;
+                    var currentSunlight = SunlightCalculator.GetSunlightChanges(yesterday, lat, lon)
     .First(change => change.Name == SolarTimeOfDay.NauticalDusk);
-                    var currentSusssnlight = SunlightCalculator.GetSunlightChanges(now, lat, lon)
+                    var currentSusssnlight = SunlightCalculator.GetSunlightChanges(yesterday, lat, lon)
     .First(change => change.Name == SolarTimeOfDay.NauticalDawn);
+
+                    string duskTime = currentSunlight.Time.ToDateTimeUnspecified().ToString("HH:mm:ss");
+                    string dawnTime = currentSusssnlight.Time.ToDateTimeUnspecified().ToString("HH:mm:ss");
+                    // Przekazanie czasu jako string do funkcji roundHours
+
+                    string ddd = roundHours(duskTime, "DOWN");
+                    string ddssd = roundHours(dawnTime, "UP");
+
                     var testtt = moon.Setting.ToString();
                     var testt22t = moon.Rising.ToString();
                     // Wschód i zachód Księżyca
@@ -110,67 +139,6 @@ namespace AstroWeather.Helpers
             return null;
 
         }
-        /*
-        TimeZoneInfo polandTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
-        SolarTimes solarTimes = new SolarTimes(DateTime.Parse("2025-06-15"), 51.1080, 17.0385);
-        DateTime sunrise = TimeZoneInfo.ConvertTimeFromUtc(solarTimes.DuskNautical.ToUniversalTime(), polandTimeZone);
-        SolarTimes solarTimes1 = new SolarTimes(DateTime.Parse("2025-06-16"), 51.1080, 17.0385);
-        DateTime sunset = TimeZoneInfo.ConvertTimeFromUtc(solarTimes1.DawnNautical.ToUniversalTime(), polandTimeZone);
-        DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-        string formattedDate = today.ToString("yyyy-MM-dd");\
-        string formattedDate = "2025-06-15";
-        var test = GetAstroData(formattedDate);
-        moonrisel.Text = sunrise.ToString();
-            moonsetl.Text = sunset.ToString();
-            WeatherRouter weather = new WeatherRouter();
-            var test2 =  weather.WeatherInit();
-
-            var todayWeather = test2.days.FirstOrDefault(x => x.datetime == formattedDate);
-
-            if (todayWeather != null)
-            {
-                // Pobranie właściwości z pominięciem "hours"
-                var properties = todayWeather.GetType().GetProperties()
-                    .Where(p => p.Name != "hours" && p.Name != "datetimeEpoch")
-                    .ToDictionary(p => p.Name, p => p.GetValue(todayWeather)?.ToString());
-
-                // Ustawienie danych jako źródło dla ListView
-                weatherListView.ItemsSource = properties.Select(kvp => new
-                {
-                    Key = kvp.Key,
-                    Value = kvp.Value
-                }).ToList();
-            }
-        
-             // Przypisanie obrazów na podstawie fazy
-    if (phase < 0.03 || phase > 0.97)
-        return "new_moon.png"; // Nów
-    else if (phase < 0.22)
-        return "waxing_crescent.png"; // Sierp przybywający
-    else if (phase < 0.28)
-        return "first_quarter.png"; // Pierwsza kwadra
-    else if (phase < 0.47)
-        return "waxing_gibbous.png"; // Garbaty przybywający
-    else if (phase < 0.53)
-        return "full_moon.png"; // Pełnia
-    else if (phase < 0.72)
-        return "waning_gibbous.png"; // Garbaty ubywający
-    else if (phase < 0.78)
-        return "last_quarter.png"; // Ostatnia kwadra
-    else
-        return "waning_crescent.png"; // Sierp ubywający
-
-            <StackLayout>
-        <Image x:Name="MoonImage" HorizontalOptions="Center" VerticalOptions="Center" />
-    </StackLayout>
-
-                string moonPhaseImage = GetMoonPhaseImage();
-
-        // Ustaw obraz w kontrolce Image
-        MoonImage.Source = moonPhaseImage;
-         
-         
-         */
 
         public List<List<AstroWeather.Helpers.Hour>> getWeatherinfo()
         {
@@ -194,9 +162,8 @@ namespace AstroWeather.Helpers
              hour.hour = hour.datetime.ToString().Substring(0, 2);
          }
 
-         return day.hours.ToList(); // Zwróć listę godzin z dodaną datą
-     })
-     .ToList(); // Konwertujemy wynik na listę list
+         return day.hours.ToList();
+     }).ToList();
             }
             return listOfHoursPerDay;
 
