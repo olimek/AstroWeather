@@ -114,7 +114,7 @@ namespace AstroWeather.Helpers
             }
         }
 
-        public static List<string>? LoadDefaultLoc()
+        public static List<double>? LoadDefaultLoc()
         {
             // Ładujemy domyślną lokalizację (może być `null` lub pusta lista)
             var defaultLoc = LogFileGetSet.LoadData<List<string>>("DefaultLoc", () => new List<string>());
@@ -123,7 +123,12 @@ namespace AstroWeather.Helpers
             if (defaultLoc != null && defaultLoc.Count > 0)
             {
                 // Ładujemy lokalizację na podstawie pierwszego elementu z defaultLoc
-                var locloc = LogFileGetSet.LoadData($"Localisation_{defaultLoc[0]}", () => new List<string>());
+                var rawData = LogFileGetSet.LoadData($"Localisation_{defaultLoc[0]}", () => new List<string>());
+                var locloc = rawData
+                    .Select(item => item.Replace(',', '.')) // Zamiana przecinków na kropki
+                    .Where(item => double.TryParse(item, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out _)) 
+                    .Select(item => double.Parse(item, System.Globalization.CultureInfo.InvariantCulture)) 
+                    .ToList();
                 return locloc;
             }
 
