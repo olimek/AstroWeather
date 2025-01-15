@@ -1,5 +1,7 @@
-﻿using System.Globalization;
+﻿using System.ComponentModel.Design;
+using System.Globalization;
 using System.Text.Json;
+using CosineKitty;
 using NodaTime;
 using NodaTime.Extensions;
 using SolCalc;
@@ -9,8 +11,9 @@ namespace AstroWeather.Helpers
 {
     public class WeatherRouter
 
-    {       private Astro? astronomicalData = null;
-            private WeatherAPI? weatherData = null;
+    {
+        private Astro? astronomicalData = null;
+        private WeatherAPI? weatherData = null;
         static private double lat = 0;
         static private double lon = 0;
 
@@ -25,7 +28,7 @@ namespace AstroWeather.Helpers
             if (DefaultLatLon != null)
             {
                 string APIkey = LogFileGetSet.GetAPIKey("weather");
-                string LAT = lat.ToString().Replace(",",".");
+                string LAT = lat.ToString().Replace(",", ".");
                 string LON = lon.ToString().Replace(",", ".");
                 string jsonresponse = ReadResponseFromUrl($"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{LAT}%2C%20{LON}?unitGroup=metric&elements=datetime%2CdatetimeEpoch%2Ctemp%2Cdew%2Chumidity%2Cprecip%2Cprecipprob%2Cwindspeed%2Cpressure%2Ccloudcover%2Cvisibility&include=days%2Chours%2Cfcst%2Cobs&key={APIkey}&contentType=json");
 
@@ -75,7 +78,7 @@ namespace AstroWeather.Helpers
 
         public static string GetMoonImage(double illumination)
         {
-            
+
             if (illumination == 0)
                 return "new_moon.png";
             else if (illumination > 0 && illumination < 50)
@@ -88,7 +91,7 @@ namespace AstroWeather.Helpers
                 return "full_moon.png";
             /*else if (phase < 0.72)
                 return "waning_gibbous.png";*/
-            else if(true)
+            else if (true)
                 return "last_quarter.png";
             else
                 return "waning_crescent.png";
@@ -137,15 +140,23 @@ namespace AstroWeather.Helpers
             }
         }
 
-        private static List<DateTime> getAstroTimes(DateTime date)
+        private static List<DateTime> getAstroTimes(DateTime date, bool first)
         {
+            ZonedDateTime now;
+                ZonedDateTime yesterday;
             // Utwórz obiekt reprezentujący Księżyc
             var moon = new AstroAlgo.SolarSystem.Moon(lat, lon, date, TimeZoneInfo.Local);
-
-            // Ustawienie strefy czasowej
-            ZonedDateTime now = SystemClock.Instance.InZone(DateTimeZoneProviders.Tzdb["Europe/Warsaw"]).GetCurrentZonedDateTime();
-            ZonedDateTime yesterday = now - Duration.FromDays(1);
-
+            if (!first)
+            {
+                // Ustawienie strefy czasowej
+                 yesterday = SystemClock.Instance.InZone(DateTimeZoneProviders.Tzdb["Europe/Warsaw"]).GetCurrentZonedDateTime();
+                 now = yesterday + Duration.FromDays(1);
+            }
+            else {
+                // Ustawienie strefy czasowej
+                 now = SystemClock.Instance.InZone(DateTimeZoneProviders.Tzdb["Europe/Warsaw"]).GetCurrentZonedDateTime();
+                 yesterday = now - Duration.FromDays(1);
+            }
             // Pobranie czasu zmierzchu nautycznego
             var nauticalDuskChange = SunlightCalculator.GetSunlightChanges(yesterday, lat, lon)
                 .FirstOrDefault(change => change.Name == SolarTimeOfDay.NauticalDusk);
@@ -169,10 +180,10 @@ namespace AstroWeather.Helpers
             string roundedDusk = roundHours(nauticalDusk, "DOWN");
             string roundedDawn = roundHours(nauticalDawn, "UP");
 
-            
+
 
             // Konwersja TimeSpan na DateTime dla wschodu i zachodu Księżyca
-            DateTime moonset =  moon.DateTime + moon.Setting;
+            DateTime moonset = moon.DateTime + moon.Setting;
             DateTime moonrise = moon.DateTime + moon.Rising;
 
             // Dodanie wartości do listy
@@ -194,33 +205,45 @@ namespace AstroWeather.Helpers
 
 
 
-        public static List<AstroWeather.Helpers.Hour> SetWeatherdata(List<Hour> inputList)
+        public static List<List<AstroWeather.Helpers.Hour>> SetWeatherdata(List<AstroWeather.Helpers.Hour> inputList)
         {
-
-            List<string> test = new List<string>();
-
+            List<AstroWeather.Helpers.Hour> resultList = new List<AstroWeather.Helpers.Hour>();
+            
+            List<List<AstroWeather.Helpers.Hour>> outlist = new List<List<AstroWeather.Helpers.Hour>>();
+            bool isNightOver = true;
+            bool firstnight = true;
+            List<DateTime> astroTimes = new List<DateTime>();
             foreach (var result in inputList)
             {
-                string processeddate = result.date + " " + result.datetime;
-                DateTime date = DateTime.ParseExact(processeddate, "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture);
-                if (date.Day >= DateTime.Now.Day && date.Day <= DateTime.Now.AddDays(1).Day)
+                string processedDate = result.date + " " + result.datetime;
+                DateTime dateTime = DateTime.ParseExact(processedDate, "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+              
+                if (isNightOver || firstnight)
                 {
-                    var czasy = getAstroTimes(date);
+                    astroTimes = getAstroTimes(dateTime, firstnight); 
+                    isNightOver = false;
+                    firstnight = false;
 
-                    // Data do obliczeń
-
-                    // Wschód i zachód Księżyca
-                    
-
-                    if (date.Hour > czasy[0].Hour) {
-                        test.Add(date.Hour.ToString());
-                    }
                 }
+                DateTime duskDateTime = astroTimes[0];  
+                DateTime dawnDateTime = astroTimes[1];  
+                
+                if (DateTime.Compare(dateTime, duskDateTime) >= 0 && DateTime.Compare(dateTime, dawnDateTime) <= 0)
+                {
+                    resultList.Add(result);
+                }
+                else if (DateTime.Compare(dateTime, dawnDateTime) > 0) { isNightOver = true;
 
+
+                    outlist.Add(new List<AstroWeather.Helpers.Hour>(resultList));
+                    resultList.Clear();
+                }
+                
             }
-            return null;
 
+            return outlist;
         }
+       
 
         public List<List<AstroWeather.Helpers.Hour>> getWeatherinfo()
         {
