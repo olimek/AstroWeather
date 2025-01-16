@@ -142,60 +142,53 @@ namespace AstroWeather.Helpers
 
         private static List<DateTime> getAstroTimes(DateTime date, bool first)
         {
-            ZonedDateTime now;
-                ZonedDateTime yesterday;
-            // Utwórz obiekt reprezentujący Księżyc
+            // Ustawienie strefy czasowej dla przekazanej daty
+            var zone = DateTimeZoneProviders.Tzdb["Europe/Warsaw"];
+            ZonedDateTime zonedDate = LocalDateTime.FromDateTime(date).InZoneLeniently(zone);
+
+            // Obliczenie wczorajszego i dzisiejszego dnia w odpowiedniej strefie czasowej
+            ZonedDateTime now = zonedDate;
+            ZonedDateTime tommorow = now + Duration.FromDays(1);
+
+            // Tworzenie obiektu reprezentującego Księżyc
             var moon = new AstroAlgo.SolarSystem.Moon(lat, lon, date, TimeZoneInfo.Local);
-            if (!first)
-            {
-                // Ustawienie strefy czasowej
-                 yesterday = SystemClock.Instance.InZone(DateTimeZoneProviders.Tzdb["Europe/Warsaw"]).GetCurrentZonedDateTime();
-                 now = yesterday + Duration.FromDays(1);
-            }
-            else {
-                // Ustawienie strefy czasowej
-                 now = SystemClock.Instance.InZone(DateTimeZoneProviders.Tzdb["Europe/Warsaw"]).GetCurrentZonedDateTime();
-                 yesterday = now - Duration.FromDays(1);
-            }
-            // Pobranie czasu zmierzchu nautycznego
-            var nauticalDuskChange = SunlightCalculator.GetSunlightChanges(yesterday, lat, lon)
+
+            // Pobieranie godzin zmierzchu i świtu
+            var nauticalDuskChange = SunlightCalculator.GetSunlightChanges(now, lat, lon)
                 .FirstOrDefault(change => change.Name == SolarTimeOfDay.NauticalDusk);
-            var astroDuskChange = SunlightCalculator.GetSunlightChanges(yesterday, lat, lon)
+            var astroDuskChange = SunlightCalculator.GetSunlightChanges(now, lat, lon)
                 .FirstOrDefault(change => change.Name == SolarTimeOfDay.AstronomicalDusk);
 
-            // Pobranie czasu świtu nautycznego
-            var nauticalDawnChange = SunlightCalculator.GetSunlightChanges(now, lat, lon)
+            var nauticalDawnChange = SunlightCalculator.GetSunlightChanges(first ? tommorow: now, lat, lon)
                 .FirstOrDefault(change => change.Name == SolarTimeOfDay.NauticalDawn);
-
-            var astroDawnChange = SunlightCalculator.GetSunlightChanges(now, lat, lon)
+            var astroDawnChange = SunlightCalculator.GetSunlightChanges(first ? tommorow : now, lat, lon)
                 .FirstOrDefault(change => change.Name == SolarTimeOfDay.AstronomicalDawn);
 
-            // Zaokrąglanie godzin zmierzchu i świtu
+            // Formatowanie dat i godzin zmierzchu oraz świtu
             string nauticalDusk = nauticalDuskChange.Time.ToDateTimeUnspecified().ToString("HH:mm:ss") + " " + nauticalDuskChange.Time.ToDateTimeUnspecified().ToString("dd.MM.yyyy");
             string nauticalDawn = nauticalDawnChange.Time.ToDateTimeUnspecified().ToString("HH:mm:ss") + " " + nauticalDawnChange.Time.ToDateTimeUnspecified().ToString("dd.MM.yyyy");
 
             string astroDusk = astroDuskChange.Time.ToDateTimeUnspecified().ToString("HH:mm:ss") + " " + astroDuskChange.Time.ToDateTimeUnspecified().ToString("dd.MM.yyyy");
             string astroDawn = astroDawnChange.Time.ToDateTimeUnspecified().ToString("HH:mm:ss") + " " + astroDawnChange.Time.ToDateTimeUnspecified().ToString("dd.MM.yyyy");
 
+            // Zaokrąglanie godzin zmierzchu i świtu
             string roundedDusk = roundHours(nauticalDusk, "DOWN");
             string roundedDawn = roundHours(nauticalDawn, "UP");
 
-
-
-            // Konwersja TimeSpan na DateTime dla wschodu i zachodu Księżyca
+            // Obliczanie wschodu i zachodu Księżyca
             DateTime moonset = moon.DateTime + moon.Setting;
             DateTime moonrise = moon.DateTime + moon.Rising;
 
-            // Dodanie wartości do listy
+            // Lista do przechowywania wyników
             List<DateTime> astroTimes = new List<DateTime>();
 
-            // Dodanie czasów słońca i nocy
-            if (!string.IsNullOrEmpty(roundedDusk)) astroTimes.Add(DateTime.Parse(roundedDusk));
-            if (!string.IsNullOrEmpty(roundedDawn)) astroTimes.Add(DateTime.Parse(roundedDawn));
-            if (!string.IsNullOrEmpty(astroDusk)) astroTimes.Add(DateTime.Parse(astroDusk));
-            if (!string.IsNullOrEmpty(astroDawn)) astroTimes.Add(DateTime.Parse(astroDawn));
+            // Dodawanie czasów słońca i nocy
+            if (!string.IsNullOrEmpty(roundedDusk)) astroTimes.Add(DateTime.ParseExact(roundedDusk, "HH:mm:ss dd.MM.yyyy", CultureInfo.InvariantCulture));
+            if (!string.IsNullOrEmpty(roundedDawn)) astroTimes.Add(DateTime.ParseExact(roundedDawn, "HH:mm:ss dd.MM.yyyy", CultureInfo.InvariantCulture));
+            if (!string.IsNullOrEmpty(astroDusk)) astroTimes.Add(DateTime.ParseExact(astroDusk, "HH:mm:ss dd.MM.yyyy", CultureInfo.InvariantCulture));
+            if (!string.IsNullOrEmpty(astroDawn)) astroTimes.Add(DateTime.ParseExact(astroDawn, "HH:mm:ss dd.MM.yyyy", CultureInfo.InvariantCulture));
 
-            // Dodanie czasów Księżyca
+            // Dodawanie czasów Księżyca
             astroTimes.Add(moonset);
             astroTimes.Add(moonrise);
 
