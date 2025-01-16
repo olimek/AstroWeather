@@ -21,6 +21,8 @@ namespace AstroWeather.Helpers
         public double pressure { get; set; }
         public double visibility { get; set; }
         public double? cloudcover { get; set; }
+        public int? riskOfDew { get; set; }
+        public int? astroConditions { get; set; }
     }
 
     public class Day

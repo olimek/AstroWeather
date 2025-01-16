@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.Design;
 using System.Globalization;
 using System.Text.Json;
+//using Android.Health.Connect.DataTypes.Units;
 using CosineKitty;
 using NodaTime;
 using NodaTime.Extensions;
@@ -236,8 +237,84 @@ namespace AstroWeather.Helpers
 
             return outlist;
         }
-       
 
+        public static List<List<AstroWeather.Helpers.Hour>> CalculateWeatherdata(List<List<AstroWeather.Helpers.Hour>> inputList) {
+            List<List<AstroWeather.Helpers.Hour>> calculatedWeatherList = new List<List<AstroWeather.Helpers.Hour>>();
+            foreach (var result in inputList) {
+                
+                foreach (var hour in result)
+                {
+                    hour.riskOfDew = calculateRiskOfDew(hour);
+                    hour.astroConditions = calculateAstroConditions(hour);
+                }
+            }
+                return inputList;
+        }
+        private static int calculateAstroConditions(AstroWeather.Helpers.Hour input) {
+            int astro_night = 0;
+            double ryzyko_mgly = input.riskOfDew ?? 100; 
+            double precipitation = input.precip ?? 0;
+            double cloud_cover = input.cloudcover ?? 100;
+            double precipitation_probability = input.precipprob ;
+
+            // Logika oceny warunków astronomicznych
+            if (precipitation_probability < 50)
+            {
+                if (precipitation == 0 && ryzyko_mgly == 0)
+                {
+                    if (cloud_cover < 10)
+                    {
+                        astro_night = 10;
+                    }
+                }
+                else if (precipitation == 0 && ryzyko_mgly < 20)
+                {
+
+                    if (cloud_cover < 10)
+                    {
+                        astro_night = 8;
+                    }
+                    else if (cloud_cover < 25)
+                    {
+                        astro_night = 6;
+                    }
+                }
+                else if (precipitation < 0.1 && ryzyko_mgly < 50)
+                {
+                    if (cloud_cover < 40)
+                    {
+                        astro_night = 4;
+                    }
+                    else if (cloud_cover < 50)
+                    {
+                        astro_night = 2;
+                    }
+                }
+            }
+
+            return astro_night;
+        }
+        private static int calculateRiskOfDew(AstroWeather.Helpers.Hour input) {
+            double ocena = 0;
+            var relative_humidity = input.humidity;
+            var visibility = input.visibility;
+            var wind_speed = input.windspeed;
+            var delta_temperature = Math.Abs(input.temp - input.dew);
+
+
+            if (visibility <= 10) {
+                ocena += 0.1;
+                    if (relative_humidity >= 92) { ocena += 0.3; }
+
+                if (delta_temperature <= 2) { ocena += 0.4; }
+
+                else if (delta_temperature <= 4) { ocena += 0.2; }
+                        
+                    if (visibility <= 5 && wind_speed< 5) { ocena += 0.3; }
+                        
+                    }
+            return Convert.ToInt32( Math.Round(ocena*1000));
+        }
         public List<List<AstroWeather.Helpers.Hour>> getWeatherinfo()
         {
             var weatherData = GetWeatherData();
