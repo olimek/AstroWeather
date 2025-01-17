@@ -24,10 +24,12 @@ namespace AstroWeather.Helpers
         {
 
             var DefaultLatLon = LogFileGetSet.LoadDefaultLoc();
-            lat = DefaultLatLon[0];
-            lon = DefaultLatLon[1];
+
+            
             if (DefaultLatLon != null)
             {
+                lat = DefaultLatLon[0];
+                lon = DefaultLatLon[1];
                 string APIkey = LogFileGetSet.GetAPIKey("weather");
                 string LAT = lat.ToString().Replace(",", ".");
                 string LON = lon.ToString().Replace(",", ".");
@@ -314,6 +316,23 @@ namespace AstroWeather.Helpers
                         
                     }
             return Convert.ToInt32( Math.Round(ocena*1000));
+        }
+
+        private static List<double> CalculateAstroNight(List<List<AstroWeather.Helpers.Hour>> inputList)
+        {
+            List<double> calculatedAstroPerNight = new List<double>();
+            foreach (var result in inputList)
+            {
+                double score = 0;
+                foreach (var hour in result)
+                {
+
+                    score += Convert.ToDouble( hour.astroConditions);
+                }
+                calculatedAstroPerNight.Add(score);
+            }
+
+            return calculatedAstroPerNight;
         }
         public List<List<AstroWeather.Helpers.Hour>> getWeatherinfo()
         {
