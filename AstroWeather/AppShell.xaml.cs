@@ -1,4 +1,4 @@
-﻿using AstroWeather.Pages;
+﻿
 namespace AstroWeather
 {
     public partial class AppShell : Shell
@@ -7,22 +7,7 @@ namespace AstroWeather
         {
             
             InitializeComponent();
-            if (false)
-            {
-                Dispatcher.Dispatch(async () =>
-                {
-                    await Shell.Current.GoToAsync("//MainPage");
-                });
-
-            }
-            else
-            {
-                Dispatcher.Dispatch(async () =>
-                {
-                    await Shell.Current.GoToAsync("//SettingsPage");
-                });
-
-            }
+          
             
         }
     }
