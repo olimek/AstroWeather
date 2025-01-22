@@ -250,6 +250,8 @@ namespace AstroWeather.Helpers
                     hour.astroConditions = calculateAstroConditions(hour);
                 }
             }
+            var test = CalculateAstroNight(inputList);
+
                 return inputList;
         }
         private static int calculateAstroConditions(AstroWeather.Helpers.Hour input) {
@@ -305,14 +307,14 @@ namespace AstroWeather.Helpers
 
 
             if (visibility <= 10) {
-                ocena += 0.1;
-                    if (relative_humidity >= 92) { ocena += 0.3; }
+                ocena += 0.2;
+                    if (relative_humidity >= 92) { ocena += 0.2; }
 
                 if (delta_temperature <= 2) { ocena += 0.4; }
 
                 else if (delta_temperature <= 4) { ocena += 0.2; }
                         
-                    if (visibility <= 5 && wind_speed< 5) { ocena += 0.3; }
+                    if (visibility <= 5 && wind_speed< 5) { ocena += 0.2; }
                         
                     }
             return Convert.ToInt32( Math.Round(ocena*1000));
@@ -323,13 +325,15 @@ namespace AstroWeather.Helpers
             List<double> calculatedAstroPerNight = new List<double>();
             foreach (var result in inputList)
             {
+                double numberofnights = 0;
                 double score = 0;
                 foreach (var hour in result)
                 {
-
+                    numberofnights = result.Count()*10;
                     score += Convert.ToDouble( hour.astroConditions);
                 }
-                calculatedAstroPerNight.Add(score);
+                var score1 = score / numberofnights * 100;
+                calculatedAstroPerNight.Add(Math.Round(score1));
             }
 
             return calculatedAstroPerNight;

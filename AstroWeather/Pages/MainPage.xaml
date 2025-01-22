@@ -72,50 +72,66 @@
                             </Border.StrokeShape>
                             <Grid Padding="10">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="100" />
-                                    <RowDefinition Height="100" />
-                                    <RowDefinition Height="100" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="50" />
+                                    <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="70" />
 
                                 </Grid.ColumnDefinitions>
                                 <Label
+                                    Grid.Row="0"
                                     Grid.Column="0"
                                     FontAttributes="Bold"
-                                    Text="Godz.: " />
+                                    Text="Night: " />
                                 <Label
                                     Grid.Row="1"
                                     Grid.Column="0"
-                                    Text="cloud.: "
-                                    VerticalOptions="End" />
+                                    Text="Cond.: " />
                                 <Label
                                     Grid.Row="2"
                                     Grid.Column="0"
-                                    Text="temp.: "
-                                    VerticalOptions="End" />
+                                    Text="Night start: " />
                                 <Label
+                                    Grid.Row="3"
+                                    Grid.Column="0"
+                                    Text="Night end: " />
+                                <Label
+                                    Grid.Row="0"
                                     Grid.Column="1"
                                     FontAttributes="Bold"
                                     HorizontalTextAlignment="Start"
-                                    Text="{Binding hour}"
+                                    Text="{Binding date}"
                                     VerticalTextAlignment="Start" />
                                 <Label
                                     Grid.Row="1"
                                     Grid.Column="1"
                                     HorizontalTextAlignment="Start"
-                                    Text="{Binding cloudcover}"
-                                    VerticalOptions="End"
+                                    Text="{Binding condition}"
                                     VerticalTextAlignment="Start" />
                                 <Label
                                     Grid.Row="2"
                                     Grid.Column="1"
                                     HorizontalTextAlignment="Start"
-                                    Text="{Binding temp}"
-                                    VerticalOptions="End"
+                                    Text="{Binding start}"
+                                    VerticalTextAlignment="Start" />
+                                <Label
+                                    Grid.Row="3"
+                                    Grid.Column="1"
+                                    HorizontalTextAlignment="Start"
+                                    Text="{Binding end}"
                                     VerticalTextAlignment="Start" />
                             </Grid>
+                            <Image
+                                x:Name="MoonImage"
+                                Aspect="AspectFit"
+                                HeightRequest="100"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                WidthRequest="100" />
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
