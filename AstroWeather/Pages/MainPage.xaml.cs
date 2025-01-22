@@ -1,28 +1,45 @@
-﻿
-using System.Text.Json;
+﻿//using AndroidX.ConstraintLayout.Helper.Widget;
 using AstroWeather.Helpers;
-using System.Net.Http;
-using static System.Net.Mime.MediaTypeNames;
-using Innovative.SolarCalculator;
+using Microsoft.Maui.Controls;
+using AstroWeather.Pages;
 namespace AstroWeather
 {
 
     public partial class MainPage : ContentPage
     {
-                public MainPage()
+        public MainPage()
         {
             InitializeComponent();
-            WeatherRouter getWeatherinfo = new();
-            var lista = getWeatherinfo.getWeatherinfo();
-            DateTime currentDateTime = DateTime.Now;
-            ;
+            var IsAPI = LogFileGetSet.GetAPIKey("weather");
+            var IsDefLoc = LogFileGetSet.LoadDefaultLoc();
+            if (IsAPI == null || IsDefLoc == null) {
+                Dispatcher.Dispatch(async () =>
+                {
+                    await Shell.Current.GoToAsync("//SettingsPage");
+                });
+            }
+            else {
+                
+                WeatherRouter getWeatherinfo = new();
+                var Pogoda = getWeatherinfo.getWeatherinfo();
+                if (Pogoda.Count != 0)
+                {
+                    DateTime currentDateTime = DateTime.Now;
+                    var result2 = Pogoda.SelectMany(i => i).Distinct();
+                    var filteredWeather = result2.Skip(Convert.ToInt32(currentDateTime.Hour)).Take(12).ToList();
+                    BindingContext = new { pogoda = filteredWeather };
+                    ActualTemp.Text = Pogoda[0][Convert.ToInt32(currentDateTime.Hour)].temp.ToString() + " °C";
 
-            ActualTemp.Text = lista[0][Convert.ToInt32(currentDateTime.Hour)].temp.ToString() + " °C";
+                    WeatherRouter.CalculateWeatherdata(WeatherRouter.SetWeatherdata(result2.ToList()));
+                    string weatherImage = WeatherRouter.GetWeatherImage();
+
+                    // Ustaw obraz w kontrolce Image
+                    WeatherImage.Source = weatherImage;
+                }
+            }
+            
+           
         }
-        
-
-        
-
-        
     }
+
 }

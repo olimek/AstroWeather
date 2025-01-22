@@ -2,94 +2,142 @@
 <ContentPage
     x:Class="AstroWeather.MainPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    BackgroundColor="{StaticResource BackgroundColor}">
 
     <ScrollView>
-        <!-- Struktura główna -->
+
+        <!--  Struktura główna  -->
         <VerticalStackLayout Padding="20" Spacing="20">
 
-            <!-- Sekcja nagłówka -->
+            <!--  Sekcja nagłówka  -->
             <StackLayout>
-                <Label Text="Current Weather"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center" 
-                   TextColor="{DynamicResource PrimaryTextColor}" />
-                <Label Text="City, Country"
-                   FontSize="16"
-                   HorizontalOptions="Center"
-                   TextColor="{DynamicResource SecondaryTextColor}" />
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="24"
+                    HorizontalOptions="Center"
+                    Text="Current Weather"
+                    TextColor="{DynamicResource PrimaryTextColor}" />
+                <Label
+                    FontSize="16"
+                    HorizontalOptions="Center"
+                    Text="City, Country"
+                    TextColor="{DynamicResource SecondaryTextColor}" />
             </StackLayout>
 
-            <!-- Sekcja pogody aktualnej -->
-            <Frame Padding="10" CornerRadius="15" HasShadow="True" BackgroundColor="{DynamicResource CardBackgroundColor}">
+            <!--  Sekcja pogody aktualnej  -->
+            <Border Padding="10" BackgroundColor="{DynamicResource SecondaryColor}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="40,0,0,40" />
+                </Border.StrokeShape>
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
-                    <!-- Ikona pogody -->
-                    <Image Source="weather_icon.png"
-                       HeightRequest="50"
-                       VerticalOptions="Center" />
+                    <Image
+                        x:Name="WeatherImage"
+                        Aspect="AspectFit"
+                        HeightRequest="100"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        WidthRequest="100" />
 
-                    <!-- Dane pogodowe -->
                     <VerticalStackLayout Grid.Column="1">
-                        <Label Text="15°C"
-                               x:Name="ActualTemp"
-                           FontSize="32"
-                           FontAttributes="Bold"
-                           TextColor="{DynamicResource PrimaryTextColor}" />
-                        <Label Text="Sunny"
-                           FontSize="18"
-                           TextColor="{DynamicResource SecondaryTextColor}" />
+                        <Label
+                            x:Name="ActualTemp"
+                            FontAttributes="Bold"
+                            FontSize="32"
+                            Text="00 °C"
+                            TextColor="{DynamicResource PrimaryTextColor}" />
+                        <Label
+                            FontSize="18"
+                            Text="Sunny"
+                            TextColor="{DynamicResource SecondaryTextColor}" />
                     </VerticalStackLayout>
                 </Grid>
-            </Frame>
+            </Border>
 
-            <!-- Prognoza na kolejne godziny -->
-            <StackLayout>
-                <Label Text="Hourly Forecast"
-                   FontSize="20"
-                   FontAttributes="Bold"
-                   TextColor="{DynamicResource PrimaryTextColor}" />
+            <!--  Prognoza na kolejne godziny  -->
+            <CollectionView ItemsLayout="HorizontalList" ItemsSource="{Binding pogoda}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Padding="5" BackgroundColor="{DynamicResource SecondaryColor}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="20,20,20,20" />
+                            </Border.StrokeShape>
+                            <Grid Padding="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="70" />
 
-                <CollectionView ItemsSource="{Binding HourlyForecast}" 
-                            BackgroundColor="Transparent">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Frame Padding="10" CornerRadius="10" BackgroundColor="{DynamicResource CardBackgroundColor}" Margin="0,5">
-                                <Grid ColumnSpacing="10">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
+                                </Grid.ColumnDefinitions>
+                                <Label
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    FontAttributes="Bold"
+                                    Text="Night: " />
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    Text="Cond.: " />
+                                <Label
+                                    Grid.Row="2"
+                                    Grid.Column="0"
+                                    Text="Night start: " />
+                                <Label
+                                    Grid.Row="3"
+                                    Grid.Column="0"
+                                    Text="Night end: " />
+                                <Label
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    FontAttributes="Bold"
+                                    HorizontalTextAlignment="Start"
+                                    Text="{Binding date}"
+                                    VerticalTextAlignment="Start" />
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    HorizontalTextAlignment="Start"
+                                    Text="{Binding condition}"
+                                    VerticalTextAlignment="Start" />
+                                <Label
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    HorizontalTextAlignment="Start"
+                                    Text="{Binding start}"
+                                    VerticalTextAlignment="Start" />
+                                <Label
+                                    Grid.Row="3"
+                                    Grid.Column="1"
+                                    HorizontalTextAlignment="Start"
+                                    Text="{Binding end}"
+                                    VerticalTextAlignment="Start" />
+                            </Grid>
+                            <Image
+                                x:Name="MoonImage"
+                                Aspect="AspectFit"
+                                HeightRequest="100"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                WidthRequest="100" />
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
-                                    <!-- Godzina -->
-                                    <Label Text="{Binding Hour}" 
-                                       FontSize="16" 
-                                       TextColor="{DynamicResource PrimaryTextColor}" />
 
-                                    <!-- Ikona pogody -->
-                                    <Image Source="{Binding Icon}" 
-                                       HeightRequest="30" 
-                                       Grid.Column="1" 
-                                       HorizontalOptions="Center" />
-
-                                    <!-- Temperatura -->
-                                    <Label Text="{Binding Temperature}" 
-                                       FontSize="16" 
-                                       TextColor="{DynamicResource PrimaryTextColor}" 
-                                       Grid.Column="2" 
-                                       HorizontalOptions="End" />
-                                </Grid>
-                            </Frame>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </StackLayout>
         </VerticalStackLayout>
     </ScrollView>
 

@@ -1,4 +1,6 @@
-﻿using AstroWeather.Helpers;
+﻿using System.ComponentModel.Design;
+using AstroWeather.Helpers;
+using AstroWeather.Pages;
 using CosineKitty;
 
 
@@ -11,6 +13,7 @@ namespace AstroWeather
         {
             InitializeComponent();
             MainPage = new AppShell();
+            
         }
 
         protected override Window CreateWindow(IActivationState? activationState)

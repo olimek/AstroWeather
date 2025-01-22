@@ -47,7 +47,7 @@ namespace AstroWeather.Helpers
             File.WriteAllText(filePath, json);
         }
 
-        public static T LoadData<T>(string key, T defaultValue = default)
+        public static T LoadData<T>(string key, Func<T> defaultFactory)
         {
             try
             {
@@ -80,12 +80,12 @@ namespace AstroWeather.Helpers
                     }
                 }
 
-                return defaultValue;
+                return defaultFactory();
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Failed to load data: {ex.Message}");
-                return defaultValue;
+                return defaultFactory();
             }
         }
 
@@ -114,31 +114,55 @@ namespace AstroWeather.Helpers
             }
         }
 
-        public static List<string>? LoadDefaultLoc()
+        public static List<double>? LoadDefaultLoc()
         {
-            var defaultLoc = LogFileGetSet.LoadData("DefaultLoc", new List<string>());
+            // Ładujemy domyślną lokalizację (może być `null` lub pusta lista)
+            var defaultLoc = LogFileGetSet.LoadData<List<string>>("DefaultLoc", () => new List<string>());
+
+            // Sprawdzamy, czy istnieje przynajmniej jeden element
             if (defaultLoc != null && defaultLoc.Count > 0)
             {
-                var locloc = LogFileGetSet.LoadData($"Localisation_{defaultLoc[0]}", new List<string>());
+                // Ładujemy lokalizację na podstawie pierwszego elementu z defaultLoc
+                var rawData = LogFileGetSet.LoadData($"Localisation_{defaultLoc[0]}", () => new List<string>());
+                var locloc = rawData
+                    .Select(item => item.Replace(',', '.')) // Zamiana przecinków na kropki
+                    .Where(item => double.TryParse(item, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out _)) 
+                    .Select(item => double.Parse(item, System.Globalization.CultureInfo.InvariantCulture)) 
+                    .ToList();
                 return locloc;
-
             }
 
+            // Jeśli defaultLoc jest `null` lub puste, zwracamy `null`
             return null;
         }
 
-        public static string getAPIkey(string which)
+        public static string? GetAPIKey(string which)
         {
-            string? APIkey = null;
-            if (which == "astro") {
-                APIkey = LogFileGetSet.LoadData("MOONAPIkey", new List<string>())[0];
-            }
-            else if (which == "weather") {
-                 APIkey = LogFileGetSet.LoadData("APIkey", new List<string>())[0];
+            // Klucz mapujący rodzaj API na odpowiedni klucz w danych
+            var keyMap = new Dictionary<string, string>
+    {
+        { "astro", "MOONAPIkey" },
+        { "weather", "APIkey" }
+    };
+
+            // Sprawdzamy, czy podano prawidłowy typ API
+            if (!keyMap.TryGetValue(which, out string? dataKey))
+            {
+                Console.WriteLine($"Invalid API type: {which}");
+                return null;
             }
 
-            return APIkey;
-            
+            // Ładujemy listę kluczy API z pliku
+            var apiKeys = LogFileGetSet.LoadData(dataKey, () => new List<string>());
+
+            // Sprawdzamy, czy lista zawiera przynajmniej jeden element
+            if (apiKeys != null && apiKeys.Count > 0)
+            {
+                return apiKeys[0];
+            }
+
+            Console.WriteLine($"No API key found for {which}");
+            return null;
         }
 
     }

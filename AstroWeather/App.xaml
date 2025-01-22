@@ -10,6 +10,20 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <Color x:Key="PrimaryColor">#1E3A8A</Color>
+            <Color x:Key="SecondaryColor">#38BDF8</Color>
+            <Color x:Key="BackgroundColor">#121212</Color>
+            <Color x:Key="TextColor">#E0F2FE</Color>
+            <Color x:Key="AccentColor">#FACC15</Color>
+
+            <!--  Style globalne  -->
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+            </Style>
+
+            <Style TargetType="ContentPage">
+                <Setter Property="BackgroundColor" Value="{StaticResource BackgroundColor}" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
