@@ -1,8 +1,10 @@
-﻿using System.ComponentModel.Design;
+﻿using System;
+using System.ComponentModel.Design;
 using System.Globalization;
 using System.Text.Json;
 //using Android.Health.Connect.DataTypes.Units;
 using CosineKitty;
+using Innovative.Geometry;
 using NodaTime;
 using NodaTime.Extensions;
 using SolCalc;
@@ -14,7 +16,7 @@ namespace AstroWeather.Helpers
 
     {
         private Astro? astronomicalData = null;
-        private WeatherAPI? weatherData = null;
+        private static WeatherAPI? weatherData = null;
         static private double lat = 0;
         static private double lon = 0;
 
@@ -79,22 +81,23 @@ namespace AstroWeather.Helpers
 
         }
 
-        public static string GetMoonImage(double illumination)
+        public static string GetMoonImage(double angle)
         {
+            angle = angle % 360; // Upewnij się, że kąt jest w zakresie 0-360
 
-            if (illumination == 0)
+            if (angle >= 0 && angle < 45)
                 return "new_moon.png";
-            else if (illumination > 0 && illumination < 50)
+            else if (angle >= 45 && angle < 90)
                 return "waxing_crescent.png";
-            else if (illumination == 50)
+            else if (angle >= 90 && angle < 135)
                 return "first_quarter.png";
-            else if (illumination > 50 && illumination < 100)
+            else if (angle >= 135 && angle < 180)
                 return "waxing_gibbous.png";
-            else if (illumination == 100)
+            else if (angle >= 180 && angle < 225)
                 return "full_moon.png";
-            /*else if (phase < 0.72)
-                return "waning_gibbous.png";*/
-            else if (true)
+            else if (angle >= 225 && angle < 270)
+                return "waning_gibbous.png";
+            else if (angle >= 270 && angle < 315)
                 return "last_quarter.png";
             else
                 return "waning_crescent.png";
@@ -194,7 +197,8 @@ namespace AstroWeather.Helpers
             // Dodawanie czasów Księżyca
             astroTimes.Add(moonset);
             astroTimes.Add(moonrise);
-
+            if (!string.IsNullOrEmpty(nauticalDusk)) astroTimes.Add(DateTime.ParseExact(nauticalDusk, "HH:mm:ss dd.MM.yyyy", CultureInfo.InvariantCulture));
+            if (!string.IsNullOrEmpty(nauticalDawn)) astroTimes.Add(DateTime.ParseExact(nauticalDawn, "HH:mm:ss dd.MM.yyyy", CultureInfo.InvariantCulture));
             return astroTimes;
         }
 
@@ -319,8 +323,38 @@ namespace AstroWeather.Helpers
                     }
             return Convert.ToInt32( Math.Round(ocena*1000));
         }
+        public static List<AstroWeather.Helpers.Day> getCalculatedDaily(List<List<AstroWeather.Helpers.Hour>> inputList)
+        {
+            List<AstroWeather.Helpers.Day> DailyOut = new List<AstroWeather.Helpers.Day>();
+            var astronight = CalculateAstroNight(inputList);
+            var weatherssData = WeatherRouter.weatherData.days;
+            int i = 0;
+            foreach (var day in weatherssData)
+            {
+                DateTime dateTime = DateTime.ParseExact(day.datetime, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                List<DateTime> astroTimes = new List<DateTime>();
+                astroTimes = getAstroTimes(dateTime, false);
+                day.AstroTimes = astroTimes;
+                DailyOut.Add(day);
+            }
+            foreach (var result in inputList)
+            {
+                double numberofnights = 0;
+                double score = 0;
+                foreach (var hour in result)
+                {
+                    numberofnights = result.Count() * 10;
+                    score += Convert.ToDouble(hour.astroConditions);
+                }
+                
+                DailyOut[i].astrocond = Math.Round(score / numberofnights * 100);
+                
+                i++;
 
-        private static List<double> CalculateAstroNight(List<List<AstroWeather.Helpers.Hour>> inputList)
+            }
+            return DailyOut;
+        }
+        public static List<double> CalculateAstroNight(List<List<AstroWeather.Helpers.Hour>> inputList)
         {
             List<double> calculatedAstroPerNight = new List<double>();
             foreach (var result in inputList)

@@ -2,6 +2,7 @@
 using AstroWeather.Helpers;
 using Microsoft.Maui.Controls;
 using AstroWeather.Pages;
+using CosineKitty;
 namespace AstroWeather
 {
 
@@ -21,20 +22,33 @@ namespace AstroWeather
             else {
                 
                 WeatherRouter getWeatherinfo = new();
-                var Pogoda = getWeatherinfo.getWeatherinfo();
+                List<List<AstroWeather.Helpers.Hour>> Pogoda = getWeatherinfo.getWeatherinfo();
                 if (Pogoda.Count != 0)
                 {
                     DateTime currentDateTime = DateTime.Now;
                     var result2 = Pogoda.SelectMany(i => i).Distinct();
                     var filteredWeather = result2.Skip(Convert.ToInt32(currentDateTime.Hour)).Take(12).ToList();
+
+
                     BindingContext = new { pogoda = filteredWeather };
                     ActualTemp.Text = Pogoda[0][Convert.ToInt32(currentDateTime.Hour)].temp.ToString() + " °C";
 
-                    WeatherRouter.CalculateWeatherdata(WeatherRouter.SetWeatherdata(result2.ToList()));
-                    string weatherImage = WeatherRouter.GetWeatherImage();
 
-                    // Ustaw obraz w kontrolce Image
-                    WeatherImage.Source = weatherImage;
+                    var time = new AstroTime(DateTime.UtcNow);
+                    IllumInfo illum = Astronomy.Illumination(Body.Moon, time);
+                    Console.WriteLine("{0} : Moon's illuminated fraction = {1:F2}%.", time, Math.Round( 100.0 * illum.phase_fraction), 1);
+                    
+
+
+                    var ss = WeatherRouter.SetWeatherdata(result2.ToList());
+                    var Warunkihodzinowe = WeatherRouter.CalculateWeatherdata(Pogoda);
+                    var Warunkidzienne = WeatherRouter.CalculateAstroNight(Pogoda);
+                    var dzienne = WeatherRouter.getCalculatedDaily(Pogoda);
+                    string weatherImage = WeatherRouter.GetWeatherImage();
+                    BindingContext = new { weather = dzienne };
+
+                    double phase = Astronomy.MoonPhase(time);
+                    MoonImage.Source = WeatherRouter.GetMoonImage(phase);
                 }
             }
             
