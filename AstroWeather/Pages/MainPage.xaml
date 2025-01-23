@@ -40,7 +40,7 @@
                     </Grid.RowDefinitions>
 
                     <Image
-                        x:Name="WeatherImage"
+                        x:Name="MoonImage"
                         Aspect="AspectFit"
                         HeightRequest="100"
                         HorizontalOptions="Center"
@@ -63,7 +63,7 @@
             </Border>
 
             <!--  Prognoza na kolejne godziny  -->
-            <CollectionView ItemsLayout="HorizontalList" ItemsSource="{Binding pogoda}">
+            <CollectionView ItemsLayout="HorizontalList" ItemsSource="{Binding weather}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Border Padding="5" BackgroundColor="{DynamicResource SecondaryColor}">
@@ -76,10 +76,11 @@
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="70" />
+                                    <ColumnDefinition Width="*" />
 
                                 </Grid.ColumnDefinitions>
                                 <Label
@@ -104,34 +105,37 @@
                                     Grid.Column="1"
                                     FontAttributes="Bold"
                                     HorizontalTextAlignment="Start"
-                                    Text="{Binding date}"
+                                    Text="{Binding datetime}"
                                     VerticalTextAlignment="Start" />
                                 <Label
                                     Grid.Row="1"
                                     Grid.Column="1"
                                     HorizontalTextAlignment="Start"
-                                    Text="{Binding condition}"
+                                    Text="{Binding astrocond}"
                                     VerticalTextAlignment="Start" />
                                 <Label
                                     Grid.Row="2"
                                     Grid.Column="1"
                                     HorizontalTextAlignment="Start"
-                                    Text="{Binding start}"
+                                    Text="{Binding AstroTimes[6], StringFormat='{0:dd.MM HH:mm}'}"
                                     VerticalTextAlignment="Start" />
                                 <Label
                                     Grid.Row="3"
                                     Grid.Column="1"
                                     HorizontalTextAlignment="Start"
-                                    Text="{Binding end}"
+                                    Text="{Binding AstroTimes[7], StringFormat='{0:dd.MM HH:mm}'}"
                                     VerticalTextAlignment="Start" />
+                                <Image
+                                    x:Name="MoonImage"
+                                    Grid.Row="4"
+                                    Grid.Column="0"
+                                    Aspect="AspectFit"
+                                    HeightRequest="100"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center"
+                                    WidthRequest="100" />
                             </Grid>
-                            <Image
-                                x:Name="MoonImage"
-                                Aspect="AspectFit"
-                                HeightRequest="100"
-                                HorizontalOptions="Center"
-                                VerticalOptions="Center"
-                                WidthRequest="100" />
+
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>

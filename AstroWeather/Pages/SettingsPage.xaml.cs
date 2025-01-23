@@ -15,8 +15,6 @@ public partial class SettingsPage : ContentPage
         // Sprawdzenie, czy lista nie jest pusta, i pobranie pierwszego klucza
         string test = apiKeys != null && apiKeys.Count > 0 ? apiKeys[0] : string.Empty;
 
-        // Wypisanie wyniku (lub informacja, że klucz nie istnieje)
-        
         BindingContext = this;
     }
 

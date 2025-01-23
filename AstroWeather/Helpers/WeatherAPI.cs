@@ -38,7 +38,9 @@ namespace AstroWeather.Helpers
         public double pressure { get; set; }
         public double cloudcover { get; set; }
         public double visibility { get; set; }
+        public double? astrocond { get; set; }
         public IList<Hour> hours { get; set; }
+        public List<DateTime> AstroTimes { get; set; }
     }
 
     public class WeatherAPI
