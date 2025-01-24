@@ -49,6 +49,10 @@ namespace AstroWeather
 
                     double phase = Astronomy.MoonPhase(time);
                     MoonImage.Source = WeatherRouter.GetMoonImage(phase);
+                    SecondLabel.Text = LogFileGetSet.LoadDefaultLocName();
+                    
+                    Actualpress.Text = Pogoda[0][Convert.ToInt32(currentDateTime.Hour)].pressure.ToString() + " hPa";
+                    ActualHum.Text = Pogoda[0][Convert.ToInt32(currentDateTime.Hour)].humidity.ToString() + " %";
                 }
             }
             

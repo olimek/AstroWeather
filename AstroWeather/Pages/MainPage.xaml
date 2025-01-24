@@ -3,7 +3,15 @@
     x:Class="AstroWeather.MainPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:AstroWeather.Helpers"
     BackgroundColor="{StaticResource BackgroundColor}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <local:AstroCondToColorConverter x:Key="AstroCondToColorConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <ScrollView>
 
@@ -16,9 +24,10 @@
                     FontAttributes="Bold"
                     FontSize="24"
                     HorizontalOptions="Center"
-                    Text="Current Weather"
+                    Text="Astro Weather Nigh Conditions"
                     TextColor="{DynamicResource PrimaryTextColor}" />
                 <Label
+                    x:Name="SecondLabel"
                     FontSize="16"
                     HorizontalOptions="Center"
                     Text="City, Country"
@@ -55,9 +64,16 @@
                             Text="00 °C"
                             TextColor="{DynamicResource PrimaryTextColor}" />
                         <Label
+                            x:Name="ActualHum"
                             FontSize="18"
                             Text="Sunny"
                             TextColor="{DynamicResource SecondaryTextColor}" />
+                        <Label
+                            x:Name="Actualpress"
+                            FontSize="18"
+                            Text="Sunny"
+                            TextColor="{DynamicResource SecondaryTextColor}" />
+
                     </VerticalStackLayout>
                 </Grid>
             </Border>
@@ -66,12 +82,22 @@
             <CollectionView ItemsLayout="HorizontalList" ItemsSource="{Binding weather}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Border Padding="5" BackgroundColor="{DynamicResource SecondaryColor}">
+                        <Border
+                            Padding="10"
+                            BackgroundColor="{DynamicResource SecondaryColor}"
+                            Stroke="{Binding astrocond, Converter={StaticResource AstroCondToColorConverter}}"
+                            StrokeThickness="3">
+
+
                             <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="20,20,20,20" />
+                                <RoundRectangle CornerRadius="20,0,0,20" />
                             </Border.StrokeShape>
-                            <Grid Padding="10">
+
+
+                            <Grid Padding="15">
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="*" />
@@ -101,39 +127,61 @@
                                     Grid.Column="0"
                                     Text="Night end: " />
                                 <Label
+                                    Grid.Row="4"
+                                    Grid.Column="0"
+                                    Text="Moon Ilum: " />
+                                <Label
+                                    Grid.Row="5"
+                                    Grid.Column="0"
+                                    Text="Moon rise: " />
+                                <Label
+                                    Grid.Row="6"
+                                    Grid.Column="0"
+                                    Text="Moon set: " />
+                                <Label
                                     Grid.Row="0"
                                     Grid.Column="1"
                                     FontAttributes="Bold"
-                                    HorizontalTextAlignment="Start"
+                                    HorizontalTextAlignment="End"
                                     Text="{Binding datetime}"
                                     VerticalTextAlignment="Start" />
                                 <Label
                                     Grid.Row="1"
                                     Grid.Column="1"
-                                    HorizontalTextAlignment="Start"
+                                    HorizontalTextAlignment="End"
                                     Text="{Binding astrocond}"
                                     VerticalTextAlignment="Start" />
                                 <Label
                                     Grid.Row="2"
                                     Grid.Column="1"
-                                    HorizontalTextAlignment="Start"
+                                    HorizontalTextAlignment="End"
                                     Text="{Binding AstroTimes[6], StringFormat='{0:dd.MM HH:mm}'}"
                                     VerticalTextAlignment="Start" />
                                 <Label
                                     Grid.Row="3"
                                     Grid.Column="1"
-                                    HorizontalTextAlignment="Start"
+                                    HorizontalTextAlignment="End"
                                     Text="{Binding AstroTimes[7], StringFormat='{0:dd.MM HH:mm}'}"
                                     VerticalTextAlignment="Start" />
-                                <Image
-                                    x:Name="MoonImage"
+                                <Label
                                     Grid.Row="4"
-                                    Grid.Column="0"
-                                    Aspect="AspectFit"
-                                    HeightRequest="100"
-                                    HorizontalOptions="Center"
-                                    VerticalOptions="Center"
-                                    WidthRequest="100" />
+                                    Grid.Column="1"
+                                    HorizontalTextAlignment="End"
+                                    Text="{Binding moonIlum, StringFormat='{0}%'}"
+                                    VerticalTextAlignment="Start" />
+                                <Label
+                                    Grid.Row="5"
+                                    Grid.Column="1"
+                                    HorizontalTextAlignment="End"
+                                    Text="{Binding AstroTimes[5], StringFormat='{0:dd.MM HH:mm}'}"
+                                    VerticalTextAlignment="Start" />
+                                <Label
+                                    Grid.Row="6"
+                                    Grid.Column="1"
+                                    HorizontalTextAlignment="End"
+                                    Text="{Binding AstroTimes[4], StringFormat='{0:dd.MM HH:mm}'}"
+                                    VerticalTextAlignment="Start" />
+
                             </Grid>
 
                         </Border>
