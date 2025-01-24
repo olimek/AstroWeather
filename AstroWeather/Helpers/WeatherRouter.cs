@@ -332,8 +332,11 @@ namespace AstroWeather.Helpers
             foreach (var day in weatherssData)
             {
                 DateTime dateTime = DateTime.ParseExact(day.datetime, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                var time = new AstroTime(DateTime.ParseExact(day.datetime, "yyyy-MM-dd", CultureInfo.InvariantCulture));
                 List<DateTime> astroTimes = new List<DateTime>();
                 astroTimes = getAstroTimes(dateTime, false);
+                IllumInfo illum = Astronomy.Illumination(Body.Moon, time);
+                day.moonIlum = Math.Round(100.0 * illum.phase_fraction);
                 day.AstroTimes = astroTimes;
                 DailyOut.Add(day);
             }

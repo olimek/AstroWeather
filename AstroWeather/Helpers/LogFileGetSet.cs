@@ -136,6 +136,22 @@ namespace AstroWeather.Helpers
             return null;
         }
 
+        public static string? LoadDefaultLocName()
+        {
+            // Ładujemy domyślną lokalizację (może być `null` lub pusta lista)
+            var defaultLoc = LogFileGetSet.LoadData<List<string>>("DefaultLoc", () => new List<string>());
+
+            // Sprawdzamy, czy istnieje przynajmniej jeden element
+            if (defaultLoc != null && defaultLoc.Count > 0)
+            {
+               
+                return defaultLoc[0];
+            }
+
+            // Jeśli defaultLoc jest `null` lub puste, zwracamy `null`
+            return null;
+        }
+
         public static string? GetAPIKey(string which)
         {
             // Klucz mapujący rodzaj API na odpowiedni klucz w danych
