@@ -16,7 +16,7 @@ namespace AstroWeather
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            // Odświeżenie danych
+            
             MainInit();
         }
         async void MainInit()
@@ -60,7 +60,8 @@ namespace AstroWeather
                     BindingContext = new { weather = dzienne };
 
                     double phase = Astronomy.MoonPhase(time);
-                    MoonImage.Source = WeatherRouter.GetMoonImage(phase);
+                    
+                    MoonImage.Source = WeatherRouter.GetMoonImage(Math.Round(100.0 * illum.phase_fraction),phase);
                     SecondLabel.Text = LogFileGetSet.LoadDefaultLocName();
 
                     Actualpress.Text = Pogoda[0][Convert.ToInt32(currentDateTime.Hour)].pressure.ToString() + " hPa";
