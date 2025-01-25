@@ -6,6 +6,7 @@ namespace AstroWeather.Pages;
 
 public partial class LocalisationPage : ContentPage
 {
+    private SelectedItemChangedEventArgs _selectedEventArgs;
     public LocalisationPage()
     {
         InitializeComponent();
@@ -51,19 +52,79 @@ public partial class LocalisationPage : ContentPage
     }
 
 
-    private void OnItemSelected(object sender, SelectedItemChangedEventArgs e)
+    private async void OnItemSelected(object sender, SelectedItemChangedEventArgs e)
     {
+
+
         if (e.SelectedItem is not null)
         {
             var selectedItem = (dynamic)e.SelectedItem;
 
             SelectedLabel.Text = $"Selected Localisation: {selectedItem.Key} ({selectedItem.Value})";
-
-
+            _selectedEventArgs = e;
+            string[] parts = selectedItem.Value.Split(',');
+            nameInput.Text = selectedItem.Key;
+            LatitudeInput.Text = parts[0].Trim();
+            LongitudeInput.Text = parts[1].Trim();
             LogFileGetSet.StoreData("DefaultLoc", new List<string>(new string[] { selectedItem.Key }));
-
-            LocalisationListView.SelectedItem = null;
         }
+        
+
+        LocalisationListView.SelectedItem = null;
+        PopupView.IsVisible = true;
+        await PopupView.FadeTo(1, 250, Easing.CubicInOut);
+          }
+
+    private async void OnComputeClicked(object sender, EventArgs e)
+    {
+        PopupView.IsVisible = true;
+
+        await PopupView.FadeTo(1, 250, Easing.CubicInOut);
+    }
+
+    private async void DeleteEntity(object sender, EventArgs e)
+    {
+        if (_selectedEventArgs?.SelectedItem is not null)
+        {
+            var selectedItem = (dynamic)_selectedEventArgs.SelectedItem;
+            string key = $"Localisation_{selectedItem.Key}";
+
+            
+            LogFileGetSet.RemoveData<List<string>>(key);
+            LogFileGetSet.RemoveData<List<string>>($"Info_{selectedItem.Key}");
+
+            await PopupView.FadeTo(1, 250, Easing.CubicInOut);
+            PopupView.IsVisible = false;
+            
+            await Shell.Current.GoToAsync("//LocalisationPage");
+        }
+
+        
+    }
+
+    private async void OnClosePopupClicked(object sender, EventArgs e)
+    {
+        string name = nameInput.Text;
+
+        string Lat = LatitudeInput.Text.Replace(".", ",");
+
+        string Lon = LongitudeInput.Text.Replace(".", ",");
+
+        if (Info.Text != null)
+        {
+            string info = Info.Text.Replace(".", ",");
+            LogFileGetSet.StoreData($"Info_{name}", new List<string>(new string[] { info }));
+        }
+
+
+        LogFileGetSet.StoreData($"Localisation_{name}", new List<string>(new string[] { Lat, Lon }));
+
+
+
+        await PopupView.FadeTo(0, 250, Easing.CubicInOut);
+        await Shell.Current.GoToAsync("//LocalisationPage");
+
+        PopupView.IsVisible = false;
     }
 
     private void CheckDefaultLoc()

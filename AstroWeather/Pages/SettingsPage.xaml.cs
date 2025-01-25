@@ -12,7 +12,7 @@ public partial class SettingsPage : ContentPage
         InitializeComponent();
         var apiKeys = LogFileGetSet.LoadData<List<string>>("APIkey", () => new List<string>());
 
-        // Sprawdzenie, czy lista nie jest pusta, i pobranie pierwszego klucza
+        
         string test = apiKeys != null && apiKeys.Count > 0 ? apiKeys[0] : string.Empty;
 
         BindingContext = this;
@@ -25,12 +25,6 @@ public partial class SettingsPage : ContentPage
         LogFileGetSet.StoreData("APIkey", new List<string>(new string[] { myText }));
     }
 
-    void OnEntryTextChangedMOON(object sender, TextChangedEventArgs e)
-    {
-
-        string myText = APIMOONkeyInput.Text;
-        LogFileGetSet.StoreData("MOONAPIkey", new List<string>(new string[] { myText }));
-    }
 
     private async void OnComputeClicked(object sender, EventArgs e)
     {
@@ -41,13 +35,16 @@ public partial class SettingsPage : ContentPage
     }
     private async void OnClosePopupClicked(object sender, EventArgs e)
     {
-        string name = nameInput.Text;
+        if (nameInput.Text != null)
+        {
+            string name = nameInput.Text;
 
-        string Lat = LatitudeInput.Text.Replace(".", ",");
+            string Lat = LatitudeInput.Text.Replace(".", ",");
 
-        string Lon = LongitudeInput.Text.Replace(".", ",");
+            string Lon = LongitudeInput.Text.Replace(".", ",");
 
-        LogFileGetSet.StoreData($"Localisation_{name}", new List<string>(new string[] { Lat, Lon}));
+            LogFileGetSet.StoreData($"Localisation_{name}", new List<string>(new string[] { Lat, Lon }));
+        }
 
         
         await PopupView.FadeTo(0, 250, Easing.CubicInOut);
