@@ -12,6 +12,11 @@
                 <DataTemplate>
                     <StackLayout>
                         <Label Padding="20" Text="{Binding Date, StringFormat='Date: {0}'}" />
+                        <Label Padding="20" Text="{Binding moonrise, StringFormat='moonr: {0}'}" />
+                        <Label Padding="20" Text="{Binding moonset, StringFormat='moons: {0}'}" />
+                        <Label Padding="20" Text="{Binding nauticalstart, StringFormat='rise: {0}'}" />
+                        <Label Padding="20" Text="{Binding nauticalend, StringFormat='set: {0}'}" />
+                        <Label Padding="20" Text="{Binding condition, StringFormat='cond: {0}'}" />
                         <Frame
                             Margin="20"
                             BorderColor="DarkGray"
@@ -28,7 +33,7 @@
                                             <Label FontSize="18" Text="{Binding hour}" />
                                             <Label Text="{Binding temp, StringFormat='Temp: {0}°C'}" />
                                             <Label Text="{Binding humidity, StringFormat='Humidity: {0}%'}" />
-                                            <Label Text="{Binding windspeed, StringFormat='Wind: {0} km/h'}" />
+                                            <Label Text="{Binding cloudcover, StringFormat='Cloud: {0}%'}" />
 
                                         </StackLayout>
                                     </DataTemplate>

@@ -51,7 +51,12 @@ namespace AstroWeather.Helpers
             Helpers.WeatherRouter getWeatherinfo = new();
             List<List<AstroWeather.Helpers.Hour>> Pogoda = getWeatherinfo.getWeatherinfo();
             var result2 = Pogoda.SelectMany(i => i).Distinct();
-            var ss = Helpers.WeatherRouter.SetWeatherdata(result2.ToList());
+            var ss = WeatherRouter.SetWeatherdata(result2.ToList());
+            var Warunkihodzinowe = WeatherRouter.CalculateWeatherdata(Pogoda);
+            var Warunkidzienne = WeatherRouter.CalculateAstroNight(Pogoda);
+            var dzienne = WeatherRouter.getCalculatedDaily(Pogoda);
+            
+            
             if (ss.Count != 0)
             {
                 
@@ -59,11 +64,24 @@ namespace AstroWeather.Helpers
 
                 for (int i = 0; i < ss.Count; i++)
                 {
+                    var time = new AstroTime(currentDateTime.AddDays(i));
+                    IllumInfo illum = Astronomy.Illumination(Body.Moon, time);
+                    var astrotimes = getAstroTimes(currentDateTime.AddDays(i), true);
+
                     var day = new Helpers.DayWithHours
                     {
-                        
-                        Date = currentDateTime.AddDays(i).ToString("yyyy-MM-dd"),  
-                        Hours = ss[i]  
+
+                    moonrise = astrotimes[5].ToString(),
+        moonset = astrotimes[4].ToString(),
+                        nauticalstart = astrotimes[6].ToString(),
+                        nauticalend = astrotimes[7].ToString(),
+                        astrostart = astrotimes[2].ToString(),
+                        astroend = astrotimes[3].ToString(),
+                        moonilum = Math.Round(100.0 * illum.phase_fraction).ToString(),
+        condition= dzienne[i].astrocond.ToString(),
+
+        Date = currentDateTime.AddDays(i).ToString("yyyy-MM-dd"),
+                        Hours = ss[i]
                     };
 
                     daysWithHours.Add(day);
@@ -380,7 +398,7 @@ namespace AstroWeather.Helpers
                 DateTime dateTime = DateTime.ParseExact(day.datetime, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 var time = new AstroTime(DateTime.ParseExact(day.datetime, "yyyy-MM-dd", CultureInfo.InvariantCulture));
                 List<DateTime> astroTimes = new List<DateTime>();
-                astroTimes = getAstroTimes(dateTime, false);
+                astroTimes = getAstroTimes(dateTime, true);
                 IllumInfo illum = Astronomy.Illumination(Body.Moon, time);
                 day.moonIlum = Math.Round(100.0 * illum.phase_fraction);
                 day.AstroTimes = astroTimes;
