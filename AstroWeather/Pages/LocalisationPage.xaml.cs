@@ -6,6 +6,7 @@ namespace AstroWeather.Pages;
 
 public partial class LocalisationPage : ContentPage
 {
+    private SelectedItemChangedEventArgs _selectedEventArgs;
     public LocalisationPage()
     {
         InitializeComponent();
@@ -51,8 +52,25 @@ public partial class LocalisationPage : ContentPage
     }
 
 
-    private void OnItemSelected(object sender, SelectedItemChangedEventArgs e)
+    private async void OnItemSelected(object sender, SelectedItemChangedEventArgs e)
     {
+
+        
+        if (e.SelectedItem is not null)
+        {
+            var selectedItem = (dynamic)e.SelectedItem;
+
+            SelectedLabel.Text = $"Selected Localisation: {selectedItem.Key} ({selectedItem.Value})";
+            _selectedEventArgs = e;
+            string[] parts = selectedItem.Value.Split(',');
+            nameInput.Text = selectedItem.Key;
+            LatitudeInput.Text = parts[0].Trim();
+            LongitudeInput.Text = parts[1].Trim();
+        }
+
+        PopupView.IsVisible = true;
+        await PopupView.FadeTo(1, 250, Easing.CubicInOut);
+        /*
         if (e.SelectedItem is not null)
         {
             var selectedItem = (dynamic)e.SelectedItem;
@@ -63,7 +81,39 @@ public partial class LocalisationPage : ContentPage
             LogFileGetSet.StoreData("DefaultLoc", new List<string>(new string[] { selectedItem.Key }));
 
             LocalisationListView.SelectedItem = null;
-        }
+        }*/
+    }
+
+    private async void OnComputeClicked(object sender, EventArgs e)
+    {
+        PopupView.IsVisible = true;
+        
+        await PopupView.FadeTo(1, 250, Easing.CubicInOut);
+    }
+
+    private async void DeleteEntity(object sender, EventArgs e)
+    {
+        var key = ((dynamic)_selectedEventArgs.SelectedItem);
+        PopupView.IsVisible = false;
+
+
+        await PopupView.FadeTo(1, 250, Easing.CubicInOut);
+    }
+    private async void OnClosePopupClicked(object sender, EventArgs e)
+    {
+        string name = nameInput.Text;
+
+        string Lat = LatitudeInput.Text.Replace(".", ",");
+
+        string Lon = LongitudeInput.Text.Replace(".", ",");
+
+        LogFileGetSet.StoreData($"Localisation_{name}", new List<string>(new string[] { Lat, Lon }));
+
+
+        await PopupView.FadeTo(0, 250, Easing.CubicInOut);
+
+
+        PopupView.IsVisible = false;
     }
 
     private void CheckDefaultLoc()

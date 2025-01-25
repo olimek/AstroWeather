@@ -5,24 +5,65 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     Title="LocalisationPage"
     BackgroundColor="{StaticResource BackgroundColor}">
-    <StackLayout Padding="10">
-        <Label
-            x:Name="SelectedLabel"
-            FontSize="16"
-            HorizontalOptions="Center"
-            Text="Selected Localisation: None"
-            VerticalOptions="Center" />
+    <AbsoluteLayout>
+        <StackLayout Padding="10">
+            <Label
+                x:Name="SelectedLabel"
+                FontSize="16"
+                HorizontalOptions="Center"
+                Text="Selected Localisation: None"
+                VerticalOptions="Center" />
 
-        <ListView
-            x:Name="LocalisationListView"
-            HorizontalOptions="FillAndExpand"
-            ItemSelected="OnItemSelected"
-            VerticalOptions="FillAndExpand">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <TextCell Detail="{Binding Value}" Text="{Binding Key}" />
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-    </StackLayout>
+            <ListView
+                x:Name="LocalisationListView"
+                HorizontalOptions="FillAndExpand"
+                ItemSelected="OnItemSelected"
+                VerticalOptions="FillAndExpand">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextCell Detail="{Binding Value}" Text="{Binding Key}" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+
+        <ContentView
+            x:Name="PopupView"
+            AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
+            AbsoluteLayout.LayoutFlags="All"
+            BackgroundColor="Black"
+            IsVisible="False"
+            Opacity="0">
+            <Border
+                Padding="20"
+                BackgroundColor="White"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+                <VerticalStackLayout Spacing="20">
+                    <Entry
+                        x:Name="nameInput"
+                        Placeholder="Enter your friendly name"
+                        TextColor="Black"
+                        WidthRequest="200" />
+                    <Entry
+                        x:Name="LatitudeInput"
+                        Placeholder="Enter your Latitude"
+                        TextColor="Black"
+                        WidthRequest="200" />
+                    <Entry
+                        x:Name="LongitudeInput"
+                        Placeholder="Enter your Longitude"
+                        TextColor="Black"
+                        WidthRequest="200" />
+                    <Entry
+                        x:Name="Info"
+                        Placeholder="SQM etc."
+                        TextColor="Black"
+                        WidthRequest="200" />
+                    <Button Clicked="DeleteEntity" Text="Delete" />
+                    <Button Clicked="OnClosePopupClicked" Text="Close" />
+                </VerticalStackLayout>
+            </Border>
+        </ContentView>
+    </AbsoluteLayout>
 </ContentPage>
