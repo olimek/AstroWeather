@@ -11,16 +11,28 @@ namespace AstroWeather
         public MainPage()
         {
             InitializeComponent();
+            MainInit();
+        }
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            // Odświeżenie danych
+            MainInit();
+        }
+        async void MainInit()
+        {
             var IsAPI = LogFileGetSet.GetAPIKey("weather");
             var IsDefLoc = LogFileGetSet.LoadDefaultLoc();
-            if (IsAPI == null || IsDefLoc == null) {
+            if (IsAPI == null || IsDefLoc == null)
+            {
                 Dispatcher.Dispatch(async () =>
                 {
                     await Shell.Current.GoToAsync("//SettingsPage");
                 });
             }
-            else {
-                
+            else
+            {
+
                 WeatherRouter getWeatherinfo = new();
                 List<List<AstroWeather.Helpers.Hour>> Pogoda = getWeatherinfo.getWeatherinfo();
                 if (Pogoda.Count != 0)
@@ -36,8 +48,8 @@ namespace AstroWeather
 
                     var time = new AstroTime(DateTime.UtcNow);
                     IllumInfo illum = Astronomy.Illumination(Body.Moon, time);
-                    Console.WriteLine("{0} : Moon's illuminated fraction = {1:F2}%.", time, Math.Round( 100.0 * illum.phase_fraction), 1);
-                    
+                    Console.WriteLine("{0} : Moon's illuminated fraction = {1:F2}%.", time, Math.Round(100.0 * illum.phase_fraction), 1);
+
 
 
                     var ss = WeatherRouter.SetWeatherdata(result2.ToList());
@@ -50,13 +62,12 @@ namespace AstroWeather
                     double phase = Astronomy.MoonPhase(time);
                     MoonImage.Source = WeatherRouter.GetMoonImage(phase);
                     SecondLabel.Text = LogFileGetSet.LoadDefaultLocName();
-                    
+
                     Actualpress.Text = Pogoda[0][Convert.ToInt32(currentDateTime.Hour)].pressure.ToString() + " hPa";
                     ActualHum.Text = Pogoda[0][Convert.ToInt32(currentDateTime.Hour)].humidity.ToString() + " %";
+                    await Shell.Current.GoToAsync("//MainPage");
                 }
             }
-            
-           
         }
     }
 

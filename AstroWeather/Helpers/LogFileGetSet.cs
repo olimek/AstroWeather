@@ -41,6 +41,42 @@ namespace AstroWeather.Helpers
             return new Dictionary<string, T>();
         }
 
+        public static void RemoveData<T>(string key)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(key))
+                    throw new ArgumentException("Key cannot be null or empty.");
+
+                string directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppInfo.Current.Name);
+                string filePath = Path.Combine(directoryPath, "data.json");
+
+                if (!File.Exists(filePath))
+                {
+                    Console.WriteLine("Data file not found.");
+                    return;
+                }
+
+                Dictionary<string, T> data = ReadData<T>(filePath);
+
+                if (data.ContainsKey(key))
+                {
+                    data.Remove(key);
+
+                    WriteData(filePath, data);
+                    Console.WriteLine($"Successfully removed key: {key}");
+                }
+                else
+                {
+                    Console.WriteLine($"Key '{key}' not found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error removing data: {ex.Message}");
+            }
+        }
+
         private static void WriteData<T>(string filePath, Dictionary<string, T> data)
         {
             string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
