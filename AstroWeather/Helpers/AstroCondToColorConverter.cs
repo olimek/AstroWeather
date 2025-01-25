@@ -8,7 +8,7 @@ public class AstroCondToColorConverter : IValueConverter
     {
         if (value is double astrocond)
         {
-            return astrocond > 50 ? Colors.Green : Colors.Red;
+            return astrocond > 10 ? Colors.Green : null;
         }
         return Colors.Gray;
     }

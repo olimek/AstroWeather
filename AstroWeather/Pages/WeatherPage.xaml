@@ -3,12 +3,46 @@
     x:Class="AstroWeather.Pages.WeatherPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:AstroWeather.Helpers"
     Title="WeatherPage"
     BackgroundColor="{StaticResource BackgroundColor}">
-    <VerticalStackLayout>
-        <Label
+    <StackLayout>
+        <CarouselView x:Name="weatherCarousel" IndicatorView="indicatorView">
+            <CarouselView.ItemTemplate>
+                <DataTemplate>
+                    <StackLayout>
+                        <Label Padding="20" Text="{Binding Date, StringFormat='Date: {0}'}" />
+                        <Frame
+                            Margin="20"
+                            BorderColor="DarkGray"
+                            CornerRadius="5"
+                            HasShadow="True"
+                            HeightRequest="300"
+                            HorizontalOptions="Center"
+                            VerticalOptions="CenterAndExpand">
+
+                            <CollectionView ItemsSource="{Binding Hours}">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackLayout Padding="5">
+                                            <Label FontSize="18" Text="{Binding hour}" />
+                                            <Label Text="{Binding temp, StringFormat='Temp: {0}°C'}" />
+                                            <Label Text="{Binding humidity, StringFormat='Humidity: {0}%'}" />
+                                            <Label Text="{Binding windspeed, StringFormat='Wind: {0} km/h'}" />
+
+                                        </StackLayout>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </Frame>
+                    </StackLayout>
+                </DataTemplate>
+            </CarouselView.ItemTemplate>
+        </CarouselView>
+        <IndicatorView
+            x:Name="indicatorView"
             HorizontalOptions="Center"
-            Text="Weather here"
-            VerticalOptions="Center" />
-    </VerticalStackLayout>
+            IndicatorColor="LightGray"
+            SelectedIndicatorColor="DarkGray" />
+    </StackLayout>
 </ContentPage>

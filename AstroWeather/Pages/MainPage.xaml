@@ -149,7 +149,7 @@
                                     Grid.Row="1"
                                     Grid.Column="1"
                                     HorizontalTextAlignment="End"
-                                    Text="{Binding astrocond}"
+                                    Text="{Binding astrocond, StringFormat='{0} %'}"
                                     VerticalTextAlignment="Start" />
                                 <Label
                                     Grid.Row="2"
@@ -167,7 +167,7 @@
                                     Grid.Row="4"
                                     Grid.Column="1"
                                     HorizontalTextAlignment="End"
-                                    Text="{Binding moonIlum, StringFormat='{0}%'}"
+                                    Text="{Binding moonIlum, StringFormat='{0} %'}"
                                     VerticalTextAlignment="Start" />
                                 <Label
                                     Grid.Row="5"

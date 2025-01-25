@@ -45,7 +45,34 @@ namespace AstroWeather.Helpers
             }
             else { return null; }
         }
+        static public List<Helpers.DayWithHours> GetCarouselView()
+        {
+            var daysWithHours = new List<Helpers.DayWithHours>();
+            Helpers.WeatherRouter getWeatherinfo = new();
+            List<List<AstroWeather.Helpers.Hour>> Pogoda = getWeatherinfo.getWeatherinfo();
+            var result2 = Pogoda.SelectMany(i => i).Distinct();
+            var ss = Helpers.WeatherRouter.SetWeatherdata(result2.ToList());
+            if (ss.Count != 0)
+            {
+                
+                DateTime currentDateTime = DateTime.Now;
 
+                for (int i = 0; i < ss.Count; i++)
+                {
+                    var day = new Helpers.DayWithHours
+                    {
+                        
+                        Date = currentDateTime.AddDays(i).ToString("yyyy-MM-dd"),  
+                        Hours = ss[i]  
+                    };
+
+                    daysWithHours.Add(day);
+                }
+                return daysWithHours;
+            }
+
+            return null;
+        }
         private Astro GetAstroData(string DATE)
         {
             var DefaultLatLon = LogFileGetSet.LoadDefaultLoc();
@@ -81,28 +108,47 @@ namespace AstroWeather.Helpers
 
         }
 
-        public static string GetMoonImage(double angle)
+        public static string GetMoonImage(double moonIllumination, double phaseAngle)
         {
-            angle = angle % 360; // Upewnij się, że kąt jest w zakresie 0-360
+            moonIllumination = Math.Clamp(moonIllumination, 0, 100); // Upewniamy się, że wartość iluminacji mieści się w zakresie 0-100
+            phaseAngle = phaseAngle % 360; // Upewniamy się, że kąt mieści się w zakresie 0-360
 
-            if (angle >= 0 && angle < 45)
-                return "new_moon.png";
-            else if (angle >= 45 && angle < 90)
-                return "waxing_crescent.png";
-            else if (angle >= 90 && angle < 135)
-                return "first_quarter.png";
-            else if (angle >= 135 && angle < 180)
-                return "waxing_gibbous.png";
-            else if (angle >= 180 && angle < 225)
-                return "full_moon.png";
-            else if (angle >= 225 && angle < 270)
-                return "waning_gibbous.png";
-            else if (angle >= 270 && angle < 315)
-                return "last_quarter.png";
-            else
-                return "waning_crescent.png";
+            // Jeśli iluminacja jest bliska 0%, to mamy Nowiu
+            if (moonIllumination <= 10)
+            {
+                return "new_moon.png";  // Nów
+            }
+            // Jeśli iluminacja jest bliska 100%, to mamy Pełnię
+            else if (moonIllumination >= 90)
+            {
+                return "full_moon.png";  // Pełnia
+            }
 
+            // Fazy wschodzącego Księżyca (faza rosnąca, od nowiu do pełni)
+            if (phaseAngle >= 0 && phaseAngle < 180)
+            {
+                if (moonIllumination >= 10 && moonIllumination < 40)
+                    return "waxing_crescent.png";  // Wzrost półksiężyca
+                else if (moonIllumination >= 40 && moonIllumination < 60)
+                    return "first_quarter.png";  // Pierwsza kwadra
+                else if (moonIllumination >= 60 && moonIllumination < 90)
+                    return "waxing_gibbous.png";  // Wzrost pełny
+            }
+            // Fazy malejącego Księżyca (faza malejąca, od pełni do nowiu)
+            else if (phaseAngle >= 180 && phaseAngle < 360)
+            {
+                if (moonIllumination >= 60 && moonIllumination < 90)
+                    return "waning_gibbous.png";  // Wzrost ostatniego ćwierć
+                else if (moonIllumination >= 40 && moonIllumination < 60)
+                    return "last_quarter.png";  // Ostatnia kwadra
+                else if (moonIllumination >= 10 && moonIllumination < 40)
+                    return "waning_crescent.png";  // Wygasający półksiężyc
+            }
+
+            return "new_moon.png"; // Default case
         }
+
+
         private static string roundHours(string dateTime, string round)
         {
             // Rozdzielamy datę i godzinę
@@ -321,7 +367,7 @@ namespace AstroWeather.Helpers
                     if (visibility <= 5 && wind_speed< 5) { ocena += 0.2; }
                         
                     }
-            return Convert.ToInt32( Math.Round(ocena*1000));
+            return Convert.ToInt32( Math.Round(ocena*100));
         }
         public static List<AstroWeather.Helpers.Day> getCalculatedDaily(List<List<AstroWeather.Helpers.Hour>> inputList)
         {
