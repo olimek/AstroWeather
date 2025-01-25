@@ -34,29 +34,7 @@
                     </FormattedString>
                 </Label.FormattedText>
             </Label>
-            <Entry
-                x:Name="APIMOONkeyInput"
-                Placeholder="Enter your api key"
-                TextChanged="OnEntryTextChangedMOON"
-                WidthRequest="400" />
-            <Label HorizontalOptions="Center">
-                <Label.FormattedText>
-                    <FormattedString>
-                        <Span Text="Get your API key: " />
-                        <Span
-                            Text="here"
-                            TextColor="Blue"
-                            TextDecorations="Underline">
-                            <Span.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding TapCommand}" CommandParameter="https://app.ipgeolocation.io/signup" />
-
-                            </Span.GestureRecognizers>
-
-                        </Span>
-
-                    </FormattedString>
-                </Label.FormattedText>
-            </Label>
+           
             <Button
                 x:Name="locButton"
                 Clicked="OnComputeClicked"
