@@ -48,10 +48,7 @@ namespace AstroWeather
 
                     var time = new AstroTime(DateTime.UtcNow);
                     IllumInfo illum = Astronomy.Illumination(Body.Moon, time);
-                    Console.WriteLine("{0} : Moon's illuminated fraction = {1:F2}%.", time, Math.Round(100.0 * illum.phase_fraction), 1);
-
-
-
+                    
                     var ss = WeatherRouter.SetWeatherdata(result2.ToList());
                     var Warunkihodzinowe = WeatherRouter.CalculateWeatherdata(Pogoda);
                     var Warunkidzienne = WeatherRouter.CalculateAstroNight(Pogoda);

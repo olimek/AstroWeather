@@ -12,20 +12,8 @@ namespace AstroWeather.Helpers
                 if (string.IsNullOrEmpty(key)) throw new ArgumentException("Key cannot be null or empty.");
                 if (value == null) throw new ArgumentNullException(nameof(value));
                
-                string filePath = string.Empty;
-                string directoryPath = string.Empty;
-                // Sprawdzanie systemu operacyjnego
-                if (DeviceInfo.Platform == DevicePlatform.Android)
-                {
-                    // Android - wewnętrzna pamięć aplikacji
-                    directoryPath = Path.Combine(Environment.ExternalStorageDirectory.AbsolutePath, "MyApp");
-                    // Zwraca ścieżkę do katalogu aplikacji
-                }
-                else
-                {
-                    // Windows - folder aplikacji
-                    directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MyApp");
-                }
+                string directoryPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                string filePath = Path.Combine(directoryPath, "data.json");
                 if (!Directory.Exists(directoryPath))
                 {
                     Directory.CreateDirectory(directoryPath);
@@ -67,22 +55,14 @@ namespace AstroWeather.Helpers
                 if (string.IsNullOrEmpty(key))
                     throw new ArgumentException("Key cannot be null or empty.");
 
-                string directoryPath = string.Empty;
-                // Sprawdzanie systemu operacyjnego
-                if (DeviceInfo.Platform == DevicePlatform.Android)
-                {
-                    // Android - wewnętrzna pamięć aplikacji
-                    directoryPath = FileSystem.AppDataDirectory;  // Zwraca ścieżkę do katalogu aplikacji
-                }
-                else
-                {
-                    // Windows - folder aplikacji
-                    directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MyApp");
-                }
+                string directoryPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                
                 if (!Directory.Exists(directoryPath))
                 {
                     Directory.CreateDirectory(directoryPath);
                 }
+
+                
                 string filePath = Path.Combine(directoryPath, "data.json");
 
                 if (!File.Exists(filePath))
@@ -121,22 +101,14 @@ namespace AstroWeather.Helpers
         {
             try
             {
-                string directoryPath = string.Empty;
-                // Sprawdzanie systemu operacyjnego
-                if (DeviceInfo.Platform == DevicePlatform.Android)
-                {
-                    // Android - wewnętrzna pamięć aplikacji
-                    directoryPath = FileSystem.AppDataDirectory;  // Zwraca ścieżkę do katalogu aplikacji
-                }
-                else
-                {
-                    // Windows - folder aplikacji
-                    directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MyApp");
-                }
+                string directoryPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                
                 if (!Directory.Exists(directoryPath))
                 {
                     Directory.CreateDirectory(directoryPath);
                 }
+
+                
                 string filePath = Path.Combine(
                     Path.Combine(directoryPath, AppInfo.Current.Name),
                     "data.json");
@@ -178,18 +150,9 @@ namespace AstroWeather.Helpers
         {
             try
             {
-                string directoryPath = string.Empty;
-                // Sprawdzanie systemu operacyjnego
-                if (DeviceInfo.Platform == DevicePlatform.Android)
-                {
-                    // Android - wewnętrzna pamięć aplikacji
-                    directoryPath = FileSystem.AppDataDirectory;  // Zwraca ścieżkę do katalogu aplikacji
-                }
-                else
-                {
-                    // Windows - folder aplikacji
-                    directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MyApp");
-                }
+                   
+                var directoryPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                
                 if (!Directory.Exists(directoryPath))
                 {
                     Directory.CreateDirectory(directoryPath);
