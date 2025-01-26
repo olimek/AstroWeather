@@ -91,74 +91,77 @@
                             HasShadow="True"
                             HeightRequest="400"
                             HorizontalOptions="Center">
-                            <StackLayout>
-                                <!--  Nagłówki kolumn  -->
-                                <Grid Padding="5" ColumnSpacing="10">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="60" />
-                                        <ColumnDefinition Width="100" />
-                                        <ColumnDefinition Width="120" />
-                                        <ColumnDefinition Width="100" />
-                                    </Grid.ColumnDefinitions>
 
-                                    <Label
-                                        Grid.Column="0"
-                                        FontAttributes="Bold"
-                                        FontSize="18"
-                                        HorizontalTextAlignment="Center"
-                                        Text="Hour" />
-                                    <Label
-                                        Grid.Column="1"
-                                        FontAttributes="Bold"
-                                        FontSize="18"
-                                        HorizontalTextAlignment="Center"
-                                        Text="Temp" />
-                                    <Label
-                                        Grid.Column="2"
-                                        FontAttributes="Bold"
-                                        FontSize="18"
-                                        HorizontalTextAlignment="Center"
-                                        Text="Humidity" />
-                                    <Label
-                                        Grid.Column="3"
-                                        FontAttributes="Bold"
-                                        FontSize="18"
-                                        HorizontalTextAlignment="Center"
-                                        Text="Cloud" />
-                                </Grid>
-                                <CollectionView ItemsSource="{Binding Hours}">
-                                    <CollectionView.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid Padding="5" ColumnSpacing="10">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="60" />
-                                                    <ColumnDefinition Width="100" />
-                                                    <ColumnDefinition Width="120" />
-                                                    <ColumnDefinition Width="100" />
-                                                </Grid.ColumnDefinitions>
 
-                                                <Label
-                                                    Grid.Column="0"
-                                                    FontSize="16"
-                                                    HorizontalTextAlignment="Center"
-                                                    Text="{Binding hour}" />
-                                                <Label
-                                                    Grid.Column="1"
-                                                    HorizontalTextAlignment="Center"
-                                                    Text="{Binding temp, StringFormat='{0}°C'}" />
-                                                <Label
-                                                    Grid.Column="2"
-                                                    HorizontalTextAlignment="Center"
-                                                    Text="{Binding humidity, StringFormat='{0}%'}" />
-                                                <Label
-                                                    Grid.Column="3"
-                                                    HorizontalTextAlignment="Center"
-                                                    Text="{Binding cloudcover, StringFormat='{0}%'}" />
-                                            </Grid>
-                                        </DataTemplate>
-                                    </CollectionView.ItemTemplate>
-                                </CollectionView>
-                            </StackLayout>
+                            <CollectionView ItemsSource="{Binding Hours}">
+
+                                <CollectionView.Header>
+                                    <Grid Padding="5" ColumnSpacing="10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label
+                                            Grid.Column="0"
+                                            FontAttributes="Bold"
+                                            FontSize="18"
+                                            HorizontalTextAlignment="Center"
+                                            Text="Hour" />
+                                        <Label
+                                            Grid.Column="1"
+                                            FontAttributes="Bold"
+                                            FontSize="18"
+                                            HorizontalTextAlignment="Center"
+                                            Text="Temp" />
+                                        <Label
+                                            Grid.Column="2"
+                                            FontAttributes="Bold"
+                                            FontSize="18"
+                                            HorizontalTextAlignment="Center"
+                                            Text="Humidity" />
+                                        <Label
+                                            Grid.Column="3"
+                                            FontAttributes="Bold"
+                                            FontSize="18"
+                                            HorizontalTextAlignment="Center"
+                                            Text="Cloud" />
+                                    </Grid>
+                                </CollectionView.Header>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Padding="5" ColumnSpacing="10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Label
+                                                Grid.Column="0"
+                                                FontSize="16"
+                                                HorizontalTextAlignment="Center"
+                                                Text="{Binding hour}" />
+                                            <Label
+                                                Grid.Column="1"
+                                                HorizontalTextAlignment="Center"
+                                                Text="{Binding temp, StringFormat='{0}°C'}" />
+                                            <Label
+                                                Grid.Column="2"
+                                                HorizontalTextAlignment="Center"
+                                                Text="{Binding humidity, StringFormat='{0}%'}" />
+                                            <Label
+                                                Grid.Column="3"
+                                                HorizontalTextAlignment="Center"
+                                                Text="{Binding cloudcover, StringFormat='{0}%'}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+
                         </Frame>
                     </StackLayout>
                 </DataTemplate>
