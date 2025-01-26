@@ -12,6 +12,7 @@ namespace AstroWeather
         public App()
         {
             InitializeComponent();
+            RequestStoragePermissionAsync();
             MainPage = new AppShell();
             
         }
@@ -23,7 +24,15 @@ namespace AstroWeather
             return window;
             //return new Window(new AppShell());
         }
-
+        public async Task<bool> RequestStoragePermissionAsync()
+        {
+            var status = await Permissions.CheckStatusAsync<Permissions.StorageWrite>();
+            if (status != PermissionStatus.Granted)
+            {
+                status = await Permissions.RequestAsync<Permissions.StorageWrite>();
+            }
+            return status == PermissionStatus.Granted;
+        }
         private async void Window_Activated(object sender, EventArgs e)
         {
 #if WINDOWS

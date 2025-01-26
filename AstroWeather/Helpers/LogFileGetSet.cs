@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Microsoft.Maui.Controls.PlatformConfiguration;
 
 namespace AstroWeather.Helpers
 {
@@ -10,9 +11,27 @@ namespace AstroWeather.Helpers
             {
                 if (string.IsNullOrEmpty(key)) throw new ArgumentException("Key cannot be null or empty.");
                 if (value == null) throw new ArgumentNullException(nameof(value));
+               
+                string filePath = string.Empty;
+                string directoryPath = string.Empty;
+                // Sprawdzanie systemu operacyjnego
+                if (DeviceInfo.Platform == DevicePlatform.Android)
+                {
+                    // Android - wewnętrzna pamięć aplikacji
+                    directoryPath = Path.Combine(Environment.ExternalStorageDirectory.AbsolutePath, "MyApp");
+                    // Zwraca ścieżkę do katalogu aplikacji
+                }
+                else
+                {
+                    // Windows - folder aplikacji
+                    directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MyApp");
+                }
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
 
-                string directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppInfo.Current.Name);
-                string filePath = Path.Combine(directoryPath, "data.json");
+                filePath = Path.Combine(directoryPath, "data.json");
 
                 if (!Directory.Exists(directoryPath))
                 {
@@ -48,7 +67,22 @@ namespace AstroWeather.Helpers
                 if (string.IsNullOrEmpty(key))
                     throw new ArgumentException("Key cannot be null or empty.");
 
-                string directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppInfo.Current.Name);
+                string directoryPath = string.Empty;
+                // Sprawdzanie systemu operacyjnego
+                if (DeviceInfo.Platform == DevicePlatform.Android)
+                {
+                    // Android - wewnętrzna pamięć aplikacji
+                    directoryPath = FileSystem.AppDataDirectory;  // Zwraca ścieżkę do katalogu aplikacji
+                }
+                else
+                {
+                    // Windows - folder aplikacji
+                    directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MyApp");
+                }
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
                 string filePath = Path.Combine(directoryPath, "data.json");
 
                 if (!File.Exists(filePath))
@@ -87,9 +121,24 @@ namespace AstroWeather.Helpers
         {
             try
             {
-
+                string directoryPath = string.Empty;
+                // Sprawdzanie systemu operacyjnego
+                if (DeviceInfo.Platform == DevicePlatform.Android)
+                {
+                    // Android - wewnętrzna pamięć aplikacji
+                    directoryPath = FileSystem.AppDataDirectory;  // Zwraca ścieżkę do katalogu aplikacji
+                }
+                else
+                {
+                    // Windows - folder aplikacji
+                    directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MyApp");
+                }
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
                 string filePath = Path.Combine(
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppInfo.Current.Name),
+                    Path.Combine(directoryPath, AppInfo.Current.Name),
                     "data.json");
 
                 if (File.Exists(filePath))
@@ -129,7 +178,23 @@ namespace AstroWeather.Helpers
         {
             try
             {
-                string filePath = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppInfo.Current.Name), "data.json");
+                string directoryPath = string.Empty;
+                // Sprawdzanie systemu operacyjnego
+                if (DeviceInfo.Platform == DevicePlatform.Android)
+                {
+                    // Android - wewnętrzna pamięć aplikacji
+                    directoryPath = FileSystem.AppDataDirectory;  // Zwraca ścieżkę do katalogu aplikacji
+                }
+                else
+                {
+                    // Windows - folder aplikacji
+                    directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MyApp");
+                }
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+                string filePath = Path.Combine(Path.Combine(directoryPath, AppInfo.Current.Name), "data.json");
                 if (File.Exists(filePath))
                 {
                     using (StreamReader reader = new StreamReader(filePath))

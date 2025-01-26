@@ -15,7 +15,9 @@ public partial class WeatherPage : ContentPage
     {
             var carousel = Helpers.WeatherRouter.GetCarouselView();
             weatherCarousel.ItemsSource = carousel;
-            
-        
+            weatherCarousel.ScrollTo(0);
+
+
     }
+
 }
