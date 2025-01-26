@@ -11,12 +11,30 @@
             <CarouselView.ItemTemplate>
                 <DataTemplate>
                     <StackLayout>
-                        <Label Padding="20" Text="{Binding Date, StringFormat='Date: {0}'}" />
-                        <Label Padding="20" Text="{Binding moonrise, StringFormat='moonr: {0}'}" />
-                        <Label Padding="20" Text="{Binding moonset, StringFormat='moons: {0}'}" />
-                        <Label Padding="20" Text="{Binding nauticalstart, StringFormat='rise: {0}'}" />
-                        <Label Padding="20" Text="{Binding nauticalend, StringFormat='set: {0}'}" />
-                        <Label Padding="20" Text="{Binding condition, StringFormat='cond: {0}'}" />
+                        <Grid Padding="20">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                                
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0" Padding="5" Text="{Binding Date, StringFormat='Date: {0:dd.MM HH:mm}'}" />
+                            <Label Grid.Row="1" Grid.Column="0" Padding="5" Text="{Binding moonrise, StringFormat='Moon rise: {0:dd.MM HH:mm}'}" />
+                            <Label Grid.Row="1" Grid.Column="1" Padding="5" Text="{Binding moonset, StringFormat='Moon set: {0:dd.MM HH:mm}'}" />
+                            <Label Grid.Row="2" Grid.Column="0" Padding="5" Text="{Binding nauticalstart, StringFormat='Nautical night: {0:dd.MM HH:mm}'}" />
+                            <Label Grid.Row="2" Grid.Column="1" Padding="5" Text="{Binding nauticalend, StringFormat='Nautical night: {0:dd.MM HH:mm}'}" />
+                            <Label Grid.Row="0" Grid.Column="1" Padding="5" Text="{Binding condition, StringFormat='Condition: {0} %'}" />
+                            <Label Grid.Row="4" Grid.Column="0" Padding="5" Text="{Binding moonilum, StringFormat='Moon Ilum: {0} %'}" />
+                            <Label Grid.Row="3" Grid.Column="0" Padding="5" Text="{Binding astrostart, StringFormat='Astro night: {0:dd.MM HH:mm}'}" />
+                            <Label Grid.Row="3" Grid.Column="1" Padding="5" Text="{Binding astroend, StringFormat='Astro night: {0:dd.MM HH:mm}'}" />
+                        </Grid>
                         <Frame
                             Margin="20"
                             BorderColor="DarkGray"

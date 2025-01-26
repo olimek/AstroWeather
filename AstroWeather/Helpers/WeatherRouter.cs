@@ -66,21 +66,21 @@ namespace AstroWeather.Helpers
                 {
                     var time = new AstroTime(currentDateTime.AddDays(i));
                     IllumInfo illum = Astronomy.Illumination(Body.Moon, time);
-                    var astrotimes = getAstroTimes(currentDateTime.AddDays(i), true);
+                    var astrotimes = getAstroTimes(currentDateTime.AddDays(i), false);
 
                     var day = new Helpers.DayWithHours
                     {
 
-                    moonrise = astrotimes[5].ToString(),
-        moonset = astrotimes[4].ToString(),
-                        nauticalstart = astrotimes[6].ToString(),
-                        nauticalend = astrotimes[7].ToString(),
-                        astrostart = astrotimes[2].ToString(),
-                        astroend = astrotimes[3].ToString(),
+                        moonrise = astrotimes[5].ToString("dd.MM HH:mm"),
+                        moonset = astrotimes[4].ToString("dd.MM HH:mm"),
+                        nauticalstart = astrotimes[6].ToString("dd.MM HH:mm"),
+                        nauticalend = astrotimes[7].ToString("dd.MM HH:mm"),
+                        astrostart = astrotimes[2].ToString("dd.MM HH:mm"),
+                        astroend = astrotimes[3].ToString("dd.MM HH:mm"),
                         moonilum = Math.Round(100.0 * illum.phase_fraction).ToString(),
-        condition= dzienne[i].astrocond.ToString(),
+                        condition = dzienne[i].astrocond.ToString(),
 
-        Date = currentDateTime.AddDays(i).ToString("yyyy-MM-dd"),
+                        Date = currentDateTime.AddDays(i).ToString("dd.MM"),
                         Hours = ss[i]
                     };
 
