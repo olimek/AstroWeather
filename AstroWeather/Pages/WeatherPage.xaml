@@ -98,46 +98,62 @@
                                 <CollectionView.Header>
                                     <Grid Padding="5" ColumnSpacing="10">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="40" />
+                                            <ColumnDefinition Width="40" />
+                                            <ColumnDefinition Width="40" />
+                                            <ColumnDefinition Width="40" />
+                                            <ColumnDefinition Width="40" />
+                                            <ColumnDefinition Width="40" />
                                         </Grid.ColumnDefinitions>
 
                                         <Label
                                             Grid.Column="0"
                                             FontAttributes="Bold"
-                                            FontSize="18"
+                                            FontSize="10"
                                             HorizontalTextAlignment="Center"
                                             Text="Hour" />
                                         <Label
                                             Grid.Column="1"
                                             FontAttributes="Bold"
-                                            FontSize="18"
+                                            FontSize="10"
                                             HorizontalTextAlignment="Center"
                                             Text="Temp" />
                                         <Label
                                             Grid.Column="2"
                                             FontAttributes="Bold"
-                                            FontSize="18"
+                                            FontSize="10"
                                             HorizontalTextAlignment="Center"
                                             Text="Humidity" />
                                         <Label
                                             Grid.Column="3"
                                             FontAttributes="Bold"
-                                            FontSize="18"
+                                            FontSize="10"
                                             HorizontalTextAlignment="Center"
                                             Text="Cloud" />
+                                        <Label
+                                            Grid.Column="4"
+                                            FontAttributes="Bold"
+                                            FontSize="10"
+                                            HorizontalTextAlignment="Center"
+                                            Text="Dew" />
+                                        <Label
+                                            Grid.Column="5"
+                                            FontAttributes="Bold"
+                                            FontSize="10"
+                                            HorizontalTextAlignment="Center"
+                                            Text="Cond." />
                                     </Grid>
                                 </CollectionView.Header>
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate>
                                         <Grid Padding="5" ColumnSpacing="10">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="40" />
+                                                <ColumnDefinition Width="40" />
+                                                <ColumnDefinition Width="40" />
+                                                <ColumnDefinition Width="40" />
+                                                <ColumnDefinition Width="40" />
+                                                <ColumnDefinition Width="40" />
                                             </Grid.ColumnDefinitions>
 
                                             <Label
@@ -157,6 +173,14 @@
                                                 Grid.Column="3"
                                                 HorizontalTextAlignment="Center"
                                                 Text="{Binding cloudcover, StringFormat='{0}%'}" />
+                                            <Label
+                                                Grid.Column="4"
+                                                HorizontalTextAlignment="Center"
+                                                Text="{Binding riskOfDew, StringFormat='{0}%'}" />
+                                            <Label
+                                                Grid.Column="5"
+                                                HorizontalTextAlignment="Center"
+                                                Text="{Binding astroConditions, StringFormat='{0}/10'}" />
                                         </Grid>
                                     </DataTemplate>
                                 </CollectionView.ItemTemplate>

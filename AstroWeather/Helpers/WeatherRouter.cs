@@ -25,14 +25,9 @@ namespace AstroWeather.Helpers
         private WeatherAPI GetWeatherData()
         {
 
-            var DefaultLatLon = LogFileGetSet.LoadDefaultLoc();
-
-            
-            if (DefaultLatLon != null)
-            {
-                lat = DefaultLatLon[0];
-                lon = DefaultLatLon[1];
-                string APIkey = LogFileGetSet.GetAPIKey("weather");
+                lat = 51.108;
+                lon = 17.0385;
+                string APIkey = "7NNBGTTVQW7YQHJS9AF4GGR6Y"; 
                 string LAT = lat.ToString().Replace(",", ".");
                 string LON = lon.ToString().Replace(",", ".");
                 string jsonresponse = ReadResponseFromUrl($"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{LAT}%2C%20{LON}?unitGroup=metric&elements=datetime%2CdatetimeEpoch%2Ctemp%2Cdew%2Chumidity%2Cprecip%2Cprecipprob%2Cwindspeed%2Cpressure%2Ccloudcover%2Cvisibility&include=days%2Chours%2Cfcst%2Cobs&key={APIkey}&contentType=json");
@@ -42,8 +37,7 @@ namespace AstroWeather.Helpers
                 weatherData = JsonSerializer.Deserialize<WeatherAPI>(jsonresponse);
 
                 return weatherData;
-            }
-            else { return null; }
+           
         }
         static public List<Helpers.DayWithHours> GetCarouselView()
         {
@@ -90,21 +84,6 @@ namespace AstroWeather.Helpers
             }
 
             return null;
-        }
-        private Astro GetAstroData(string DATE)
-        {
-            var DefaultLatLon = LogFileGetSet.LoadDefaultLoc();
-
-            if (DefaultLatLon == null || DefaultLatLon.Count < 2)
-            {
-                throw new Exception("DefaultLatLon is null or incomplete.");
-            }
-            string APIkey = LogFileGetSet.GetAPIKey("astro");
-            string LAT = DefaultLatLon[0].ToString();
-            string LON = DefaultLatLon[1].ToString();
-            string jsonresponse = ReadResponseFromUrl($"https://api.ipgeolocation.io/astronomy?apiKey={APIkey}&lat={LAT}&long={LON}&date={DATE}");
-            astronomicalData = JsonSerializer.Deserialize<Astro>(jsonresponse);
-            return astronomicalData;
         }
         public static string GetWeatherImage()
         {
@@ -467,21 +446,7 @@ namespace AstroWeather.Helpers
             return listOfHoursPerDay;
 
         }
-        public string[] getMooninfo()
-        {
-            string[] mooninfoarr = new string[3];
-            DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-            string formattedDate = today.ToString("yyyy-MM-dd");
-
-            var moonInfoData = GetAstroData(formattedDate);
-            mooninfoarr[0] = moonInfoData.moonrise.ToString();
-            mooninfoarr[1] = moonInfoData.moonset.ToString();
-            mooninfoarr[2] = moonInfoData.moon_illumination_percentage.ToString();
-            mooninfoarr[3] = moonInfoData.moon_phase.ToString();
-            return mooninfoarr;
-
-        }
-        private static string ReadResponseFromUrl(string url)
+           private static string ReadResponseFromUrl(string url)
         {
             var httpClientHandler = new HttpClientHandler();
             var httpClient = new HttpClient(httpClientHandler)

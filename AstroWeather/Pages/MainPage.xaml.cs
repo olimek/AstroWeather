@@ -21,8 +21,8 @@ namespace AstroWeather
         }
         async void MainInit()
         {
-            var IsAPI = LogFileGetSet.GetAPIKey("weather");
-            var IsDefLoc = LogFileGetSet.LoadDefaultLoc();
+            var IsAPI = 1;
+            var IsDefLoc = 1;
             if (IsAPI == null || IsDefLoc == null)
             {
                 Dispatcher.Dispatch(async () =>
