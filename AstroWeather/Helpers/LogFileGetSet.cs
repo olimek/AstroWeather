@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Microsoft.Maui.Controls.PlatformConfiguration;
+using Microsoft.Maui.Storage;
 
 namespace AstroWeather.Helpers
 {
@@ -11,7 +12,12 @@ namespace AstroWeather.Helpers
             {
                 if (string.IsNullOrEmpty(key)) throw new ArgumentException("Key cannot be null or empty.");
                 if (value == null) throw new ArgumentNullException(nameof(value));
-               
+                string targetFile;
+                /*#if ANDROID
+                targetFile = Path.Combine(Android.App.Application.Context.GetExternalFilesDir("").AbsolutePath, filename);
+                #else
+                targetFile = Path.Combine(FileSystem.AppDataDirectory, filename);
+                #endif*/
                 string directoryPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
                 string filePath = Path.Combine(directoryPath, "data.json");
                 if (!Directory.Exists(directoryPath))
