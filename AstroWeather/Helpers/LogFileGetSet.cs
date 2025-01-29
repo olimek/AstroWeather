@@ -1,7 +1,11 @@
 ﻿using System.Text.Json;
 using Microsoft.Maui.Controls.PlatformConfiguration;
 using Microsoft.Maui.Storage;
-
+#if ANDROID
+using Android.App;
+using Android.Content;
+using Android.OS;
+#endif
 namespace AstroWeather.Helpers
 {
     class LogFileGetSet
@@ -12,13 +16,15 @@ namespace AstroWeather.Helpers
             {
                 if (string.IsNullOrEmpty(key)) throw new ArgumentException("Key cannot be null or empty.");
                 if (value == null) throw new ArgumentNullException(nameof(value));
-                string targetFile;
-                /*#if ANDROID
-                targetFile = Path.Combine(Android.App.Application.Context.GetExternalFilesDir("").AbsolutePath, filename);
-                #else
-                targetFile = Path.Combine(FileSystem.AppDataDirectory, filename);
-                #endif*/
-                string directoryPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                string directoryPath;
+                #if ANDROID
+        // Android - używamy katalogu aplikacji
+        directoryPath = FileSystem.AppDataDirectory;
+#else
+        // Pozostałe platformy - katalog lokalny
+        directoryPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+#endif
+                
                 string filePath = Path.Combine(directoryPath, "data.json");
                 if (!Directory.Exists(directoryPath))
                 {
@@ -60,8 +66,15 @@ namespace AstroWeather.Helpers
             {
                 if (string.IsNullOrEmpty(key))
                     throw new ArgumentException("Key cannot be null or empty.");
-
-                string directoryPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                string directoryPath;
+#if ANDROID
+                // Android - używamy katalogu aplikacji
+                directoryPath = FileSystem.AppDataDirectory;
+#else
+        // Pozostałe platformy - katalog lokalny
+        directoryPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+#endif
+                
                 
                 if (!Directory.Exists(directoryPath))
                 {
@@ -107,8 +120,15 @@ namespace AstroWeather.Helpers
         {
             try
             {
-                string directoryPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                
+                string directoryPath;
+#if ANDROID
+                // Android - używamy katalogu aplikacji
+                directoryPath = FileSystem.AppDataDirectory;
+#else
+        // Pozostałe platformy - katalog lokalny
+        directoryPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+#endif
+
                 if (!Directory.Exists(directoryPath))
                 {
                     Directory.CreateDirectory(directoryPath);
@@ -156,9 +176,16 @@ namespace AstroWeather.Helpers
         {
             try
             {
-                   
-                var directoryPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                
+
+                string directoryPath;
+#if ANDROID
+                // Android - używamy katalogu aplikacji
+                directoryPath = FileSystem.AppDataDirectory;
+#else
+        // Pozostałe platformy - katalog lokalny
+        directoryPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+#endif
+
                 if (!Directory.Exists(directoryPath))
                 {
                     Directory.CreateDirectory(directoryPath);
