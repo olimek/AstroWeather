@@ -1,55 +1,55 @@
-﻿using System.Windows.Input;
+﻿using System.Collections.Generic;
+using System.Windows.Input;
 using AstroWeather.Helpers;
 using Microsoft.Maui.Controls;
-using static System.Net.Mime.MediaTypeNames;
-namespace AstroWeather.Pages;
 
-public partial class SettingsPage : ContentPage
+namespace AstroWeather.Pages
 {
-    public ICommand TapCommand => new Command<string>(async (url) => await Launcher.OpenAsync(url));
-    public SettingsPage()
+    public partial class SettingsPage : ContentPage
     {
-        InitializeComponent();
-        var apiKeys = LogFileGetSet.LoadData<List<string>>("APIkey", () => new List<string>());
+        public ICommand TapCommand => new Command<string>(async (url) => await Launcher.OpenAsync(url));
+        private readonly LogFileGetSet _logFileGetSet = new LogFileGetSet(); // Create an instance of LogFileGetSet
 
-        
-        string test = apiKeys != null && apiKeys.Count > 0 ? apiKeys[0] : string.Empty;
-
-        BindingContext = this;
-    }
-
-    void OnEntryTextChanged(object sender, TextChangedEventArgs e)
-    {
-        
-        string myText = APIkeyInput.Text;
-        LogFileGetSet.StoreData("APIkey", new List<string>(new string[] { myText }));
-    }
-
-
-    private async void OnComputeClicked(object sender, EventArgs e)
-    {
-        PopupView.IsVisible = true;
-
-        
-        await PopupView.FadeTo(1, 250, Easing.CubicInOut);
-    }
-    private async void OnClosePopupClicked(object sender, EventArgs e)
-    {
-        if (nameInput.Text != null)
+        public SettingsPage()
         {
-            string name = nameInput.Text;
-
-            string Lat = LatitudeInput.Text.Replace(".", ",");
-
-            string Lon = LongitudeInput.Text.Replace(".", ",");
-
-            LogFileGetSet.StoreData($"Localisation_{name}", new List<string>(new string[] { Lat, Lon }));
+            InitializeComponent();
+            LoadApiKeys();
+            BindingContext = this;
         }
 
-        
-        await PopupView.FadeTo(0, 250, Easing.CubicInOut);
+        private async void LoadApiKeys()
+        {
+            var apiKeys = await _logFileGetSet.LoadDataAsync("APIkey", () => new List<string>());
+            string test = apiKeys != null && apiKeys.Count > 0 ? apiKeys[0] : string.Empty;
+            APIkeyInput.Text = test;
+        }
 
-        
-        PopupView.IsVisible = false;
+        private async void OnEntryTextChanged(object sender, TextChangedEventArgs e)
+        {
+            string myText = APIkeyInput.Text;
+            await _logFileGetSet.StoreDataAsync("APIkey", new List<string> { myText });
+        }
+
+        private async void OnComputeClicked(object sender, EventArgs e)
+        {
+            PopupView.IsVisible = true;
+            await PopupView.FadeTo(1, 250, Easing.CubicInOut);
+        }
+
+        private async void OnClosePopupClicked(object sender, EventArgs e)
+        {
+            string name = nameInput.Text;
+            string lat = LatitudeInput.Text.Replace(".", ",");
+            string lon = LongitudeInput.Text.Replace(".", ",");
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                await _logFileGetSet.StoreDataAsync($"Localisation_{name}", new List<string> { lat, lon });
+                await _logFileGetSet.StoreDataAsync("DefaultLoc", new List<string> { name });
+            }
+
+            await PopupView.FadeTo(0, 250, Easing.CubicInOut);
+            PopupView.IsVisible = false;
+        }
     }
 }

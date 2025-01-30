@@ -1,140 +1,138 @@
 ﻿using System.Text.Json;
 using AstroWeather.Helpers;
 
-
-namespace AstroWeather.Pages;
-
-public partial class LocalisationPage : ContentPage
+namespace AstroWeather.Pages
 {
-    private SelectedItemChangedEventArgs _selectedEventArgs;
-    public LocalisationPage()
+    public partial class LocalisationPage : ContentPage
     {
-        InitializeComponent();
-        LoadJsonData();
-        CheckDefaultLoc();
-    }
-    private void LoadJsonData()
-    {
+        private SelectionChangedEventArgs _selectedEventArgs;
+        private readonly LogFileGetSet _logFileGetSet = new LogFileGetSet();
 
-        var jsonData = LogFileGetSet.LoadAllData();
-
-        var filteredData = jsonData
-                .Where(kvp => kvp.Key.Contains("Localisation_"))
-                .ToDictionary(kvp => kvp.Key.Replace("Localisation_", ""), kvp =>
-                {
-                    if (kvp.Value is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.Array)
-                    {
-                        return jsonElement.EnumerateArray()
-                            .Select(v =>
-                            {
-                                if (v.ValueKind == JsonValueKind.Number)
-                                {
-                                    return v.GetDouble();
-                                }
-                                else if (v.ValueKind == JsonValueKind.String && double.TryParse(v.GetString(), out double result))
-                                {
-                                    return result;
-                                }
-                                return (double?)null;
-                            })
-                            .Where(v => v.HasValue)
-                            .Select(v => v.Value)
-                            .ToList();
-                    }
-                    return new List<double>();
-                });
-
-        LocalisationListView.ItemsSource = filteredData.Select(kvp => new
+        public LocalisationPage()
         {
-            kvp.Key,
-            Value = string.Join(", ", kvp.Value.Select(v => v.ToString().Replace(",", ".")))
-        }).ToList();
-    }
 
+            InitializeComponent();
+            BindingContext = this;
+            CheckDefaultLocAsync();
 
-    private async void OnItemSelected(object sender, SelectedItemChangedEventArgs e)
-    {
-
-
-        if (e.SelectedItem is not null)
-        {
-            var selectedItem = (dynamic)e.SelectedItem;
-
-            SelectedLabel.Text = $"Selected Localisation: {selectedItem.Key} ({selectedItem.Value})";
-            _selectedEventArgs = e;
-            string[] parts = selectedItem.Value.Split(',');
-            nameInput.Text = selectedItem.Key;
-            LatitudeInput.Text = parts[0].Trim();
-            LongitudeInput.Text = parts[1].Trim();
-            LogFileGetSet.StoreData("DefaultLoc", new List<string>(new string[] { selectedItem.Key }));
         }
-        
-
-        LocalisationListView.SelectedItem = null;
-        PopupView.IsVisible = true;
-        await PopupView.FadeTo(1, 250, Easing.CubicInOut);
-          }
-
-    private async void OnComputeClicked(object sender, EventArgs e)
-    {
-        PopupView.IsVisible = true;
-
-        await PopupView.FadeTo(1, 250, Easing.CubicInOut);
-    }
-
-    private async void DeleteEntity(object sender, EventArgs e)
-    {
-        if (_selectedEventArgs?.SelectedItem is not null)
+        protected override async void OnAppearing()
         {
-            var selectedItem = (dynamic)_selectedEventArgs.SelectedItem;
-            string key = $"Localisation_{selectedItem.Key}";
+            base.OnAppearing();
+            await LoadJsonDataAsync();
+        }
+        private async Task LoadJsonDataAsync()
+        {
 
-            
-            LogFileGetSet.RemoveData<List<string>>(key);
-            LogFileGetSet.RemoveData<List<string>>($"Info_{selectedItem.Key}");
+            var jsonData = await _logFileGetSet.LoadAllDataAsync();
 
+            var filteredData = jsonData
+                 .Where(kvp => kvp.Key.Contains("Localisation_"))
+                 .ToDictionary(kvp => kvp.Key.Replace("Localisation_", ""), kvp =>
+                 {
+                     if (kvp.Value is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.Array)
+                     {
+                         return jsonElement.EnumerateArray()
+                             .Select(v =>
+                             {
+                                 if (v.ValueKind == JsonValueKind.Number)
+                                 {
+                                     return v.GetDouble();
+                                 }
+                                 else if (v.ValueKind == JsonValueKind.String && double.TryParse(v.GetString(), out double result))
+                                 {
+                                     return result;
+                                 }
+                                 return (double?)null;
+                             })
+                             .Where(v => v.HasValue)
+                             .Select(v => v.Value)
+                             .ToList();
+                     }
+                     return new List<double>();
+                 });
+
+            LocalisationCollectionView.ItemsSource = filteredData.Select(kvp => new
+            {
+                kvp.Key,
+                Value = string.Join(", ", kvp.Value.Select(v => v.ToString().Replace(",", ".")))
+            }).ToList();
+        }
+
+        private async void OnItemSelected(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.CurrentSelection.FirstOrDefault() is not null)
+            {
+                var selectedItem = e.CurrentSelection.FirstOrDefault() as dynamic;
+
+                SelectedLabel.Text = $"Selected Localisation: {selectedItem.Key} ({selectedItem.Value})";
+                _selectedEventArgs = e;
+                string[] parts = selectedItem.Value.Split(',');
+                nameInput.Text = selectedItem.Key;
+                LatitudeInput.Text = parts[0].Trim();
+                LongitudeInput.Text = parts[1].Trim();
+                await _logFileGetSet.StoreDataAsync("DefaultLoc", new List<string> { selectedItem.Key });
+            }
+
+            LocalisationCollectionView.SelectedItem = null;
+            PopupView.IsVisible = true;
             await PopupView.FadeTo(1, 250, Easing.CubicInOut);
-            PopupView.IsVisible = false;
-            
+        }
+
+        private async void OnComputeClicked(object sender, EventArgs e)
+        {
+            PopupView.IsVisible = true;
+            await PopupView.FadeTo(1, 250, Easing.CubicInOut);
+        }
+
+        private async void DeleteEntity(object sender, EventArgs e)
+        {
+            if (_selectedEventArgs?.CurrentSelection.FirstOrDefault() is not null)
+            {
+                var selectedItem = _selectedEventArgs.CurrentSelection.FirstOrDefault() as dynamic;
+                string key = $"Localisation_{selectedItem.Key}";
+
+                await _logFileGetSet.RemoveDataAsync<List<string>>(key);
+                await _logFileGetSet.RemoveDataAsync<List<string>>($"Info_{selectedItem.Key}");
+
+                await PopupView.FadeTo(1, 250, Easing.CubicInOut);
+                PopupView.IsVisible = false;
+                LocalisationCollectionView.SelectedItem = null;
+                LoadJsonDataAsync();
+                await Shell.Current.GoToAsync("//LocalisationPage");
+            }
+        }
+
+        private async void OnClosePopupClicked(object sender, EventArgs e)
+        {
+            string name = nameInput.Text;
+            string lat = LatitudeInput.Text.Replace(".", ",");
+            string lon = LongitudeInput.Text.Replace(".", ",");
+
+            if (!string.IsNullOrEmpty(Info.Text))
+            {
+                string info = Info.Text.Replace(".", ",");
+                await _logFileGetSet.StoreDataAsync($"Info_{name}", new List<string> { info });
+            }
+
+            await _logFileGetSet.StoreDataAsync($"Localisation_{name}", new List<string> { lat, lon });
+
+            await PopupView.FadeTo(0, 250, Easing.CubicInOut);
+            LocalisationCollectionView.SelectedItem = null;
+            LoadJsonDataAsync();
             await Shell.Current.GoToAsync("//LocalisationPage");
+
+            PopupView.IsVisible = false;
         }
 
-        
-    }
-
-    private async void OnClosePopupClicked(object sender, EventArgs e)
-    {
-        string name = nameInput.Text;
-
-        string Lat = LatitudeInput.Text.Replace(".", ",");
-
-        string Lon = LongitudeInput.Text.Replace(".", ",");
-
-        if (Info.Text != null)
+        private async void CheckDefaultLocAsync()
         {
-            string info = Info.Text.Replace(".", ",");
-            LogFileGetSet.StoreData($"Info_{name}", new List<string>(new string[] { info }));
-        }
+            var defaultLatLon = await _logFileGetSet.LoadDefaultLocAsync();
 
-
-        LogFileGetSet.StoreData($"Localisation_{name}", new List<string>(new string[] { Lat, Lon }));
-
-
-
-        await PopupView.FadeTo(0, 250, Easing.CubicInOut);
-        await Shell.Current.GoToAsync("//LocalisationPage");
-
-        PopupView.IsVisible = false;
-    }
-
-    private void CheckDefaultLoc()
-    {
-        var DefaultLatLon = LogFileGetSet.LoadDefaultLoc();
-
-        if (DefaultLatLon != null)
-        {
-            SelectedLabel.Text = $"Default Localisation: ({DefaultLatLon[0]}, {DefaultLatLon[1]})";
+            if (defaultLatLon != null && defaultLatLon.Count() > 1)
+            {
+                SelectedLabel.Text = $"Default Localisation: ({defaultLatLon[0]}, {defaultLatLon[1]})";
+            }
         }
     }
-
 }

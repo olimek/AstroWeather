@@ -7,33 +7,185 @@
     Title="WeatherPage"
     BackgroundColor="{StaticResource BackgroundColor}">
     <StackLayout>
-        <CarouselView x:Name="weatherCarousel" IndicatorView="indicatorView">
+        <CarouselView
+            x:Name="weatherCarousel"
+            IndicatorView="indicatorView"
+            IsScrollAnimated="true">
             <CarouselView.ItemTemplate>
+
                 <DataTemplate>
                     <StackLayout>
-                        <Label Padding="20" Text="{Binding Date, StringFormat='Date: {0}'}" />
                         <Frame
-                            Margin="20"
+                            BackgroundColor="{DynamicResource SecondaryColor}"
                             BorderColor="DarkGray"
                             CornerRadius="5"
                             HasShadow="True"
-                            HeightRequest="300"
-                            HorizontalOptions="Center"
-                            VerticalOptions="CenterAndExpand">
+                            HeightRequest="200"
+                            HorizontalOptions="Center">
+                            <Grid Padding="5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+
+                                </Grid.ColumnDefinitions>
+                                <Label
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Padding="5"
+                                    Text="{Binding Date, StringFormat='Date: {0:dd.MM HH:mm}'}" />
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    Padding="5"
+                                    Text="{Binding moonrise, StringFormat='Moon rise: {0:dd.MM HH:mm}'}" />
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Padding="5"
+                                    Text="{Binding moonset, StringFormat='Moon set: {0:dd.MM HH:mm}'}" />
+                                <Label
+                                    Grid.Row="2"
+                                    Grid.Column="0"
+                                    Padding="5"
+                                    Text="{Binding nauticalstart, StringFormat='Nautical night: {0:dd.MM HH:mm}'}" />
+                                <Label
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    Padding="5"
+                                    Text="{Binding nauticalend, StringFormat='Nautical night: {0:dd.MM HH:mm}'}" />
+                                <Label
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Padding="5"
+                                    Text="{Binding condition, StringFormat='Condition: {0} %'}" />
+                                <Label
+                                    Grid.Row="4"
+                                    Grid.Column="0"
+                                    Padding="5"
+                                    Text="{Binding moonilum, StringFormat='Moon Ilum: {0} %'}" />
+                                <Label
+                                    Grid.Row="3"
+                                    Grid.Column="0"
+                                    Padding="5"
+                                    Text="{Binding astrostart, StringFormat='Astro night: {0:dd.MM HH:mm}'}" />
+                                <Label
+                                    Grid.Row="3"
+                                    Grid.Column="1"
+                                    Padding="5"
+                                    Text="{Binding astroend, StringFormat='Astro night: {0:dd.MM HH:mm}'}" />
+                            </Grid>
+                        </Frame>
+                        <Frame
+                            Margin="10"
+                            BackgroundColor="{DynamicResource SecondaryColor}"
+                            BorderColor="DarkGray"
+                            CornerRadius="5"
+                            HasShadow="True"
+                            HeightRequest="400"
+                            HorizontalOptions="Center">
+
 
                             <CollectionView ItemsSource="{Binding Hours}">
+
+                                <CollectionView.Header>
+                                    <Grid Padding="5" ColumnSpacing="10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="40" />
+                                            <ColumnDefinition Width="40" />
+                                            <ColumnDefinition Width="40" />
+                                            <ColumnDefinition Width="40" />
+                                            <ColumnDefinition Width="40" />
+                                            <ColumnDefinition Width="40" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label
+                                            Grid.Column="0"
+                                            FontAttributes="Bold"
+                                            FontSize="10"
+                                            HorizontalTextAlignment="Center"
+                                            Text="Hour" />
+                                        <Label
+                                            Grid.Column="1"
+                                            FontAttributes="Bold"
+                                            FontSize="10"
+                                            HorizontalTextAlignment="Center"
+                                            Text="Temp" />
+                                        <Label
+                                            Grid.Column="2"
+                                            FontAttributes="Bold"
+                                            FontSize="10"
+                                            HorizontalTextAlignment="Center"
+                                            Text="Humidity" />
+                                        <Label
+                                            Grid.Column="3"
+                                            FontAttributes="Bold"
+                                            FontSize="10"
+                                            HorizontalTextAlignment="Center"
+                                            Text="Cloud" />
+                                        <Label
+                                            Grid.Column="4"
+                                            FontAttributes="Bold"
+                                            FontSize="10"
+                                            HorizontalTextAlignment="Center"
+                                            Text="Dew" />
+                                        <Label
+                                            Grid.Column="5"
+                                            FontAttributes="Bold"
+                                            FontSize="10"
+                                            HorizontalTextAlignment="Center"
+                                            Text="Cond." />
+                                    </Grid>
+                                </CollectionView.Header>
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate>
-                                        <StackLayout Padding="5">
-                                            <Label FontSize="18" Text="{Binding hour}" />
-                                            <Label Text="{Binding temp, StringFormat='Temp: {0}°C'}" />
-                                            <Label Text="{Binding humidity, StringFormat='Humidity: {0}%'}" />
-                                            <Label Text="{Binding windspeed, StringFormat='Wind: {0} km/h'}" />
+                                        <Grid Padding="5" ColumnSpacing="10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="40" />
+                                                <ColumnDefinition Width="40" />
+                                                <ColumnDefinition Width="40" />
+                                                <ColumnDefinition Width="40" />
+                                                <ColumnDefinition Width="40" />
+                                                <ColumnDefinition Width="40" />
+                                            </Grid.ColumnDefinitions>
 
-                                        </StackLayout>
+                                            <Label
+                                                Grid.Column="0"
+                                                FontSize="16"
+                                                HorizontalTextAlignment="Center"
+                                                Text="{Binding hour}" />
+                                            <Label
+                                                Grid.Column="1"
+                                                HorizontalTextAlignment="Center"
+                                                Text="{Binding temp, StringFormat='{0}°C'}" />
+                                            <Label
+                                                Grid.Column="2"
+                                                HorizontalTextAlignment="Center"
+                                                Text="{Binding humidity, StringFormat='{0}%'}" />
+                                            <Label
+                                                Grid.Column="3"
+                                                HorizontalTextAlignment="Center"
+                                                Text="{Binding cloudcover, StringFormat='{0}%'}" />
+                                            <Label
+                                                Grid.Column="4"
+                                                HorizontalTextAlignment="Center"
+                                                Text="{Binding riskOfDew, StringFormat='{0}%'}" />
+                                            <Label
+                                                Grid.Column="5"
+                                                HorizontalTextAlignment="Center"
+                                                Text="{Binding astroConditions, StringFormat='{0}/10'}" />
+                                        </Grid>
                                     </DataTemplate>
                                 </CollectionView.ItemTemplate>
                             </CollectionView>
+
                         </Frame>
                     </StackLayout>
                 </DataTemplate>
@@ -43,6 +195,8 @@
             x:Name="indicatorView"
             HorizontalOptions="Center"
             IndicatorColor="LightGray"
-            SelectedIndicatorColor="DarkGray" />
+            IndicatorSize="18"
+            IndicatorsShape="Square"
+            SelectedIndicatorColor="{DynamicResource SecondaryColor}" />
     </StackLayout>
 </ContentPage>

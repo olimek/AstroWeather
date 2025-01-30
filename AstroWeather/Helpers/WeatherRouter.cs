@@ -1,69 +1,83 @@
 ﻿using System;
-using System.ComponentModel.Design;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Net.Http;
 using System.Text.Json;
-//using Android.Health.Connect.DataTypes.Units;
+using System.Threading.Tasks;
 using CosineKitty;
 using Innovative.Geometry;
 using NodaTime;
 using NodaTime.Extensions;
 using SolCalc;
 using SolCalc.Data;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 namespace AstroWeather.Helpers
 {
     public class WeatherRouter
-
     {
         private Astro? astronomicalData = null;
         private static WeatherAPI? weatherData = null;
-        static private double lat = 0;
-        static private double lon = 0;
+        private static double lat = 0;
+        private static double lon = 0;
+        private readonly LogFileGetSet logFileGetSet = new LogFileGetSet();
 
-
-
-        private WeatherAPI GetWeatherData()
+        private async Task<WeatherAPI?> GetWeatherDataAsync()
         {
-
-            var DefaultLatLon = LogFileGetSet.LoadDefaultLoc();
-
-            
-            if (DefaultLatLon != null)
+            var defaultLatLon = await logFileGetSet.LoadDefaultLocAsync();
+            if (defaultLatLon != null && defaultLatLon.Count() > 1)
             {
-                lat = DefaultLatLon[0];
-                lon = DefaultLatLon[1];
-                string APIkey = LogFileGetSet.GetAPIKey("weather");
-                string LAT = lat.ToString().Replace(",", ".");
-                string LON = lon.ToString().Replace(",", ".");
-                string jsonresponse = ReadResponseFromUrl($"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{LAT}%2C%20{LON}?unitGroup=metric&elements=datetime%2CdatetimeEpoch%2Ctemp%2Cdew%2Chumidity%2Cprecip%2Cprecipprob%2Cwindspeed%2Cpressure%2Ccloudcover%2Cvisibility&include=days%2Chours%2Cfcst%2Cobs&key={APIkey}&contentType=json");
+                lat = defaultLatLon[0];
+                lon = defaultLatLon[1];
+                string apiKey = await logFileGetSet.GetAPIKeyAsync("weather");
+                string latStr = lat.ToString(CultureInfo.InvariantCulture);
+                string lonStr = lon.ToString(CultureInfo.InvariantCulture);
 
-                jsonresponse = jsonresponse.Replace("null", "0");
+                string jsonResponse = await ReadResponseFromUrlAsync($"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{latStr}%2C{lonStr}?unitGroup=metric&elements=datetime%2CdatetimeEpoch%2Ctemp%2Cdew%2Chumidity%2Cprecip%2Cprecipprob%2Cwindspeed%2Cpressure%2Ccloudcover%2Cvisibility&include=days%2Chours%2Cfcst%2Cobs&key={apiKey}&contentType=json");
+                jsonResponse = jsonResponse.Replace("null", "0");
 
-                weatherData = JsonSerializer.Deserialize<WeatherAPI>(jsonresponse);
-
+                weatherData = JsonSerializer.Deserialize<WeatherAPI>(jsonResponse);
                 return weatherData;
             }
-            else { return null; }
+            else
+            {
+                return null;
+            }
         }
-        static public List<Helpers.DayWithHours> GetCarouselView()
+
+        public static async Task<List<DayWithHours>?> GetCarouselViewAsync()
         {
-            var daysWithHours = new List<Helpers.DayWithHours>();
-            Helpers.WeatherRouter getWeatherinfo = new();
-            List<List<AstroWeather.Helpers.Hour>> Pogoda = getWeatherinfo.getWeatherinfo();
-            var result2 = Pogoda.SelectMany(i => i).Distinct();
-            var ss = Helpers.WeatherRouter.SetWeatherdata(result2.ToList());
+            var daysWithHours = new List<DayWithHours>();
+            var weatherRouter = new WeatherRouter();
+            var weatherInfo = await weatherRouter.GetWeatherInfoAsync();
+            var result2 = weatherInfo.SelectMany(i => i).Distinct();
+            var ss = SetWeatherData(result2.ToList());
+            var hourlyConditions = CalculateWeatherData(ss);
+            var dailyConditions = CalculateAstroNight(ss);
+            var dailyData = await weatherRouter.GetCalculatedDailyAsync(ss);
+
             if (ss.Count != 0)
             {
-                
                 DateTime currentDateTime = DateTime.Now;
 
                 for (int i = 0; i < ss.Count; i++)
                 {
-                    var day = new Helpers.DayWithHours
+                    var time = new AstroTime(currentDateTime.AddDays(i));
+                    IllumInfo illum = Astronomy.Illumination(Body.Moon, time);
+                    var astroTimes = GetAstroTimes(currentDateTime.AddDays(i), false);
+
+                    var day = new DayWithHours
                     {
-                        
-                        Date = currentDateTime.AddDays(i).ToString("yyyy-MM-dd"),  
-                        Hours = ss[i]  
+                        moonrise = astroTimes[5].ToString("dd.MM HH:mm"),
+                        moonset = astroTimes[4].ToString("dd.MM HH:mm"),
+                        nauticalstart = astroTimes[6].ToString("dd.MM HH:mm"),
+                        nauticalend = astroTimes[7].ToString("dd.MM HH:mm"),
+                        astrostart = astroTimes[2].ToString("dd.MM HH:mm"),
+                        astroend = astroTimes[3].ToString("dd.MM HH:mm"),
+                        moonilum = Math.Round(100.0 * illum.phase_fraction).ToString(),
+                        condition = dailyData[i].astrocond.ToString(),
+                        Date = currentDateTime.AddDays(i).ToString("dd.MM"),
+                        Hours = ss[i]
                     };
 
                     daysWithHours.Add(day);
@@ -73,24 +87,25 @@ namespace AstroWeather.Helpers
 
             return null;
         }
-        private Astro GetAstroData(string DATE)
-        {
-            var DefaultLatLon = LogFileGetSet.LoadDefaultLoc();
 
-            if (DefaultLatLon == null || DefaultLatLon.Count < 2)
+        private async Task<Astro> GetAstroDataAsync(string date)
+        {
+            var defaultLatLon = await logFileGetSet.LoadDefaultLocAsync();
+            if (defaultLatLon == null || defaultLatLon.Count < 2)
             {
                 throw new Exception("DefaultLatLon is null or incomplete.");
             }
-            string APIkey = LogFileGetSet.GetAPIKey("astro");
-            string LAT = DefaultLatLon[0].ToString();
-            string LON = DefaultLatLon[1].ToString();
-            string jsonresponse = ReadResponseFromUrl($"https://api.ipgeolocation.io/astronomy?apiKey={APIkey}&lat={LAT}&long={LON}&date={DATE}");
-            astronomicalData = JsonSerializer.Deserialize<Astro>(jsonresponse);
+            string apiKey = await logFileGetSet.GetAPIKeyAsync("astro");
+            string latStr = defaultLatLon[0].ToString(CultureInfo.InvariantCulture);
+            string lonStr = defaultLatLon[1].ToString(CultureInfo.InvariantCulture);
+
+            string jsonResponse = await ReadResponseFromUrlAsync($"https://api.ipgeolocation.io/astronomy?apiKey={apiKey}&lat={latStr}&long={lonStr}&date={date}");
+            astronomicalData = JsonSerializer.Deserialize<Astro>(jsonResponse);
             return astronomicalData;
         }
-        public static string GetWeatherImage()
+
+        public static string GetWeatherImage(double phase)
         {
-            double phase = 0;
             if (phase == 0)
                 return "sun.png";
             else if (phase < 0.22)
@@ -105,53 +120,42 @@ namespace AstroWeather.Helpers
                 return "cloudyrain.png";
             else
                 return "heavyrain.png";
-
         }
 
         public static string GetMoonImage(double moonIllumination, double phaseAngle)
         {
-            moonIllumination = Math.Clamp(moonIllumination, 0, 100); // Upewniamy się, że wartość iluminacji mieści się w zakresie 0-100
-            phaseAngle = phaseAngle % 360; // Upewniamy się, że kąt mieści się w zakresie 0-360
+            moonIllumination = Math.Clamp(moonIllumination, 0, 100); // Ensure illumination is between 0-100
+            phaseAngle = phaseAngle % 360; // Ensure angle is between 0-360
 
-            // Jeśli iluminacja jest bliska 0%, to mamy Nowiu
             if (moonIllumination <= 10)
-            {
-                return "new_moon.png";  // Nów
-            }
-            // Jeśli iluminacja jest bliska 100%, to mamy Pełnię
+                return "new_moon.png";  // New Moon
             else if (moonIllumination >= 90)
-            {
-                return "full_moon.png";  // Pełnia
-            }
+                return "full_moon.png";  // Full Moon
 
-            // Fazy wschodzącego Księżyca (faza rosnąca, od nowiu do pełni)
             if (phaseAngle >= 0 && phaseAngle < 180)
             {
                 if (moonIllumination >= 10 && moonIllumination < 40)
-                    return "waxing_crescent.png";  // Wzrost półksiężyca
+                    return "waxing_crescent.png";
                 else if (moonIllumination >= 40 && moonIllumination < 60)
-                    return "first_quarter.png";  // Pierwsza kwadra
+                    return "first_quarter.png";
                 else if (moonIllumination >= 60 && moonIllumination < 90)
-                    return "waxing_gibbous.png";  // Wzrost pełny
+                    return "waxing_gibbous.png";
             }
-            // Fazy malejącego Księżyca (faza malejąca, od pełni do nowiu)
             else if (phaseAngle >= 180 && phaseAngle < 360)
             {
                 if (moonIllumination >= 60 && moonIllumination < 90)
-                    return "waning_gibbous.png";  // Wzrost ostatniego ćwierć
+                    return "waning_gibbous.png";
                 else if (moonIllumination >= 40 && moonIllumination < 60)
-                    return "last_quarter.png";  // Ostatnia kwadra
+                    return "last_quarter.png";
                 else if (moonIllumination >= 10 && moonIllumination < 40)
-                    return "waning_crescent.png";  // Wygasający półksiężyc
+                    return "waning_crescent.png";
             }
 
             return "new_moon.png"; // Default case
         }
 
-
-        private static string roundHours(string dateTime, string round)
+        private static string RoundHours(string dateTime, string round)
         {
-            // Rozdzielamy datę i godzinę
             string[] parts = dateTime.Split(' ');
             if (parts.Length != 2)
             {
@@ -161,10 +165,8 @@ namespace AstroWeather.Helpers
             string time = parts[0];
             string date = parts[1];
 
-            // Parsowanie godziny z formatu HH:mm:ss
             if (TimeSpan.TryParse(time, out TimeSpan parsedTime))
             {
-                // Zaokrąglanie godziny
                 TimeSpan roundedTime;
                 if (round == "UP")
                 {
@@ -179,11 +181,7 @@ namespace AstroWeather.Helpers
                     throw new ArgumentException("Invalid round value. Use 'UP' or 'DOWN'.");
                 }
 
-                // Tworzymy nowy DateTime z zaokrągloną godziną
-                DateTime roundedDateTime = DateTime.ParseExact(date, "dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture)
-                    .Add(roundedTime); // Dodajemy zaokrągloną godzinę do daty
-
-                // Zwracamy zaokrągloną godzinę w formacie: HH:mm:ss dd:MM:yyyy
+                DateTime roundedDateTime = DateTime.ParseExact(date, "dd.MM.yyyy", CultureInfo.InvariantCulture).Add(roundedTime);
                 return roundedDateTime.ToString("HH:mm:ss dd.MM.yyyy");
             }
             else
@@ -192,55 +190,45 @@ namespace AstroWeather.Helpers
             }
         }
 
-        private static List<DateTime> getAstroTimes(DateTime date, bool first)
+        private static List<DateTime> GetAstroTimes(DateTime date, bool first)
         {
-            // Ustawienie strefy czasowej dla przekazanej daty
             var zone = DateTimeZoneProviders.Tzdb["Europe/Warsaw"];
             ZonedDateTime zonedDate = LocalDateTime.FromDateTime(date).InZoneLeniently(zone);
 
-            // Obliczenie wczorajszego i dzisiejszego dnia w odpowiedniej strefie czasowej
             ZonedDateTime now = zonedDate;
-            ZonedDateTime tommorow = now + Duration.FromDays(1);
+            ZonedDateTime tomorrow = now + Duration.FromDays(1);
 
-            // Tworzenie obiektu reprezentującego Księżyc
             var moon = new AstroAlgo.SolarSystem.Moon(lat, lon, date, TimeZoneInfo.Local);
 
-            // Pobieranie godzin zmierzchu i świtu
             var nauticalDuskChange = SunlightCalculator.GetSunlightChanges(now, lat, lon)
                 .FirstOrDefault(change => change.Name == SolarTimeOfDay.NauticalDusk);
             var astroDuskChange = SunlightCalculator.GetSunlightChanges(now, lat, lon)
                 .FirstOrDefault(change => change.Name == SolarTimeOfDay.AstronomicalDusk);
 
-            var nauticalDawnChange = SunlightCalculator.GetSunlightChanges(first ? tommorow: now, lat, lon)
+            var nauticalDawnChange = SunlightCalculator.GetSunlightChanges(first ? tomorrow : now, lat, lon)
                 .FirstOrDefault(change => change.Name == SolarTimeOfDay.NauticalDawn);
-            var astroDawnChange = SunlightCalculator.GetSunlightChanges(first ? tommorow : now, lat, lon)
+            var astroDawnChange = SunlightCalculator.GetSunlightChanges(first ? tomorrow : now, lat, lon)
                 .FirstOrDefault(change => change.Name == SolarTimeOfDay.AstronomicalDawn);
 
-            // Formatowanie dat i godzin zmierzchu oraz świtu
             string nauticalDusk = nauticalDuskChange.Time.ToDateTimeUnspecified().ToString("HH:mm:ss") + " " + nauticalDuskChange.Time.ToDateTimeUnspecified().ToString("dd.MM.yyyy");
             string nauticalDawn = nauticalDawnChange.Time.ToDateTimeUnspecified().ToString("HH:mm:ss") + " " + nauticalDawnChange.Time.ToDateTimeUnspecified().ToString("dd.MM.yyyy");
 
             string astroDusk = astroDuskChange.Time.ToDateTimeUnspecified().ToString("HH:mm:ss") + " " + astroDuskChange.Time.ToDateTimeUnspecified().ToString("dd.MM.yyyy");
             string astroDawn = astroDawnChange.Time.ToDateTimeUnspecified().ToString("HH:mm:ss") + " " + astroDawnChange.Time.ToDateTimeUnspecified().ToString("dd.MM.yyyy");
 
-            // Zaokrąglanie godzin zmierzchu i świtu
-            string roundedDusk = roundHours(nauticalDusk, "DOWN");
-            string roundedDawn = roundHours(nauticalDawn, "UP");
+            string roundedDusk = RoundHours(nauticalDusk, "DOWN");
+            string roundedDawn = RoundHours(nauticalDawn, "UP");
 
-            // Obliczanie wschodu i zachodu Księżyca
             DateTime moonset = moon.DateTime + moon.Setting;
             DateTime moonrise = moon.DateTime + moon.Rising;
 
-            // Lista do przechowywania wyników
             List<DateTime> astroTimes = new List<DateTime>();
 
-            // Dodawanie czasów słońca i nocy
             if (!string.IsNullOrEmpty(roundedDusk)) astroTimes.Add(DateTime.ParseExact(roundedDusk, "HH:mm:ss dd.MM.yyyy", CultureInfo.InvariantCulture));
             if (!string.IsNullOrEmpty(roundedDawn)) astroTimes.Add(DateTime.ParseExact(roundedDawn, "HH:mm:ss dd.MM.yyyy", CultureInfo.InvariantCulture));
             if (!string.IsNullOrEmpty(astroDusk)) astroTimes.Add(DateTime.ParseExact(astroDusk, "HH:mm:ss dd.MM.yyyy", CultureInfo.InvariantCulture));
             if (!string.IsNullOrEmpty(astroDawn)) astroTimes.Add(DateTime.ParseExact(astroDawn, "HH:mm:ss dd.MM.yyyy", CultureInfo.InvariantCulture));
 
-            // Dodawanie czasów Księżyca
             astroTimes.Add(moonset);
             astroTimes.Add(moonrise);
             if (!string.IsNullOrEmpty(nauticalDusk)) astroTimes.Add(DateTime.ParseExact(nauticalDusk, "HH:mm:ss dd.MM.yyyy", CultureInfo.InvariantCulture));
@@ -248,232 +236,237 @@ namespace AstroWeather.Helpers
             return astroTimes;
         }
 
-
-
-
-        public static List<List<AstroWeather.Helpers.Hour>> SetWeatherdata(List<AstroWeather.Helpers.Hour> inputList)
+        public static List<List<Hour>> SetWeatherData(List<Hour> inputList)
         {
-            List<AstroWeather.Helpers.Hour> resultList = new List<AstroWeather.Helpers.Hour>();
-            
-            List<List<AstroWeather.Helpers.Hour>> outlist = new List<List<AstroWeather.Helpers.Hour>>();
+            List<Hour> resultList = new List<Hour>();
+            List<List<Hour>> outList = new List<List<Hour>>();
             bool isNightOver = true;
-            bool firstnight = true;
+            bool firstNight = true;
             List<DateTime> astroTimes = new List<DateTime>();
+
             foreach (var result in inputList)
             {
                 string processedDate = result.date + " " + result.datetime;
                 DateTime dateTime = DateTime.ParseExact(processedDate, "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture);
-              
-                if (isNightOver || firstnight)
-                {
-                    astroTimes = getAstroTimes(dateTime, firstnight); 
-                    isNightOver = false;
-                    firstnight = false;
 
+                if (isNightOver || firstNight)
+                {
+                    astroTimes = GetAstroTimes(dateTime, firstNight);
+                    isNightOver = false;
+                    firstNight = false;
                 }
-                DateTime duskDateTime = astroTimes[0];  
-                DateTime dawnDateTime = astroTimes[1];  
-                
+
+                DateTime duskDateTime = astroTimes[0];
+                DateTime dawnDateTime = astroTimes[1];
+
                 if (DateTime.Compare(dateTime, duskDateTime) >= 0 && DateTime.Compare(dateTime, dawnDateTime) <= 0)
                 {
                     resultList.Add(result);
                 }
-                else if (DateTime.Compare(dateTime, dawnDateTime) > 0) { isNightOver = true;
-
-
-                    outlist.Add(new List<AstroWeather.Helpers.Hour>(resultList));
+                else if (DateTime.Compare(dateTime, dawnDateTime) > 0)
+                {
+                    isNightOver = true;
+                    outList.Add(new List<Hour>(resultList));
                     resultList.Clear();
                 }
-                
             }
 
-            return outlist;
+            return outList;
         }
 
-        public static List<List<AstroWeather.Helpers.Hour>> CalculateWeatherdata(List<List<AstroWeather.Helpers.Hour>> inputList) {
-            List<List<AstroWeather.Helpers.Hour>> calculatedWeatherList = new List<List<AstroWeather.Helpers.Hour>>();
-            foreach (var result in inputList) {
-                
-                foreach (var hour in result)
-                {
-                    hour.riskOfDew = calculateRiskOfDew(hour);
-                    hour.astroConditions = calculateAstroConditions(hour);
-                }
-            }
-            var test = CalculateAstroNight(inputList);
-
-                return inputList;
-        }
-        private static int calculateAstroConditions(AstroWeather.Helpers.Hour input) {
-            int astro_night = 0;
-            double ryzyko_mgly = input.riskOfDew ?? 100; 
-            double precipitation = input.precip ?? 0;
-            double cloud_cover = input.cloudcover ?? 100;
-            double precipitation_probability = input.precipprob ;
-
-            // Logika oceny warunków astronomicznych
-            if (precipitation_probability < 50)
-            {
-                if (precipitation == 0 && ryzyko_mgly == 0)
-                {
-                    if (cloud_cover < 10)
-                    {
-                        astro_night = 10;
-                    }
-                }
-                else if (precipitation == 0 && ryzyko_mgly < 20)
-                {
-
-                    if (cloud_cover < 10)
-                    {
-                        astro_night = 8;
-                    }
-                    else if (cloud_cover < 25)
-                    {
-                        astro_night = 6;
-                    }
-                }
-                else if (precipitation < 0.1 && ryzyko_mgly < 50)
-                {
-                    if (cloud_cover < 40)
-                    {
-                        astro_night = 4;
-                    }
-                    else if (cloud_cover < 50)
-                    {
-                        astro_night = 2;
-                    }
-                }
-            }
-
-            return astro_night;
-        }
-        private static int calculateRiskOfDew(AstroWeather.Helpers.Hour input) {
-            double ocena = 0;
-            var relative_humidity = input.humidity;
-            var visibility = input.visibility;
-            var wind_speed = input.windspeed;
-            var delta_temperature = Math.Abs(input.temp - input.dew);
-
-
-            if (visibility <= 10) {
-                ocena += 0.2;
-                    if (relative_humidity >= 92) { ocena += 0.2; }
-
-                if (delta_temperature <= 2) { ocena += 0.4; }
-
-                else if (delta_temperature <= 4) { ocena += 0.2; }
-                        
-                    if (visibility <= 5 && wind_speed< 5) { ocena += 0.2; }
-                        
-                    }
-            return Convert.ToInt32( Math.Round(ocena*100));
-        }
-        public static List<AstroWeather.Helpers.Day> getCalculatedDaily(List<List<AstroWeather.Helpers.Hour>> inputList)
+        public static List<List<Hour>> CalculateWeatherData(List<List<Hour>> inputList)
         {
-            List<AstroWeather.Helpers.Day> DailyOut = new List<AstroWeather.Helpers.Day>();
-            var astronight = CalculateAstroNight(inputList);
-            var weatherssData = WeatherRouter.weatherData.days;
-            int i = 0;
-            foreach (var day in weatherssData)
-            {
-                DateTime dateTime = DateTime.ParseExact(day.datetime, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-                var time = new AstroTime(DateTime.ParseExact(day.datetime, "yyyy-MM-dd", CultureInfo.InvariantCulture));
-                List<DateTime> astroTimes = new List<DateTime>();
-                astroTimes = getAstroTimes(dateTime, false);
-                IllumInfo illum = Astronomy.Illumination(Body.Moon, time);
-                day.moonIlum = Math.Round(100.0 * illum.phase_fraction);
-                day.AstroTimes = astroTimes;
-                DailyOut.Add(day);
-            }
             foreach (var result in inputList)
             {
-                double numberofnights = 0;
+                foreach (var hour in result)
+                {
+                    hour.riskOfDew = CalculateRiskOfDew(hour);
+                    hour.astroConditions = CalculateAstroConditions(hour);
+                }
+            }
+            return inputList;
+        }
+
+        private static int CalculateAstroConditions(Hour input)
+        {
+            int astroNight = 0;
+            double riskOfDew = input.riskOfDew ?? 100;
+            double precipitation = input.precip ?? 0;
+            double cloudCover = input.cloudcover ?? 100;
+            double precipitationProbability = input.precipprob;
+
+            if (precipitationProbability < 50)
+            {
+                if (precipitation == 0 && riskOfDew == 0)
+                {
+                    if (cloudCover < 10)
+                    {
+                        astroNight = 10;
+                    }
+                }
+                else if (precipitation == 0 && riskOfDew < 20)
+                {
+                    if (cloudCover < 10)
+                    {
+                        astroNight = 8;
+                    }
+                    else if (cloudCover < 25)
+                    {
+                        astroNight = 6;
+                    }
+                }
+                else if (precipitation < 0.1 && riskOfDew < 50)
+                {
+                    if (cloudCover < 40)
+                    {
+                        astroNight = 4;
+                    }
+                    else if (cloudCover < 50)
+                    {
+                        astroNight = 2;
+                    }
+                }
+            }
+
+            return astroNight;
+        }
+
+        private static int CalculateRiskOfDew(Hour input)
+        {
+            double ocena = 0;
+            var relativeHumidity = input.humidity;
+            var visibility = input.visibility;
+            var windSpeed = input.windspeed;
+            var deltaTemperature = Math.Abs(input.temp - input.dew);
+
+            if (visibility <= 10)
+            {
+                ocena += 0.2;
+                if (relativeHumidity >= 92)
+                {
+                    ocena += 0.2;
+                }
+
+                if (deltaTemperature <= 2)
+                {
+                    ocena += 0.4;
+                }
+                else if (deltaTemperature <= 4)
+                {
+                    ocena += 0.2;
+                }
+
+                if (visibility <= 5 && windSpeed < 5)
+                {
+                    ocena += 0.2;
+                }
+            }
+
+            return Convert.ToInt32(Math.Round(ocena * 100));
+        }
+
+        public async Task<List<Day>> GetCalculatedDailyAsync(List<List<Hour>> inputList)
+        {
+            var dailyOut = new List<Day>();
+            var astronight = CalculateAstroNight(inputList);
+            var weatherDataDays = weatherData?.days ?? new List<Day>();
+            int i = 0;
+
+            foreach (var day in weatherDataDays)
+            {
+                DateTime dateTime = DateTime.ParseExact(day.datetime, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                var time = new AstroTime(dateTime);
+                List<DateTime> astroTimes = GetAstroTimes(dateTime, true);
+                IllumInfo illum = Astronomy.Illumination(Body.Moon, time);
+
+                day.moonIlum = Math.Round(100.0 * illum.phase_fraction);
+                day.AstroTimes = astroTimes;
+                dailyOut.Add(day);
+            }
+
+            foreach (var result in inputList)
+            {
+                double numberOfNights = 0;
                 double score = 0;
                 foreach (var hour in result)
                 {
-                    numberofnights = result.Count() * 10;
+                    numberOfNights = result.Count() * 10;
                     score += Convert.ToDouble(hour.astroConditions);
                 }
-                
-                DailyOut[i].astrocond = Math.Round(score / numberofnights * 100);
-                
-                i++;
 
+                dailyOut[i].astrocond = Math.Round(score / numberOfNights * 100);
+                i++;
             }
-            return DailyOut;
+
+            return dailyOut;
         }
-        public static List<double> CalculateAstroNight(List<List<AstroWeather.Helpers.Hour>> inputList)
+
+        public static List<double> CalculateAstroNight(List<List<Hour>> inputList)
         {
             List<double> calculatedAstroPerNight = new List<double>();
             foreach (var result in inputList)
             {
-                double numberofnights = 0;
+                double numberOfNights = 0;
                 double score = 0;
                 foreach (var hour in result)
                 {
-                    numberofnights = result.Count()*10;
-                    score += Convert.ToDouble( hour.astroConditions);
+                    numberOfNights = result.Count() * 10;
+                    score += Convert.ToDouble(hour.astroConditions);
                 }
-                var score1 = score / numberofnights * 100;
+                var score1 = score / numberOfNights * 100;
                 calculatedAstroPerNight.Add(Math.Round(score1));
             }
 
             return calculatedAstroPerNight;
         }
-        public List<List<AstroWeather.Helpers.Hour>> getWeatherinfo()
+
+        public async Task<List<List<Hour>>> GetWeatherInfoAsync()
         {
-            var weatherData = GetWeatherData();
-            List<List<AstroWeather.Helpers.Hour>> listOfHoursPerDay = new List<List<AstroWeather.Helpers.Hour>>();
+            var weatherData = await GetWeatherDataAsync();
+            var listOfHoursPerDay = new List<List<Hour>>();
+
             if (weatherData != null)
             {
-
                 listOfHoursPerDay = weatherData.days
-     .Select(day =>
-     {
+                    .Select(day =>
+                    {
+                        var dayDate = DateTime.ParseExact(day.datetime, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                        var dateWithoutTime = dayDate.ToString("dd.MM.yyyy");
 
-         var dayDate = DateTime.ParseExact(day.datetime, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-         var dateWithoutTime = dayDate.ToString("dd.MM.yyyy");
+                        foreach (var hour in day.hours)
+                        {
+                            hour.precip = hour.precip ?? 0;
+                            hour.cloudcover = hour.cloudcover ?? 0;
+                            hour.date = dateWithoutTime;
+                            hour.hour = hour.datetime.ToString().Substring(0, 2);
+                        }
 
-         foreach (var hour in day.hours)
-         {
-             hour.precip = hour.precip ?? 0;
-             hour.cloudcover = hour.cloudcover ?? 0;
-             hour.date = dateWithoutTime.ToString();
-             hour.hour = hour.datetime.ToString().Substring(0, 2);
-         }
-
-         return day.hours.ToList();
-     }).ToList();
+                        return day.hours.ToList();
+                    }).ToList();
             }
             return listOfHoursPerDay;
-
         }
-        public string[] getMooninfo()
+        public async Task<string[]> GetMoonInfoAsync()
         {
-            string[] mooninfoarr = new string[3];
+            string[] moonInfoArr = new string[4]; // Zmieniono rozmiar tablicy na 4, aby pomieścić moon_phase
             DateOnly today = DateOnly.FromDateTime(DateTime.Now);
             string formattedDate = today.ToString("yyyy-MM-dd");
 
-            var moonInfoData = GetAstroData(formattedDate);
-            mooninfoarr[0] = moonInfoData.moonrise.ToString();
-            mooninfoarr[1] = moonInfoData.moonset.ToString();
-            mooninfoarr[2] = moonInfoData.moon_illumination_percentage.ToString();
-            mooninfoarr[3] = moonInfoData.moon_phase.ToString();
-            return mooninfoarr;
-
+            var moonInfoData = await GetAstroDataAsync(formattedDate);
+            moonInfoArr[0] = moonInfoData.moonrise.ToString();
+            moonInfoArr[1] = moonInfoData.moonset.ToString();
+            moonInfoArr[2] = moonInfoData.moon_illumination_percentage.ToString();
+            moonInfoArr[3] = moonInfoData.moon_phase.ToString();
+            return moonInfoArr;
         }
-        private static string ReadResponseFromUrl(string url)
+
+        private async Task<string> ReadResponseFromUrlAsync(string url)
         {
-            var httpClientHandler = new HttpClientHandler();
-            var httpClient = new HttpClient(httpClientHandler)
+            using (var httpClient = new HttpClient())
             {
-                BaseAddress = new Uri(url)
-            };
-            using (var response = httpClient.GetAsync(url))
-            {
-                string responseBody = response.Result.Content.ReadAsStringAsync().Result;
-                return responseBody;
+                var response = await httpClient.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadAsStringAsync();
             }
         }
 
