@@ -14,17 +14,27 @@
                 Text="Selected Localisation: None"
                 VerticalOptions="Center" />
 
-            <ListView
-                x:Name="LocalisationListView"
+            <CollectionView
+                x:Name="LocalisationCollectionView"
                 HorizontalOptions="FillAndExpand"
-                ItemSelected="OnItemSelected"
+                SelectionChanged="OnItemSelected"
+                SelectionMode="Single"
                 VerticalOptions="FillAndExpand">
-                <ListView.ItemTemplate>
+                <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <TextCell Detail="{Binding Value}" Text="{Binding Key}" />
+                        <StackLayout Padding="10">
+                            <Label
+                                FontSize="16"
+                                Text="{Binding Key}"
+                                TextColor="Black" />
+                            <Label
+                                FontSize="14"
+                                Text="{Binding Value}"
+                                TextColor="Gray" />
+                        </StackLayout>
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
         </StackLayout>
 
         <ContentView

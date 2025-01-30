@@ -1,23 +1,22 @@
 ﻿using CosineKitty;
 using Microsoft.Maui.Controls;
+using System.Threading.Tasks;
 
-namespace AstroWeather.Pages;
-
-public partial class WeatherPage : ContentPage
+namespace AstroWeather.Pages
 {
-    public WeatherPage()
+    public partial class WeatherPage : ContentPage
     {
-        InitializeComponent();
-        LoadWeatherData();
-    }
+        public WeatherPage()
+        {
+            InitializeComponent();
+            LoadWeatherData();
+        }
 
-    private void LoadWeatherData()
-    {
-            var carousel = Helpers.WeatherRouter.GetCarouselView();
+        private async void LoadWeatherData()
+        {
+            var carousel = await Helpers.WeatherRouter.GetCarouselViewAsync();
             weatherCarousel.ItemsSource = carousel;
             weatherCarousel.ScrollTo(0);
-
-
+        }
     }
-
 }

@@ -1,47 +1,74 @@
-﻿using System.Text.Json;
-using Microsoft.Maui.Controls.PlatformConfiguration;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.Maui.Storage;
-#if ANDROID
-using Android.App;
-using Android.Content;
-using Android.OS;
-#endif
+using Microsoft.Maui.Controls;
+
 namespace AstroWeather.Helpers
 {
-    class LogFileGetSet
+    public class LogFileGetSet
     {
-        public static void StoreData<T>(string key, T value)
+        public string GetFilePath(string fileName)
+        {
+            string documentsPath = FileSystem.AppDataDirectory;
+            return Path.Combine(documentsPath, fileName);
+        }
+
+        public bool FileExists(string fileName)
+        {
+            string filePath = GetFilePath(fileName);
+            return File.Exists(filePath);
+        }
+
+        public async Task SaveFileAsync(string content, string fileName)
+        {
+            string filePath = GetFilePath(fileName);
+            using (var writer = new StreamWriter(filePath, false))
+            {
+                await writer.WriteAsync(content);
+            }
+        }
+
+        public async Task<string> ReadFileAsync(string fileName)
+        {
+            string filePath = GetFilePath(fileName);
+            if (File.Exists(filePath))
+            {
+                using (var reader = new StreamReader(filePath))
+                {
+                    return await reader.ReadToEndAsync();
+                }
+            }
+            return null;
+        }
+
+        public async Task StoreDataAsync<T>(string key, T value)
         {
             try
             {
                 if (string.IsNullOrEmpty(key)) throw new ArgumentException("Key cannot be null or empty.");
                 if (value == null) throw new ArgumentNullException(nameof(value));
-                string directoryPath;
-                #if ANDROID
-        // Android - używamy katalogu aplikacji
-        directoryPath = FileSystem.AppDataDirectory;
-#else
-        // Pozostałe platformy - katalog lokalny
-        directoryPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-#endif
-                
-                string filePath = Path.Combine(directoryPath, "data.json");
-                if (!Directory.Exists(directoryPath))
+
+                string fileName = "data.json";
+                string filePath = GetFilePath(fileName);
+
+                Dictionary<string, T> data;
+                if (FileExists(fileName))
                 {
-                    Directory.CreateDirectory(directoryPath);
+                    string existingJson = await ReadFileAsync(fileName);
+                    data = JsonSerializer.Deserialize<Dictionary<string, T>>(existingJson) ?? new Dictionary<string, T>();
+                }
+                else
+                {
+                    data = new Dictionary<string, T>();
                 }
 
-                filePath = Path.Combine(directoryPath, "data.json");
-
-                if (!Directory.Exists(directoryPath))
-                {
-                    Directory.CreateDirectory(directoryPath);
-                }
-
-                Dictionary<string, T> data = ReadData<T>(filePath);
                 data[key] = value;
 
-                WriteData(filePath, data);
+                await WriteDataAsync(filePath, data);
             }
             catch (Exception ex)
             {
@@ -49,54 +76,34 @@ namespace AstroWeather.Helpers
             }
         }
 
-        private static Dictionary<string, T> ReadData<T>(string filePath)
+        private async Task WriteDataAsync<T>(string filePath, Dictionary<string, T> data)
         {
-            if (File.Exists(filePath) && new FileInfo(filePath).Length > 0)
-            {
-                string existingJson = File.ReadAllText(filePath);
-                return JsonSerializer.Deserialize<Dictionary<string, T>>(existingJson) ?? new Dictionary<string, T>();
-            }
-
-            return new Dictionary<string, T>();
+            string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+            await File.WriteAllTextAsync(filePath, json);
         }
 
-        public static void RemoveData<T>(string key)
+        public async Task RemoveDataAsync<T>(string key)
         {
             try
             {
-                if (string.IsNullOrEmpty(key))
-                    throw new ArgumentException("Key cannot be null or empty.");
-                string directoryPath;
-#if ANDROID
-                // Android - używamy katalogu aplikacji
-                directoryPath = FileSystem.AppDataDirectory;
-#else
-        // Pozostałe platformy - katalog lokalny
-        directoryPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-#endif
-                
-                
-                if (!Directory.Exists(directoryPath))
-                {
-                    Directory.CreateDirectory(directoryPath);
-                }
+                if (string.IsNullOrEmpty(key)) throw new ArgumentException("Key cannot be null or empty.");
 
-                
-                string filePath = Path.Combine(directoryPath, "data.json");
+                string fileName = "data.json";
+                string filePath = GetFilePath(fileName);
 
-                if (!File.Exists(filePath))
+                if (!FileExists(fileName))
                 {
                     Console.WriteLine("Data file not found.");
                     return;
                 }
 
-                Dictionary<string, T> data = ReadData<T>(filePath);
+                string existingJson = await ReadFileAsync(fileName);
+                var data = JsonSerializer.Deserialize<Dictionary<string, T>>(existingJson) ?? new Dictionary<string, T>();
 
                 if (data.ContainsKey(key))
                 {
                     data.Remove(key);
-
-                    WriteData(filePath, data);
+                    await WriteDataAsync(filePath, data);
                     Console.WriteLine($"Successfully removed key: {key}");
                 }
                 else
@@ -110,51 +117,23 @@ namespace AstroWeather.Helpers
             }
         }
 
-        private static void WriteData<T>(string filePath, Dictionary<string, T> data)
-        {
-            string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(filePath, json);
-        }
-
-        public static T LoadData<T>(string key, Func<T> defaultFactory)
+        public async Task<T> LoadDataAsync<T>(string key, Func<T> defaultFactory)
         {
             try
             {
-                string directoryPath;
-#if ANDROID
-                // Android - używamy katalogu aplikacji
-                directoryPath = FileSystem.AppDataDirectory;
-#else
-        // Pozostałe platformy - katalog lokalny
-        directoryPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-#endif
+                string fileName = "data.json";
+                string filePath = GetFilePath(fileName);
 
-                if (!Directory.Exists(directoryPath))
+                if (FileExists(fileName))
                 {
-                    Directory.CreateDirectory(directoryPath);
-                }
-
-                
-                string filePath = Path.Combine(
-                    Path.Combine(directoryPath, AppInfo.Current.Name),
-                    "data.json");
-
-                if (File.Exists(filePath))
-                {
-
-                    string json = File.ReadAllText(filePath);
+                    string json = await ReadFileAsync(fileName);
                     var rootObject = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
                     if (rootObject != null && rootObject.TryGetValue(key, out JsonElement valueElement))
                     {
-
-                        if (valueElement.ValueKind == JsonValueKind.Array)
+                        if (valueElement.ValueKind == JsonValueKind.Array || valueElement.ValueKind == JsonValueKind.String)
                         {
                             return valueElement.Deserialize<T>();
-                        }
-                        else if (valueElement.ValueKind == JsonValueKind.String)
-                        {
-                            return JsonSerializer.Deserialize<T>($"\"{valueElement.GetString()}\"");
                         }
                         else
                         {
@@ -172,34 +151,19 @@ namespace AstroWeather.Helpers
             }
         }
 
-        public static Dictionary<string, object> LoadAllData()
+        public async Task<Dictionary<string, object>> LoadAllDataAsync()
         {
             try
             {
+                string fileName = "data.json";
+                string filePath = GetFilePath(fileName);
 
-                string directoryPath;
-#if ANDROID
-                // Android - używamy katalogu aplikacji
-                directoryPath = FileSystem.AppDataDirectory;
-#else
-        // Pozostałe platformy - katalog lokalny
-        directoryPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-#endif
-
-                if (!Directory.Exists(directoryPath))
+                if (FileExists(fileName))
                 {
-                    Directory.CreateDirectory(directoryPath);
-                }
-                string filePath = Path.Combine(Path.Combine(directoryPath, AppInfo.Current.Name), "data.json");
-                if (File.Exists(filePath))
-                {
-                    using (StreamReader reader = new StreamReader(filePath))
-                    {
-                        string json = reader.ReadToEnd();
-                        var data = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+                    string json = await ReadFileAsync(fileName);
+                    var data = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
 
-                        return data ?? new Dictionary<string, object>();
-                    }
+                    return data ?? new Dictionary<string, object>();
                 }
 
                 return new Dictionary<string, object>();
@@ -211,64 +175,52 @@ namespace AstroWeather.Helpers
             }
         }
 
-        public static List<double>? LoadDefaultLoc()
+        public async Task<List<double>?> LoadDefaultLocAsync()
         {
-            // Ładujemy domyślną lokalizację (może być `null` lub pusta lista)
-            var defaultLoc = LogFileGetSet.LoadData<List<string>>("DefaultLoc", () => new List<string>());
+            var defaultLoc = await LoadDataAsync("DefaultLoc", () => new List<string>());
 
-            // Sprawdzamy, czy istnieje przynajmniej jeden element
             if (defaultLoc != null && defaultLoc.Count > 0)
             {
-                // Ładujemy lokalizację na podstawie pierwszego elementu z defaultLoc
-                var rawData = LogFileGetSet.LoadData($"Localisation_{defaultLoc[0]}", () => new List<string>());
+                var rawData = await LoadDataAsync($"Localisation_{defaultLoc[0]}", () => new List<string>());
                 var locloc = rawData
-                    .Select(item => item.Replace(',', '.')) // Zamiana przecinków na kropki
-                    .Where(item => double.TryParse(item, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out _)) 
-                    .Select(item => double.Parse(item, System.Globalization.CultureInfo.InvariantCulture)) 
+                    .Select(item => item.Replace(',', '.'))
+                    .Where(item => double.TryParse(item, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out _))
+                    .Select(item => double.Parse(item, System.Globalization.CultureInfo.InvariantCulture))
                     .ToList();
                 return locloc;
             }
 
-            // Jeśli defaultLoc jest `null` lub puste, zwracamy `null`
             return null;
         }
 
-        public static string? LoadDefaultLocName()
+        public async Task<string?> LoadDefaultLocNameAsync()
         {
-            // Ładujemy domyślną lokalizację (może być `null` lub pusta lista)
-            var defaultLoc = LogFileGetSet.LoadData<List<string>>("DefaultLoc", () => new List<string>());
+            var defaultLoc = await LoadDataAsync("DefaultLoc", () => new List<string>());
 
-            // Sprawdzamy, czy istnieje przynajmniej jeden element
             if (defaultLoc != null && defaultLoc.Count > 0)
             {
-               
                 return defaultLoc[0];
             }
 
-            // Jeśli defaultLoc jest `null` lub puste, zwracamy `null`
             return null;
         }
 
-        public static string? GetAPIKey(string which)
+        public async Task<string?> GetAPIKeyAsync(string which)
         {
-            // Klucz mapujący rodzaj API na odpowiedni klucz w danych
             var keyMap = new Dictionary<string, string>
-    {
-        { "astro", "MOONAPIkey" },
-        { "weather", "APIkey" }
-    };
+            {
+                { "astro", "MOONAPIkey" },
+                { "weather", "APIkey" }
+            };
 
-            // Sprawdzamy, czy podano prawidłowy typ API
             if (!keyMap.TryGetValue(which, out string? dataKey))
             {
                 Console.WriteLine($"Invalid API type: {which}");
                 return null;
             }
 
-            // Ładujemy listę kluczy API z pliku
-            var apiKeys = LogFileGetSet.LoadData(dataKey, () => new List<string>());
+            var apiKeys = await LoadDataAsync(dataKey, () => new List<string>());
 
-            // Sprawdzamy, czy lista zawiera przynajmniej jeden element
             if (apiKeys != null && apiKeys.Count > 0)
             {
                 return apiKeys[0];
@@ -277,6 +229,5 @@ namespace AstroWeather.Helpers
             Console.WriteLine($"No API key found for {which}");
             return null;
         }
-
     }
 }

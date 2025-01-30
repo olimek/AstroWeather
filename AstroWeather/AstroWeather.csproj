@@ -47,6 +47,10 @@
 	  <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
+	  <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<!-- App Icon -->
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
@@ -71,6 +75,9 @@
 		<PackageReference Include="CosineKitty.AstronomyEngine" Version="2.1.19" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.30" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.1" />
+		<PackageReference Include="Microsoft.Maui.Controls.Core" Version="9.0.30" />
+		<PackageReference Include="Microsoft.Maui.Controls.Xaml" Version="9.0.30" />
+		<PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.30" />
 		<PackageReference Include="SolarCalculator" Version="3.5.0" />
 		<PackageReference Include="SolCalc" Version="1.0.0" />
 	</ItemGroup>
