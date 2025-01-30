@@ -32,6 +32,7 @@ namespace AstroWeather.Helpers
         public double temp { get; set; }
         public double dew { get; set; }
         public double humidity { get; set; }
+        public string dayOfWeek { get; set; }
         public double precip { get; set; }
         public double precipprob { get; set; }
         public double windspeed { get; set; }
@@ -53,6 +54,7 @@ namespace AstroWeather.Helpers
         public string address { get; set; }
         public string timezone { get; set; }
         public double tzoffset { get; set; }
+        
         public IList<Day> days { get; set; }
     }
 

@@ -103,6 +103,7 @@
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -117,25 +118,29 @@
                                 <Label
                                     Grid.Row="1"
                                     Grid.Column="0"
-                                    Text="Cond.: " />
+                                    Text="Day: " />
                                 <Label
                                     Grid.Row="2"
                                     Grid.Column="0"
-                                    Text="Night start: " />
+                                    Text="Cond.: " />
                                 <Label
                                     Grid.Row="3"
                                     Grid.Column="0"
-                                    Text="Night end: " />
+                                    Text="Night start: " />
                                 <Label
                                     Grid.Row="4"
                                     Grid.Column="0"
-                                    Text="Moon Ilum: " />
+                                    Text="Night end: " />
                                 <Label
                                     Grid.Row="5"
                                     Grid.Column="0"
-                                    Text="Moon rise: " />
+                                    Text="Moon Ilum: " />
                                 <Label
                                     Grid.Row="6"
+                                    Grid.Column="0"
+                                    Text="Moon rise: " />
+                                <Label
+                                    Grid.Row="7"
                                     Grid.Column="0"
                                     Text="Moon set: " />
                                 <Label
@@ -149,34 +154,40 @@
                                     Grid.Row="1"
                                     Grid.Column="1"
                                     HorizontalTextAlignment="End"
-                                    Text="{Binding astrocond, StringFormat='{0} %'}"
+                                    Text="{Binding dayOfWeek}"
                                     VerticalTextAlignment="Start" />
                                 <Label
                                     Grid.Row="2"
                                     Grid.Column="1"
                                     HorizontalTextAlignment="End"
-                                    Text="{Binding AstroTimes[6], StringFormat='{0:dd.MM HH:mm}'}"
+                                    Text="{Binding astrocond, StringFormat='{0} %'}"
                                     VerticalTextAlignment="Start" />
                                 <Label
                                     Grid.Row="3"
                                     Grid.Column="1"
                                     HorizontalTextAlignment="End"
-                                    Text="{Binding AstroTimes[7], StringFormat='{0:dd.MM HH:mm}'}"
+                                    Text="{Binding AstroTimes[6], StringFormat='{0:dd.MM HH:mm}'}"
                                     VerticalTextAlignment="Start" />
                                 <Label
                                     Grid.Row="4"
                                     Grid.Column="1"
                                     HorizontalTextAlignment="End"
-                                    Text="{Binding moonIlum, StringFormat='{0} %'}"
+                                    Text="{Binding AstroTimes[7], StringFormat='{0:dd.MM HH:mm}'}"
                                     VerticalTextAlignment="Start" />
                                 <Label
                                     Grid.Row="5"
                                     Grid.Column="1"
                                     HorizontalTextAlignment="End"
-                                    Text="{Binding AstroTimes[5], StringFormat='{0:dd.MM HH:mm}'}"
+                                    Text="{Binding moonIlum, StringFormat='{0} %'}"
                                     VerticalTextAlignment="Start" />
                                 <Label
                                     Grid.Row="6"
+                                    Grid.Column="1"
+                                    HorizontalTextAlignment="End"
+                                    Text="{Binding AstroTimes[5], StringFormat='{0:dd.MM HH:mm}'}"
+                                    VerticalTextAlignment="Start" />
+                                <Label
+                                    Grid.Row="7"
                                     Grid.Column="1"
                                     HorizontalTextAlignment="End"
                                     Text="{Binding AstroTimes[4], StringFormat='{0:dd.MM HH:mm}'}"
