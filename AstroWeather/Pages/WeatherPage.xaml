@@ -81,6 +81,11 @@
                                     Grid.Column="1"
                                     Padding="5"
                                     Text="{Binding astroend, StringFormat='Astro night: {0:dd.MM HH:mm}'}" />
+                                <Label
+                                    Grid.Row="4"
+                                    Grid.Column="1"
+                                    Padding="5"
+                                    Text="{Binding dayOfWeek, StringFormat='day: {0}'}" />
                             </Grid>
                         </Frame>
                         <Frame

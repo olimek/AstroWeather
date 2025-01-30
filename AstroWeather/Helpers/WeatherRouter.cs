@@ -16,7 +16,7 @@ namespace AstroWeather.Helpers
 {
     public class WeatherRouter
     {
-        private Astro? astronomicalData = null;
+        
         private static WeatherAPI? weatherData = null;
         private static double lat = 0;
         private static double lon = 0;
@@ -76,6 +76,7 @@ namespace AstroWeather.Helpers
                         astroend = astroTimes[3].ToString("dd.MM HH:mm"),
                         moonilum = Math.Round(100.0 * illum.phase_fraction).ToString(),
                         condition = dailyData[i].astrocond.ToString(),
+                        DayOfWeek = GetPolishDayOfWeek(currentDateTime.AddDays(i)),
                         Date = currentDateTime.AddDays(i).ToString("dd.MM"),
                         Hours = ss[i]
                     };
@@ -87,22 +88,13 @@ namespace AstroWeather.Helpers
 
             return null;
         }
-
-        private async Task<Astro> GetAstroDataAsync(string date)
+        private static string GetPolishDayOfWeek(DateTime date)
         {
-            var defaultLatLon = await logFileGetSet.LoadDefaultLocAsync();
-            if (defaultLatLon == null || defaultLatLon.Count < 2)
-            {
-                throw new Exception("DefaultLatLon is null or incomplete.");
-            }
-            string apiKey = await logFileGetSet.GetAPIKeyAsync("astro");
-            string latStr = defaultLatLon[0].ToString(CultureInfo.InvariantCulture);
-            string lonStr = defaultLatLon[1].ToString(CultureInfo.InvariantCulture);
-
-            string jsonResponse = await ReadResponseFromUrlAsync($"https://api.ipgeolocation.io/astronomy?apiKey={apiKey}&lat={latStr}&long={lonStr}&date={date}");
-            astronomicalData = JsonSerializer.Deserialize<Astro>(jsonResponse);
-            return astronomicalData;
+            string[] dniTygodnia = { "Niedziela", "Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota" };
+            return dniTygodnia[(int)date.DayOfWeek];
         }
+
+
 
         public static string GetWeatherImage(double phase)
         {
@@ -378,7 +370,7 @@ namespace AstroWeather.Helpers
                 var time = new AstroTime(dateTime);
                 List<DateTime> astroTimes = GetAstroTimes(dateTime, true);
                 IllumInfo illum = Astronomy.Illumination(Body.Moon, time);
-
+                day.dayOfWeek = GetPolishDayOfWeek(dateTime);
                 day.moonIlum = Math.Round(100.0 * illum.phase_fraction);
                 day.AstroTimes = astroTimes;
                 dailyOut.Add(day);
@@ -446,20 +438,7 @@ namespace AstroWeather.Helpers
             }
             return listOfHoursPerDay;
         }
-        public async Task<string[]> GetMoonInfoAsync()
-        {
-            string[] moonInfoArr = new string[4]; // Zmieniono rozmiar tablicy na 4, aby pomieścić moon_phase
-            DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-            string formattedDate = today.ToString("yyyy-MM-dd");
-
-            var moonInfoData = await GetAstroDataAsync(formattedDate);
-            moonInfoArr[0] = moonInfoData.moonrise.ToString();
-            moonInfoArr[1] = moonInfoData.moonset.ToString();
-            moonInfoArr[2] = moonInfoData.moon_illumination_percentage.ToString();
-            moonInfoArr[3] = moonInfoData.moon_phase.ToString();
-            return moonInfoArr;
-        }
-
+        
         private async Task<string> ReadResponseFromUrlAsync(string url)
         {
             using (var httpClient = new HttpClient())
