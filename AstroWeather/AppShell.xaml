@@ -12,13 +12,14 @@
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
     <ShellContent
-        Title="Localisation"
-        ContentTemplate="{DataTemplate local:Pages.LocalisationPage}"
-        Route="LocalisationPage" />
-    <ShellContent
         Title="Weather"
         ContentTemplate="{DataTemplate local:Pages.WeatherPage}"
         Route="WeatherPage" />
+    <ShellContent
+        Title="Localisation"
+        ContentTemplate="{DataTemplate local:Pages.LocalisationPage}"
+        Route="LocalisationPage" />
+
     <ShellContent
         Title="Settings"
         ContentTemplate="{DataTemplate local:Pages.SettingsPage}"
