@@ -10,7 +10,7 @@
         <CarouselView
             x:Name="weatherCarousel"
             IndicatorView="indicatorView"
-            IsScrollAnimated="true">
+            IsScrollAnimated="False">
             <CarouselView.ItemTemplate>
 
                 <DataTemplate>

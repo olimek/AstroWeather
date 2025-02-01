@@ -13,7 +13,7 @@ namespace AstroWeather
         public MainPage()
         {
             InitializeComponent();
-            MainInit();
+            //MainInit();
         }
 
         protected override async void OnAppearing()
@@ -45,7 +45,7 @@ namespace AstroWeather
                     var result2 = Pogoda.SelectMany(i => i).Distinct();
                     var filteredWeather = result2.Skip(Convert.ToInt32(currentDateTime.Hour)).Take(12).ToList();
 
-                    BindingContext = new { pogoda = filteredWeather };
+                    
                     ActualTemp.Text = Pogoda[0][Convert.ToInt32(currentDateTime.Hour)].temp.ToString() + " °C";
 
                     var time = new AstroTime(DateTime.UtcNow);
@@ -71,6 +71,21 @@ namespace AstroWeather
                     await Shell.Current.GoToAsync("//MainPage");
                 }
             }
+        }
+        private async void WeatherListView_ItemTapped(object sender, SelectionChangedEventArgs e)
+        {
+            //await DisplayAlert("Info", "Kliknięto element", "OK");
+            if (e.CurrentSelection?.FirstOrDefault() is AstroWeather.Helpers.Day selectedItem)
+            {
+                var parameters = new Dictionary<string, object>
+    {
+        { "selectedDay", selectedItem } // Klucz musi pasować do [QueryProperty]
+    };
+
+                await Shell.Current.GoToAsync("//WeatherPage", parameters);
+            }
+
+    ((CollectionView)sender).SelectedItem = null;
         }
     }
 }
