@@ -79,7 +79,11 @@
             </Border>
 
             <!--  Prognoza na kolejne godziny  -->
-            <CollectionView ItemsLayout="HorizontalList" ItemsSource="{Binding weather}">
+            <CollectionView
+                ItemsLayout="HorizontalList"
+                ItemsSource="{Binding weather}"
+                SelectionChanged="WeatherListView_ItemTapped"
+                SelectionMode="Single">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Border
