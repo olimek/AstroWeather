@@ -19,6 +19,7 @@ public partial class TargetsList : ContentPage
         // Wyszukaj obiekt po nazwie (przykład: "NGC 40")
         string objectName = "NGC 40";
         var dso = DsoYamlLoader.GetDsoByName(objectName, dsoList);
+        label.Text = dso.description;
 
     }
 }
