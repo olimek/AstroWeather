@@ -13,7 +13,7 @@ namespace AstroWeather
         public MainPage()
         {
             InitializeComponent();
-            //MainInit();
+           
         }
 
         protected override async void OnAppearing()

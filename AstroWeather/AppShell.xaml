@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:AstroWeather"
     Title="AstroWeather"
+    BackgroundColor="{StaticResource BackgroundColor}"
     Shell.FlyoutBehavior="Flyout">
 
     <ShellContent
@@ -15,6 +16,10 @@
         Title="Weather"
         ContentTemplate="{DataTemplate local:Pages.WeatherPage}"
         Route="WeatherPage" />
+    <ShellContent
+        Title="TargetsList"
+        ContentTemplate="{DataTemplate local:Pages.TargetsList}"
+        Route="TargetsList" />
     <ShellContent
         Title="Localisation"
         ContentTemplate="{DataTemplate local:Pages.LocalisationPage}"
