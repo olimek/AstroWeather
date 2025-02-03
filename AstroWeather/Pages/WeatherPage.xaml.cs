@@ -68,9 +68,19 @@ namespace AstroWeather.Pages
                     }
                 }
             }
-            weatherCarousel.ScrollTo(selectedIndex, animate: false);
+            
+            weatherCarousel.Loaded += (s, e) =>
+            {
+                weatherCarousel.ScrollTo(selectedIndex, animate: true);
+            };
+            //weatherCarousel.ScrollTo(selectedIndex, animate: false);
             // Przesuń CarouselView do wyliczonego indeksu.
             //weatherCarousel.ScrollTo(selectedIndex);
+        }
+
+        private void OnWeatherCarouselLoaded(object? sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }
