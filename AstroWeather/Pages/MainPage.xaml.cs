@@ -13,7 +13,7 @@ namespace AstroWeather
         public MainPage()
         {
             InitializeComponent();
-           
+
         }
 
         protected override async void OnAppearing()
@@ -36,40 +36,26 @@ namespace AstroWeather
             }
             else
             {
-                WeatherRouter getWeatherinfo = new();
-                List<List<AstroWeather.Helpers.Hour>> Pogoda = await getWeatherinfo.GetWeatherInfoAsync();
 
-                if (Pogoda.Count != 0)
-                {
-                    DateTime currentDateTime = DateTime.Now;
-                    var result2 = Pogoda.SelectMany(i => i).Distinct();
-                    var filteredWeather = result2.Skip(Convert.ToInt32(currentDateTime.Hour)).Take(12).ToList();
+                DateTime currentDateTime = DateTime.Now;
 
-                    
-                    ActualTemp.Text = Pogoda[0][Convert.ToInt32(currentDateTime.Hour)].temp.ToString() + " °C";
 
-                    var time = new AstroTime(DateTime.UtcNow);
-                    IllumInfo illum = Astronomy.Illumination(Body.Moon, time);
+                var time = new AstroTime(DateTime.UtcNow);
+                IllumInfo illum = Astronomy.Illumination(Body.Moon, time);
 
-                    var ss = WeatherRouter.SetWeatherData(result2.ToList());
-                    var Warunkihodzinowe = WeatherRouter.CalculateWeatherData(Pogoda);
-                    var Warunkidzienne = WeatherRouter.CalculateAstroNight(Pogoda);
-                    var dzienne = await getWeatherinfo.GetCalculatedDailyAsync(Pogoda);
+                string weatherImage = WeatherRouter.GetWeatherImage(illum.phase_fraction);
+                var pogodaDzienna = await WeatherRouter.SetWeatherBindingContextAsync();
+                BindingContext = new { weather = pogodaDzienna };
 
-                    string weatherImage = WeatherRouter.GetWeatherImage(illum.phase_fraction);
-                    BindingContext = new { weather = dzienne };
+                double phase = Astronomy.MoonPhase(time);
 
-                    double phase = Astronomy.MoonPhase(time);
+                MoonImage.Source = WeatherRouter.GetMoonImage(Math.Round(100.0 * illum.phase_fraction), phase);
+                var defaultLocName = await _logFileGetSet.LoadDefaultLocNameAsync();
+                SecondLabel.Text = defaultLocName ?? "Default location name not found";
 
-                    MoonImage.Source = WeatherRouter.GetMoonImage(Math.Round(100.0 * illum.phase_fraction), phase);
-                    var defaultLocName = await _logFileGetSet.LoadDefaultLocNameAsync();
-                    SecondLabel.Text = defaultLocName ?? "Default location name not found";
 
-                    Actualpress.Text = Pogoda[0][Convert.ToInt32(currentDateTime.Hour)].pressure.ToString() + " hPa";
-                    ActualHum.Text = Pogoda[0][Convert.ToInt32(currentDateTime.Hour)].humidity.ToString() + " %";
+                await Shell.Current.GoToAsync("//MainPage");
 
-                    await Shell.Current.GoToAsync("//MainPage");
-                }
             }
         }
         private async void WeatherListView_ItemTapped(object sender, SelectionChangedEventArgs e)

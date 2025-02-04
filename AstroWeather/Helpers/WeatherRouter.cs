@@ -45,7 +45,22 @@ namespace AstroWeather.Helpers
                 return null;
             }
         }
-
+        public static async Task<List<Day>> SetWeatherBindingContextAsync()
+        {
+            var daysWithHours = new List<DayWithHours>();
+            var weatherRouter = new WeatherRouter();
+            var weatherInfo = await weatherRouter.GetWeatherInfoAsync();
+            var result2 = weatherInfo.SelectMany(i => i).Distinct();
+            var ss = SetWeatherData(result2.ToList());
+            var hourlyConditions = CalculateWeatherData(ss);
+            var dailyConditions = CalculateAstroNight(ss);
+            var dailyData = await weatherRouter.GetCalculatedDailyAsync(ss);
+            if (dailyData != null){ 
+                return dailyData;
+            }
+            return null;
+        }
+        
         public static async Task<List<DayWithHours>?> GetCarouselViewAsync()
         {
             var daysWithHours = new List<DayWithHours>();
@@ -56,7 +71,7 @@ namespace AstroWeather.Helpers
             var hourlyConditions = CalculateWeatherData(ss);
             var dailyConditions = CalculateAstroNight(ss);
             var dailyData = await weatherRouter.GetCalculatedDailyAsync(ss);
-
+            
             if (ss.Count != 0)
             {
                 
