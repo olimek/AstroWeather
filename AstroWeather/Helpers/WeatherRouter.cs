@@ -19,8 +19,8 @@ namespace AstroWeather.Helpers
     {
         
         private static WeatherAPI? weatherData = null;
-        private static double lat = 0;
-        private static double lon = 0;
+        public static double lat = 0;
+        public static double lon = 0;
         private readonly LogFileGetSet logFileGetSet = new LogFileGetSet();
 
         private async Task<WeatherAPI?> GetWeatherDataAsync()
@@ -200,7 +200,7 @@ namespace AstroWeather.Helpers
             }
         }
 
-        private static List<DateTime> GetAstroTimes(DateTime date, bool first)
+        public static List<DateTime> GetAstroTimes(DateTime date, bool first)
         {
             var zone = DateTimeZoneProviders.Tzdb["Europe/Warsaw"];
             ZonedDateTime zonedDate = LocalDateTime.FromDateTime(date).InZoneLeniently(zone);
