@@ -3,12 +3,55 @@
     x:Class="AstroWeather.Pages.TargetsList"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="TargetsList">
-    <VerticalStackLayout>
+    Title="TargetsList"
+    BackgroundColor="{StaticResource BackgroundColor}">
+    <StackLayout Padding="10">
         <Label
-            x:Name="label"
+            x:Name="SelectedLabel"
+            FontSize="16"
             HorizontalOptions="Center"
-            Text="Welcome to .NET MAUI!"
+            Text="Lista 20 obiektów DSO najlepiej dzisiaj widocznych"
             VerticalOptions="Center" />
-    </VerticalStackLayout>
+
+        <CollectionView
+            x:Name="DsoCollectionView"
+            HorizontalOptions="FillAndExpand"
+            SelectionMode="None"
+            VerticalOptions="FillAndExpand">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <StackLayout Padding="10">
+                        <Label
+                            FontSize="16"
+                            Text="{Binding Name}"
+                            TextColor="Black" />
+                        <Label
+                            FontSize="14"
+                            Text="{Binding Description}"
+                            TextColor="Gray" />
+                        <Label
+                            FontSize="14"
+                            Text="{Binding Constellation}"
+                            TextColor="Gray" />
+                        <Label
+                            FontSize="14"
+                            Text="{Binding Type}"
+                            TextColor="Gray" />
+                        <Label
+                            FontSize="14"
+                            Text="{Binding Mag}"
+                            TextColor="Gray" />
+                        <Label
+                            FontSize="14"
+                            Text="{Binding Visible, StringFormat='Widoczność: {0:F2}%'}"
+                            TextColor="Gray" />
+                        <Label
+                            FontSize="14"
+                            Text="{Binding MaxAlt, StringFormat='Maksymalna wysokość: {0:F2}°'}"
+                            TextColor="Gray" />
+                    </StackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
 </ContentPage>

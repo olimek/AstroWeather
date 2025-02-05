@@ -11,6 +11,7 @@ using NodaTime;
 using NodaTime.Extensions;
 using SolCalc;
 using SolCalc.Data;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AstroWeather.Helpers
 {
@@ -18,8 +19,8 @@ namespace AstroWeather.Helpers
     {
         
         private static WeatherAPI? weatherData = null;
-        private static double lat = 0;
-        private static double lon = 0;
+        public static double lat = 0;
+        public static double lon = 0;
         private readonly LogFileGetSet logFileGetSet = new LogFileGetSet();
 
         private async Task<WeatherAPI?> GetWeatherDataAsync()
@@ -44,7 +45,22 @@ namespace AstroWeather.Helpers
                 return null;
             }
         }
-
+        public static async Task<List<Day>> SetWeatherBindingContextAsync()
+        {
+            var daysWithHours = new List<DayWithHours>();
+            var weatherRouter = new WeatherRouter();
+            var weatherInfo = await weatherRouter.GetWeatherInfoAsync();
+            var result2 = weatherInfo.SelectMany(i => i).Distinct();
+            var ss = SetWeatherData(result2.ToList());
+            var hourlyConditions = CalculateWeatherData(ss);
+            var dailyConditions = CalculateAstroNight(ss);
+            var dailyData = await weatherRouter.GetCalculatedDailyAsync(ss);
+            if (dailyData != null){ 
+                return dailyData;
+            }
+            return null;
+        }
+        
         public static async Task<List<DayWithHours>?> GetCarouselViewAsync()
         {
             var daysWithHours = new List<DayWithHours>();
@@ -55,16 +71,18 @@ namespace AstroWeather.Helpers
             var hourlyConditions = CalculateWeatherData(ss);
             var dailyConditions = CalculateAstroNight(ss);
             var dailyData = await weatherRouter.GetCalculatedDailyAsync(ss);
-
+            
             if (ss.Count != 0)
             {
-                DateTime currentDateTime = DateTime.Now;
+                
 
                 for (int i = 0; i < ss.Count; i++)
                 {
-                    var time = new AstroTime(currentDateTime.AddDays(i));
+                    DateTime currentdate = DateTime.ParseExact(ss[i][0].date, "dd.MM.yyyy", CultureInfo.InvariantCulture);
+                    
+                    var time = new AstroTime(currentdate);
                     IllumInfo illum = Astronomy.Illumination(Body.Moon, time);
-                    var astroTimes = GetAstroTimes(currentDateTime.AddDays(i), false);
+                    var astroTimes = GetAstroTimes(currentdate, true);
 
                     var day = new DayWithHours
                     {
@@ -76,8 +94,8 @@ namespace AstroWeather.Helpers
                         astroend = astroTimes[3].ToString("dd.MM HH:mm"),
                         moonilum = Math.Round(100.0 * illum.phase_fraction).ToString(),
                         condition = dailyData[i].astrocond.ToString(),
-                        DayOfWeek = GetPolishDayOfWeek(currentDateTime.AddDays(i)),
-                        Date = currentDateTime.AddDays(i).ToString("dd.MM"),
+                        DayOfWeek = GetPolishDayOfWeek(currentdate),
+                        Date = currentdate.ToString("dd.MM"),
                         Hours = ss[i]
                     };
 
@@ -182,7 +200,7 @@ namespace AstroWeather.Helpers
             }
         }
 
-        private static List<DateTime> GetAstroTimes(DateTime date, bool first)
+        public static List<DateTime> GetAstroTimes(DateTime date, bool first)
         {
             var zone = DateTimeZoneProviders.Tzdb["Europe/Warsaw"];
             ZonedDateTime zonedDate = LocalDateTime.FromDateTime(date).InZoneLeniently(zone);

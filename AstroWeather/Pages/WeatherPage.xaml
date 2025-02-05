@@ -9,8 +9,9 @@
     <StackLayout>
         <CarouselView
             x:Name="weatherCarousel"
+            HeightRequest="600"
             IndicatorView="indicatorView"
-            IsScrollAnimated="False">
+            IsScrollAnimated="True">
             <CarouselView.ItemTemplate>
 
                 <DataTemplate>
@@ -199,9 +200,10 @@
         </CarouselView>
         <IndicatorView
             x:Name="indicatorView"
+            Margin="15"
             HorizontalOptions="Center"
             IndicatorColor="LightGray"
-            IndicatorSize="18"
+            IndicatorSize="15"
             IndicatorsShape="Square"
             SelectedIndicatorColor="{DynamicResource SecondaryColor}" />
     </StackLayout>

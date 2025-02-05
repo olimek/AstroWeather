@@ -61,17 +61,17 @@
                             x:Name="ActualTemp"
                             FontAttributes="Bold"
                             FontSize="32"
-                            Text="00 °C"
+                            Text="Nie wiem co tu wstawić"
                             TextColor="{DynamicResource PrimaryTextColor}" />
                         <Label
                             x:Name="ActualHum"
                             FontSize="18"
-                            Text="Sunny"
+                            Text="tu też nie"
                             TextColor="{DynamicResource SecondaryTextColor}" />
                         <Label
                             x:Name="Actualpress"
                             FontSize="18"
-                            Text="Sunny"
+                            Text="w sumie nie mam pomysłu na tę sekcję, ale ikonka księżyca jest super"
                             TextColor="{DynamicResource SecondaryTextColor}" />
 
                     </VerticalStackLayout>

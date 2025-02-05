@@ -27,6 +27,7 @@ namespace AstroWeather.Helpers
 
     public class Day
     {
+        public DateTime? ostAkt { get; set; }
         public string datetime { get; set; }
         public int datetimeEpoch { get; set; }
         public double temp { get; set; }
