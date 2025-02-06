@@ -74,12 +74,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="Helpers\GaryImm.yaml">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="AstroAlgo" Version="2.3.1" />
 		<PackageReference Include="BenMakesGames.MoonMath" Version="1.0.0" />
 		<PackageReference Include="CosineKitty.AstronomyEngine" Version="2.1.19" />
@@ -110,6 +104,12 @@
 	  <Compile Update="Pages\WeatherPage.xaml.cs">
 	    <DependentUpon>WeatherPage.xaml</DependentUpon>
 	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiAsset Update="Resources\Raw\GaryImm.yaml">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </MauiAsset>
 	</ItemGroup>
 
 	<ItemGroup>

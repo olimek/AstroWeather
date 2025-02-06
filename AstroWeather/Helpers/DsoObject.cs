@@ -22,21 +22,39 @@ public class DsoObject
 public class DsoCalculator
 {
     private List<DsoObject> _dsoObjects;
-
-    public DsoCalculator(string filePath)
+    private static async Task<string> ReadYamlFileAsync(string fileName)
     {
-        _dsoObjects = LoadDsoData(filePath);
+        // Używamy FileSystem.OpenAppPackageFileAsync, by otworzyć plik dołączony jako zasób
+        var streamhh = await FileSystem.AppPackageFileExistsAsync(fileName);
+        if (streamhh)
+        {
+            using Stream stream = await FileSystem.OpenAppPackageFileAsync(fileName);
+            using var reader = new StreamReader(stream);
+            string content = await reader.ReadToEndAsync();
+            return content;
+        }
+        else { return null; }
+    }
+    private DsoCalculator(List<DsoObject> dsoObjects)
+    {
+        _dsoObjects = dsoObjects;
     }
 
-    public static List<DsoObject> LoadDsoData(string filePath)
+    public static async Task<DsoCalculator> CreateAsync(string fileName)
     {
+        // Wczytaj zawartość pliku YAML
+        string yamlText = await ReadYamlFileAsync(fileName);
+
+        // Skonfiguruj deserializator z konwencją nazewnictwa camelCase
         var deserializer = new DeserializerBuilder()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .Build();
 
-        var yamlText = File.ReadAllText(filePath);
-       
-        return deserializer.Deserialize<List<DsoObject>>(yamlText);
+        // Deserializuj tekst do listy obiektów DsoObject
+        List<DsoObject> dsoObjects = deserializer.Deserialize<List<DsoObject>>(yamlText);
+
+        // Zwróć nową instancję DsoCalculator
+        return new DsoCalculator(dsoObjects);
     }
 
 
@@ -72,7 +90,7 @@ public class DsoCalculator
 
     public static DsoObject CalculateVisibilityAndAltitude(DsoObject dso, DateTime dateUtc, List<DateTime> astrotimes, double lat, double lon)
     {
-        
+
         double observerLatitude = 51.108;
         double observerLongitude = 17.0385;
         Observer observer = new Observer(observerLatitude, observerLongitude, 100);
@@ -80,16 +98,16 @@ public class DsoCalculator
         double raRad = ParseRA(dso.Ra);
         double decRad = ParseDec(dso.Dec);
 
-        
+
         Astronomy.DefineStar(Body.Star1, raRad, decRad, 1000);
 
         DateTime sunset = astrotimes[0];
-        DateTime sunrise = astrotimes[1]; 
+        DateTime sunrise = astrotimes[1];
 
         double visibleTime = 0;
         double maxAlt = double.MinValue;
 
-        
+
         TimeSpan step = TimeSpan.FromMinutes(5);
         for (DateTime currentTime = sunset; currentTime <= sunrise; currentTime += step)
         {
@@ -100,11 +118,11 @@ public class DsoCalculator
             if (topo.altitude > maxAlt)
                 maxAlt = topo.altitude;
 
-            if (topo.altitude > 20) 
+            if (topo.altitude > 20)
                 visibleTime += step.TotalHours;
         }
 
-        
+
         double totalNight = (sunrise - sunset).TotalHours;
         dso.Visible = Math.Min((visibleTime / totalNight) * 100.0, 100.0);
         dso.MaxAlt = maxAlt;
@@ -115,7 +133,7 @@ public class DsoCalculator
     {
         var calculatedDsoObjects = _dsoObjects
             .Where(dso => dso.Mag != -9999) // Ignorowanie obiektów z nieznaną jasnością
-            .Select(dso => CalculateVisibilityAndAltitude(dso, dateUtc, astrotimes,lat,lon))
+            .Select(dso => CalculateVisibilityAndAltitude(dso, dateUtc, astrotimes, lat, lon))
             .ToList();
 
         return calculatedDsoObjects
