@@ -10,21 +10,22 @@
             x:Name="SelectedLabel"
             FontSize="16"
             HorizontalOptions="Center"
-            Text="Lista 20 obiektów DSO najlepiej dzisiaj widocznych"
+            Text="Lista 20 obiektów DSO najlepiej widocznych dzisiaj:"
             VerticalOptions="Center" />
 
         <CollectionView
             x:Name="DsoCollectionView"
             HorizontalOptions="FillAndExpand"
-            SelectionMode="None"
-            VerticalOptions="FillAndExpand">
+            SelectionMode="Single"
+            VerticalOptions="FillAndExpand"
+            SelectionChanged="DSOListView_ItemTapped">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <StackLayout Padding="10">
                         <Label
                             FontSize="16"
                             Text="{Binding Name}"
-                            TextColor="Black" />
+                            TextColor="White" />
                         <Label
                             FontSize="14"
                             Text="{Binding Description}"

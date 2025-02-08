@@ -90,7 +90,7 @@ namespace AstroWeather.Pages
             {
 
                 var targetItem = carousel[selectedIndex];
-                weatherCarousel.ScrollTo(targetItem, ScrollToPosition.Center, animate: false);
+                weatherCarousel.ScrollTo(targetItem, ScrollToPosition.Center, animate: true);
                 Task.Delay(10);
                 indicatorView.Position = selectedIndex;
             
