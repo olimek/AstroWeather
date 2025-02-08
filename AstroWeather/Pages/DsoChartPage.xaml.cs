@@ -25,7 +25,6 @@ namespace AstroWeather.Pages
             DsoDescriptionLabel.Text = selectedDso.Description;
             DsoconstellationLabel.Text = "Constellation: " + selectedDso.Constellation;
 
-            //DrawChart(selectedDso);
         }
 
         protected override void OnAppearing()

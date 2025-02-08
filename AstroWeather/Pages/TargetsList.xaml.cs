@@ -8,7 +8,7 @@ public partial class TargetsList : ContentPage
     public TargetsList()
     {
         InitializeComponent();
-        InitDsoAsync();
+        
     }
     protected override async void OnAppearing()
     {

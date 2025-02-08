@@ -60,17 +60,17 @@
                         <Label
                             x:Name="ActualTemp"
                             FontAttributes="Bold"
-                            FontSize="32"
+                            FontSize="16"
                             Text="Nie wiem co tu wstawić"
                             TextColor="{DynamicResource PrimaryTextColor}" />
                         <Label
                             x:Name="ActualHum"
-                            FontSize="18"
+                            FontSize="16"
                             Text="tu też nie"
                             TextColor="{DynamicResource SecondaryTextColor}" />
                         <Label
                             x:Name="Actualpress"
-                            FontSize="18"
+                            FontSize="16"
                             Text="w sumie nie mam pomysłu na tę sekcję, ale ikonka księżyca jest super"
                             TextColor="{DynamicResource SecondaryTextColor}" />
 
@@ -82,6 +82,7 @@
             <CollectionView
                 ItemsLayout="HorizontalList"
                 ItemsSource="{Binding weather}"
+                Scrolled="OnCollectionViewScrolled"
                 SelectionChanged="WeatherListView_ItemTapped"
                 SelectionMode="Single">
                 <CollectionView.ItemTemplate>
