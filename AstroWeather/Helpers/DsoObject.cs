@@ -87,12 +87,39 @@ public class DsoCalculator
         return sign * absDegrees; // Wynik w stopniach (-90 do 90)
     }
 
+    public static List<Tuple<float, float>> calculateDSOpath(DsoObject dso, DateTime dateUtc, List<DateTime> astrotimes, double lat, double lon)
+    {
+        List<Tuple<float, float>> trajectory = new List<Tuple<float, float>>();
+        double observerLatitude = lat;
+        double observerLongitude = lon;
+        Observer observer = new Observer(observerLatitude, observerLongitude, 100);
 
+        double raRad = ParseRA(dso.Ra);
+        double decRad = ParseDec(dso.Dec);
+
+        // Definiujemy unikalną gwiazdę dla tego obiektu
+        Astronomy.DefineStar(Body.Star1, raRad, decRad, 1000);
+
+        DateTime sunset = astrotimes[0];
+        DateTime sunrise = astrotimes[1];
+
+        TimeSpan step = TimeSpan.FromMinutes(20);
+        for (DateTime currentTime = sunset; currentTime <= sunrise; currentTime += step)
+        {
+            AstroTime astroCurrent = new AstroTime(currentTime);
+            Equatorial eq = Astronomy.Equator(Body.Star1, astroCurrent, observer, EquatorEpoch.OfDate, Aberration.Corrected);
+            Topocentric topo = Astronomy.Horizon(astroCurrent, observer, eq.ra, eq.dec, Refraction.Normal);
+
+            // Poprawiona kolejność: (azimuth, altitude)
+            trajectory.Add(new Tuple<float, float>(Convert.ToSingle(topo.azimuth), Convert.ToSingle(topo.altitude)));
+        }
+        return trajectory;
+    }
     public static DsoObject CalculateVisibilityAndAltitude(DsoObject dso, DateTime dateUtc, List<DateTime> astrotimes, double lat, double lon)
     {
 
-        double observerLatitude = 51.108;
-        double observerLongitude = 17.0385;
+        double observerLatitude = lat;
+        double observerLongitude = lon;
         Observer observer = new Observer(observerLatitude, observerLongitude, 100);
 
         double raRad = ParseRA(dso.Ra);

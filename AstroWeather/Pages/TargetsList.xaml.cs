@@ -45,4 +45,19 @@ public partial class TargetsList : ContentPage
         DsoCollectionView.ItemsSource = calculatedDSO;
     }
 
+    private async void DSOListView_ItemTapped(object sender, SelectionChangedEventArgs e)
+    {
+        if (e.CurrentSelection?.FirstOrDefault() is DsoObject selectedItem)
+        {
+            var parameters = new Dictionary<string, object>
+                {
+                    { "selectedDSO", selectedItem }
+                };
+
+            await Navigation.PushAsync(new DsoChartPage(selectedItem));
+        }
+
+            ((CollectionView)sender).SelectedItem = null;
+    }
+
 }

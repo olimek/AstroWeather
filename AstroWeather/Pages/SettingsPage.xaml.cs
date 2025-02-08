@@ -8,7 +8,7 @@ namespace AstroWeather.Pages
     public partial class SettingsPage : ContentPage
     {
         public ICommand TapCommand => new Command<string>(async (url) => await Launcher.OpenAsync(url));
-        private readonly LogFileGetSet _logFileGetSet = new LogFileGetSet(); // Create an instance of LogFileGetSet
+        private readonly LogFileGetSet _logFileGetSet = new LogFileGetSet(); 
 
         public SettingsPage()
         {

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="AstroWeather.Pages.DsoChartPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:skia="clr-namespace:SkiaSharp.Views.Maui.Controls;assembly=SkiaSharp.Views.Maui.Controls"
+    Title="DSO Chart">
+
+    <ContentPage.Content>
+        <VerticalStackLayout Padding="20">
+            <Label
+                x:Name="DsoNameLabel"
+                FontSize="Large"
+                HorizontalOptions="Center" />
+            <Label
+                x:Name="DsoDescriptionLabel"
+                FontSize="Medium"
+                HorizontalOptions="Center" />
+            <Grid
+                BackgroundColor="Red"
+                HeightRequest="400"
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill">
+                <skia:SKCanvasView x:Name="canvasView" PaintSurface="OnCanvasPaint" />
+            </Grid>
+            <Label
+                x:Name="DsoDetailsLabel"
+                FontSize="Medium"
+                HorizontalOptions="Center" />
+            <Label
+                x:Name="DsosizeLabel"
+                FontSize="Medium"
+                HorizontalOptions="Center" />
+            <Label
+                x:Name="DsotypeLabel"
+                FontSize="Medium"
+                HorizontalOptions="Center" />
+            <Label
+                x:Name="DsoconstellationLabel"
+                FontSize="Medium"
+                HorizontalOptions="Center" />
+        </VerticalStackLayout>
+    </ContentPage.Content>
+</ContentPage>

@@ -132,17 +132,17 @@
                                             HorizontalTextAlignment="Center"
                                             Text="Humidity" />
                                         <Label
-                                            Grid.Column="3"
+                                            Grid.Column="4"
                                             FontAttributes="Bold"
                                             FontSize="10"
                                             HorizontalTextAlignment="Center"
                                             Text="Cloud" />
                                         <Label
-                                            Grid.Column="4"
+                                            Grid.Column="3"
                                             FontAttributes="Bold"
                                             FontSize="10"
                                             HorizontalTextAlignment="Center"
-                                            Text="Dew" />
+                                            Text="Dew risk" />
                                         <Label
                                             Grid.Column="5"
                                             FontAttributes="Bold"
@@ -157,7 +157,7 @@
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="40" />
                                                 <ColumnDefinition Width="40" />
-                                                <ColumnDefinition Width="40" />
+                                                <ColumnDefinition Width="50" />
                                                 <ColumnDefinition Width="40" />
                                                 <ColumnDefinition Width="40" />
                                                 <ColumnDefinition Width="40" />
@@ -177,11 +177,11 @@
                                                 HorizontalTextAlignment="Center"
                                                 Text="{Binding humidity, StringFormat='{0}%'}" />
                                             <Label
-                                                Grid.Column="3"
+                                                Grid.Column="4"
                                                 HorizontalTextAlignment="Center"
                                                 Text="{Binding cloudcover, StringFormat='{0}%'}" />
                                             <Label
-                                                Grid.Column="4"
+                                                Grid.Column="3"
                                                 HorizontalTextAlignment="Center"
                                                 Text="{Binding riskOfDew, StringFormat='{0}%'}" />
                                             <Label
