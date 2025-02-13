@@ -25,7 +25,7 @@ namespace AstroWeather
         {
             base.OnAppearing();
             await RefreshWeatherIfNeeded();
-            drawMoonGraph(0);
+            await drawMoonGraph(0);
         }
 
         private async Task RefreshWeatherIfNeeded()
@@ -35,8 +35,12 @@ namespace AstroWeather
                 await MainInit();
             }
             else
-            {
-                BindingContext = new { weather = GlobalWeatherList };
+            {   if (GlobalWeatherList.Count <= 3) { await MainInit(); }
+                else
+                {
+                    BindingContext = new { weather = GlobalWeatherList };
+                }   
+                
             }
         }
         private void OnCollectionViewScrolled(object sender, ItemsViewScrolledEventArgs e)
@@ -45,26 +49,31 @@ namespace AstroWeather
             drawMoonGraph(firstVisibleIndex);
 
         }
-        private void drawMoonGraph(int firstVisibleIndex)
+        private async Task drawMoonGraph(int firstVisibleIndex)
         {
             DateTime parsedDate;
-            DateTime.TryParseExact(GlobalWeatherList[firstVisibleIndex].datetime, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out parsedDate);
-            
+            if (GlobalWeatherList.Count <= 3) {
+               
+                await Shell.Current.GoToAsync("//SettingsPage");
+               
+            }
+            else
+            {
+                DateTime.TryParseExact(GlobalWeatherList[firstVisibleIndex].datetime, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out parsedDate);
 
+                var time = new AstroTime(parsedDate);
+                double phase = Astronomy.MoonPhase(time);
 
-
-            var time = new AstroTime(parsedDate);
-            double phase = Astronomy.MoonPhase(time);
-
-            IllumInfo illum = Astronomy.Illumination(Body.Moon, time);
-            MoonImage.Source = WeatherRouter.GetMoonImage(Math.Round(100.0 * illum.phase_fraction), phase);
-            var moontimes = WeatherRouter.GetAstroTimes(parsedDate, true);
-            var moonSet = moontimes[4];
-            var moonrise = moontimes[5];
-            TimeSpan nightDuration = moontimes[3] - moontimes[2];
-            ActualTemp.Text = $"Data: {parsedDate.ToString("dd-MM")}, Długość nocy: {Math.Round(nightDuration.TotalHours, 1)}";
-            ActualHum.Text = $"Moonrise: {moonrise.ToString("HH:mm dd-MM")}, Moonset: {moonSet.ToString("HH:mm dd-MM")}";
-            Actualpress.Text = $"Moon illumination: {Math.Round(100.0 * illum.phase_fraction, 1)} %";
+                IllumInfo illum = Astronomy.Illumination(Body.Moon, time);
+                MoonImage.Source = WeatherRouter.GetMoonImage(Math.Round(100.0 * illum.phase_fraction), phase);
+                var moontimes = WeatherRouter.GetAstroTimes(parsedDate, true);
+                var moonSet = moontimes[4];
+                var moonrise = moontimes[5];
+                TimeSpan nightDuration = moontimes[3] - moontimes[2];
+                ActualTemp.Text = $"Data: {parsedDate.ToString("dd-MM")}, Długość nocy: {Math.Round(nightDuration.TotalHours, 1)}";
+                ActualHum.Text = $"Moonrise: {moonrise.ToString("HH:mm dd-MM")}, Moonset: {moonSet.ToString("HH:mm dd-MM")}";
+                Actualpress.Text = $"Moon illumination: {Math.Round(100.0 * illum.phase_fraction, 1)} %";
+            }
         }
         private async Task MainInit()
         {

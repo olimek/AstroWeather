@@ -10,15 +10,15 @@
             x:Name="SelectedLabel"
             FontSize="16"
             HorizontalOptions="Center"
-            Text="Lista 20 obiektów DSO najlepiej widocznych dzisiaj:"
+            Text="Top 200 obiektów DSO :"
             VerticalOptions="Center" />
 
         <CollectionView
             x:Name="DsoCollectionView"
             HorizontalOptions="FillAndExpand"
+            SelectionChanged="DSOListView_ItemTapped"
             SelectionMode="Single"
-            VerticalOptions="FillAndExpand"
-            SelectionChanged="DSOListView_ItemTapped">
+            VerticalOptions="FillAndExpand">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <StackLayout Padding="10">

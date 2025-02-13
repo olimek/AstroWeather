@@ -5,8 +5,6 @@ using System.Xml.Linq;
 using SkiaSharp.Views.Maui;
 using System.Diagnostics;
 
-
-
 namespace AstroWeather.Pages
 {
     public partial class DsoChartPage : ContentPage
@@ -17,26 +15,22 @@ namespace AstroWeather.Pages
             InitializeComponent();
             _selectedDSO = selectedDso;
 
-           
             DsoNameLabel.Text = selectedDso.Name;
             DsoDetailsLabel.Text = $"Magnitude: {selectedDso.Mag}, Max Altitude: {Math.Round(selectedDso.MaxAlt)}°";
             DsosizeLabel.Text = "Size: " + selectedDso.Size.ToString() + "'";
             DsotypeLabel.Text = "Type: " + selectedDso.Type;
             DsoDescriptionLabel.Text = selectedDso.Description;
             DsoconstellationLabel.Text = "Constellation: " + selectedDso.Constellation;
-
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            
-            canvasView.InvalidateSurface(); 
+            canvasView.InvalidateSurface();
         }
+
         private void OnCanvasPaint(object sender, SKPaintSurfaceEventArgs e)
         {
-            
-
             var canvas = e.Surface.Canvas;
             var info = e.Info;
             canvas.Clear(SKColors.Black);
@@ -51,11 +45,12 @@ namespace AstroWeather.Pages
             float centerX = info.Width / 2;
             float centerY = info.Height / 2;
             float scale = Math.Min(info.Width, info.Height) / 2.2f;
- 
-            DrawAzimuthalGrid(canvas, centerX, centerY, scale);
 
+            DrawAzimuthalGrid(canvas, centerX, centerY, scale);
+            DrawPolaris(canvas, centerX, centerY, scale);
             DrawDsoTrajectory(canvas, centerX, centerY, scale);
         }
+
         private void DrawAzimuthalGrid(SKCanvas canvas, float cx, float cy, float scale)
         {
             var gridPaint = new SKPaint
@@ -67,7 +62,7 @@ namespace AstroWeather.Pages
             };
             float radius = (70 / 90f) * scale;
             canvas.DrawCircle(cx, cy, radius, gridPaint);
-            
+
             for (int alt = 30; alt <= 90; alt += 30)
             {
                 radius = (alt / 90f) * scale;
@@ -78,12 +73,11 @@ namespace AstroWeather.Pages
             {
                 float angleRad = MathF.PI * az / 180f;
                 float x = cx + MathF.Cos(angleRad) * scale;
-                float y = cy + MathF.Sin(angleRad) * scale;  
+                float y = cy + MathF.Sin(angleRad) * scale;
 
                 canvas.DrawLine(cx, cy, x, y, gridPaint);
             }
 
-            
             var textPaint = new SKPaint
             {
                 Color = SKColors.Gray,
@@ -93,67 +87,76 @@ namespace AstroWeather.Pages
             };
 
             canvas.DrawText("N", cx, cy - scale - 5, textPaint);
-            canvas.DrawText("S", cx, cy + scale + 20, textPaint); 
-            canvas.DrawText("E", cx + scale + 20, cy + 5, textPaint); 
-            canvas.DrawText("W", cx - scale - 20, cy + 5, textPaint); 
+            canvas.DrawText("S", cx, cy + scale + 20, textPaint);
+            canvas.DrawText("E", cx + scale + 20, cy + 5, textPaint);
+            canvas.DrawText("W", cx - scale - 20, cy + 5, textPaint);
 
-            
-            textPaint.TextSize = 12; 
+            textPaint.TextSize = 12;
             for (int alt = 30; alt <= 90; alt += 30)
             {
                 radius = (alt / 90f) * scale;
                 canvas.DrawText($"{90 - alt}°", cx - 15, cy - radius, textPaint);
             }
         }
+        private void DrawPolaris(SKCanvas canvas, float cx, float cy, float scale)
+        {
+            var polarisPaint = new SKPaint
+            {
+                Color = SKColors.Yellow,
+                IsAntialias = true,
+                Style = SKPaintStyle.Fill
+            };
+
+            double lat = Helpers.WeatherRouter.lat;
+            float azPolaris = 0f;
+            float altPolaris = Convert.ToSingle(lat);
+
+            float angleRad = MathF.PI * (azPolaris - 90) / 180f;
+            float radius = (1 - (altPolaris / 90f)) * scale;
+
+            float x = cx + MathF.Cos(angleRad) * radius;
+            var y = cy + MathF.Sin(angleRad) * radius;
+            canvas.DrawCircle(x, y, 5, polarisPaint);
+
+            var textPaint = new SKPaint
+            {
+                Color = SKColors.Yellow,
+                TextSize = 20,
+                IsAntialias = true,
+                TextAlign = SKTextAlign.Center
+            };
+            canvas.DrawText("Polaris", x, y - 10, textPaint);
+        }
 
         private void DrawDsoTrajectory(SKCanvas canvas, float cx, float cy, float scale)
         {
             var trajectoryPaint = new SKPaint
             {
-                Color = SKColors.White,
+                Color = SKColors.Red,
                 IsAntialias = true,
                 Style = SKPaintStyle.Fill
             };
 
             DateTime now = DateTime.UtcNow;
-            var astroTimes = Helpers.WeatherRouter.GetAstroTimes(now, true);
+            var astroTimes = Helpers.WeatherRouter.GetAstroTimes(now, false);
             var lat = Helpers.WeatherRouter.lat;
             var lon = Helpers.WeatherRouter.lon;
 
-            
             List<Tuple<float, float>> trajectory = DsoCalculator.calculateDSOpath(
                 _selectedDSO, DateTime.UtcNow, astroTimes, lat, lon
             );
-
-            float angleRad = MathF.PI * (0 - 90) / 180f;
-            float radius = (1 - (52 / 90f)) * scale;
-
-            float x = cx + MathF.Cos(angleRad) * radius;
-            float y = cy + MathF.Sin(angleRad) * radius;
-
-            canvas.DrawCircle(x, y, 3, trajectoryPaint);
-
-            trajectoryPaint = new SKPaint
-            {
-                Color = SKColors.Red,
-                IsAntialias = true,
-                Style = SKPaintStyle.Fill
-            };
+            trajectory = trajectory.OrderBy(t => t.Item1).ToList();
             foreach (var (az, alt) in trajectory)
             {
-                 angleRad = MathF.PI * (az-90) / 180f;
+                
+                var angleRad = MathF.PI * (az-90) / 180f;
+                var alt1 = Math.Clamp(alt, 0, 90);
+                var radius = (1 - (alt1 / 90f)) * scale;
 
-                 radius = (1 - (alt / 90f)) * scale;
-
-                 x = cx + MathF.Cos(angleRad) * radius;
-                 y = cy + MathF.Sin(angleRad) * radius;
-
-                canvas.DrawCircle(x, y, 2, trajectoryPaint);
+                var x = cx + MathF.Cos(angleRad) * radius;
+                var y = cy + MathF.Sin(angleRad) * radius;
+                canvas.DrawCircle(x, y, 3, trajectoryPaint);
             }
         }
-
-
-
-
     }
 }
