@@ -99,7 +99,10 @@ public class DsoCalculator
 
         DateTime sunset = astrotimes[0];
         DateTime sunrise = astrotimes[1];
-
+        if ((sunrise - sunset).TotalDays < 0)
+            sunrise = sunrise.AddDays(1);
+        if ((sunrise - sunset).TotalDays > 1)
+            sunrise = sunrise.AddDays(-1);
         TimeSpan step = TimeSpan.FromMinutes(20);
         for (DateTime currentTime = sunset; currentTime <= sunrise; currentTime += step)
         {
@@ -133,7 +136,8 @@ public class DsoCalculator
 
         DateTime sunset = astrotimes[0];
         DateTime sunrise = astrotimes[1];
-
+        if ((sunrise - sunset).TotalDays > 1)
+            sunrise = sunrise.AddDays(-1);
         double visibleTime = 0;
         double maxAlt = double.MinValue;
         dso.Ealt = 0;
