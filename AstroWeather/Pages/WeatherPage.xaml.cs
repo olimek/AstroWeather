@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace AstroWeather.Pages
 {
-    
+
     [QueryProperty(nameof(SelectedDay), "selectedDay")]
     public partial class WeatherPage : ContentPage
     {
-        private static List<DayWithHours>? carouselDATA = new List<DayWithHours>();
+        private static List<DayWithHours>? carouselDATA = new();
         private static DateTime LastcarouselUpdateTime = DateTime.MinValue;
         private AstroWeather.Helpers.Day _selectedDay;
         public AstroWeather.Helpers.Day SelectedDay
@@ -29,8 +29,8 @@ namespace AstroWeather.Pages
         public WeatherPage()
         {
             InitializeComponent();
-            //LoadWeatherData();
         }
+
         protected override async void OnAppearing()
         {
             base.OnAppearing();
@@ -39,7 +39,7 @@ namespace AstroWeather.Pages
 
         private async Task RefrescarouselIfNeeded()
         {
-            if ((DateTime.Now - LastcarouselUpdateTime).TotalHours >= 1)
+            if ((DateTime.UtcNow - LastcarouselUpdateTime).TotalHours >= 1)
             {
                 await LoadWeatherData();
             }
@@ -48,55 +48,50 @@ namespace AstroWeather.Pages
                 BindingContext = new { weather = carouselDATA };
             }
         }
+
         private async Task LoadWeatherData()
         {
-            
             var carousel = await Helpers.WeatherRouter.GetCarouselViewAsync();
-            carouselDATA = carousel.ToList();
-            weatherCarousel.ItemsSource = carousel;
+
+            carouselDATA = carousel?.ToList() ?? new List<DayWithHours>();
+
+            weatherCarousel.ItemsSource = carouselDATA;
 
             int selectedIndex = 0;
             DateTime targetDate;
             if (!DateTime.TryParse(SelectedDay?.datetime, out targetDate))
             {
-                // Jeśli parsowanie się nie uda, przyjmujemy aktualną datę.
-                targetDate = DateTime.Now;
+                targetDate = DateTime.UtcNow;
                 selectedIndex = 0;
             }
-            else
+
+            selectedIndex = 0;
+            TimeSpan minDelta = TimeSpan.MaxValue;
+
+            for (int i = 0; i < carouselDATA.Count; i++)
             {
-                selectedIndex = 0;
-                TimeSpan minDelta = TimeSpan.MaxValue;
-
-                // Zakładamy, że elementy carouselu to obiekty typu Day i mają właściwość "datetime" (string).
-                for (int i = 0; i < carousel.Count; i++)
+                DateTime itemDate;
+                if (DateTime.TryParseExact(carouselDATA[i].Date, "dd.MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out itemDate))
                 {
-                    DateTime itemDate;
-                    if (DateTime.TryParseExact(carousel[i].Date, "dd.MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out itemDate))
-                    {
-                        // Obliczamy wartość bezwzględną różnicy między datami.
-                        TimeSpan delta = (itemDate - targetDate).Duration();
+                    TimeSpan delta = (itemDate - targetDate).Duration();
 
-                        if (delta < minDelta)
-                        {
-                            minDelta = delta;
-                            selectedIndex = i;
-                        }
+                    if (delta < minDelta)
+                    {
+                        minDelta = delta;
+                        selectedIndex = i;
                     }
                 }
+
             }
             await Task.Delay(100);
             weatherCarousel.Loaded += (s, e) =>
             {
-
-                var targetItem = carousel[selectedIndex];
-                weatherCarousel.ScrollTo(targetItem, ScrollToPosition.Center, animate: true);
+                var targetItem = carouselDATA[selectedIndex];
+                weatherCarousel.ScrollTo(targetItem, ScrollToPosition.Center, animate: false);
                 Task.Delay(10);
                 indicatorView.Position = selectedIndex;
-            
             };
-            Debug.WriteLine($"Wybrano indeks: {selectedIndex}, data: {carousel[selectedIndex].Date}");
+            
         }
-
     }
 }

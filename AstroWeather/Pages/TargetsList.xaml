@@ -3,56 +3,118 @@
     x:Class="AstroWeather.Pages.TargetsList"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="TargetsList"
+    Title="Targets List"
     BackgroundColor="{StaticResource BackgroundColor}">
-    <StackLayout Padding="10">
-        <Label
-            x:Name="SelectedLabel"
-            FontSize="16"
-            HorizontalOptions="Center"
-            Text="Top 200 obiektów DSO :"
-            VerticalOptions="Center" />
 
-        <CollectionView
-            x:Name="DsoCollectionView"
-            HorizontalOptions="FillAndExpand"
-            SelectionChanged="DSOListView_ItemTapped"
-            SelectionMode="Single"
-            VerticalOptions="FillAndExpand">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <StackLayout Padding="10">
-                        <Label
-                            FontSize="16"
-                            Text="{Binding Name}"
-                            TextColor="White" />
-                        <Label
-                            FontSize="14"
-                            Text="{Binding Description}"
-                            TextColor="Gray" />
-                        <Label
-                            FontSize="14"
-                            Text="{Binding Constellation}"
-                            TextColor="Gray" />
-                        <Label
-                            FontSize="14"
-                            Text="{Binding Type}"
-                            TextColor="Gray" />
-                        <Label
-                            FontSize="14"
-                            Text="{Binding Mag}"
-                            TextColor="Gray" />
-                        <Label
-                            FontSize="14"
-                            Text="{Binding Visible, StringFormat='Widoczność: {0:F2}%'}"
-                            TextColor="Gray" />
-                        <Label
-                            FontSize="14"
-                            Text="{Binding MaxAlt, StringFormat='Maksymalna wysokość: {0:F2}°'}"
-                            TextColor="Gray" />
-                    </StackLayout>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-    </StackLayout>
+    <Grid>
+        <!--  Główna zawartość strony  -->
+        <ScrollView>
+            <StackLayout Padding="10">
+                <Button
+                    x:Name="FilterButton"
+                    Clicked="OnComputeClicked2"
+                    Text="Filters"
+                    WidthRequest="200">
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroupList>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal">
+                                    <VisualState.Setters>
+                                        <Setter Property="Scale" Value="1" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <VisualState.Setters>
+                                        <Setter Property="Scale" Value="0.95" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="PointerOver" />
+                            </VisualStateGroup>
+                        </VisualStateGroupList>
+                    </VisualStateManager.VisualStateGroups>
+                </Button>
+
+                <Label
+                    x:Name="SelectedLabel"
+                    FontSize="16"
+                    HorizontalOptions="Center"
+                    Text="Top 200 obiektów DSO:"
+                    VerticalOptions="Center" />
+
+                <CollectionView
+                    x:Name="DsoCollectionView"
+                    HorizontalOptions="FillAndExpand"
+                    SelectionChanged="DSOListView_ItemTapped"
+                    SelectionMode="Single"
+                    VerticalOptions="FillAndExpand">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <StackLayout Padding="10">
+                                <Label
+                                    FontSize="16"
+                                    Text="{Binding Name}"
+                                    TextColor="White" />
+                                <Label
+                                    FontSize="14"
+                                    Text="{Binding Description}"
+                                    TextColor="Gray" />
+                                <Label
+                                    FontSize="14"
+                                    Text="{Binding Constellation}"
+                                    TextColor="Gray" />
+                                <Label
+                                    FontSize="14"
+                                    Text="{Binding Type}"
+                                    TextColor="Gray" />
+                                <Label
+                                    FontSize="14"
+                                    Text="{Binding Mag}"
+                                    TextColor="Gray" />
+                                <Label
+                                    FontSize="14"
+                                    Text="{Binding Visible, StringFormat='Widoczność: {0:F2}%'}"
+                                    TextColor="Gray" />
+                                <Label
+                                    FontSize="14"
+                                    Text="{Binding MaxAlt, StringFormat='Maksymalna wysokość: {0:F2}°'}"
+                                    TextColor="Gray" />
+                            </StackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </StackLayout>
+        </ScrollView>
+
+        <!--  Popup View (nakładka na Grid)  -->
+        <ContentView
+            x:Name="PopupView"
+            Grid.RowSpan="2"
+            BackgroundColor="Black"
+            IsVisible="False"
+            Opacity="0">
+            <Border
+                Padding="20"
+                BackgroundColor="White"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+                <VerticalStackLayout Spacing="20">
+
+
+                    <Entry
+                        x:Name="MinSize"
+                        Placeholder="MinSize '"
+                        TextColor="Black"
+                        WidthRequest="200" />
+                    <Entry
+                        x:Name="MaxSize"
+                        Placeholder="MaxSize '"
+                        TextColor="Black"
+                        WidthRequest="200" />
+                    <Button Clicked="ClearPhotographed" Text="Clear Photographed" />
+                    <Button Clicked="OnClosePopupClicked" Text="Close" />
+
+                </VerticalStackLayout>
+            </Border>
+        </ContentView>
+    </Grid>
 </ContentPage>

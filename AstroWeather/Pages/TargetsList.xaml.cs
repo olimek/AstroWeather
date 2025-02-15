@@ -1,10 +1,14 @@
 ﻿using System.Diagnostics;
+using System.Security.Cryptography;
 using AstroWeather.Helpers;
+using Microsoft.Maui.Storage;
 
 namespace AstroWeather.Pages;
 
 public partial class TargetsList : ContentPage
 {
+    double minsize = 0;
+    double maxsize = 9999;
     public TargetsList()
     {
         InitializeComponent();
@@ -25,11 +29,39 @@ public partial class TargetsList : ContentPage
         var lat = WeatherRouter.lat;
         var lon = WeatherRouter.lon;
 
-        List<DsoObject> calculatedDSO = dsoCalculator.GetTopVisibleObjects(now, astroTimes, 20, lat, lon);
+        List<DsoObject> calculatedDSO = dsoCalculator.GetTopVisibleObjects(now, astroTimes, lat, lon);
 
-        DsoCollectionView.ItemsSource = calculatedDSO;
+        DsoCollectionView.ItemsSource = calculatedDSO.Where(dso => dso.Size >= minsize && dso.Size <= maxsize);
+    }
+    private async void OnComputeClicked2(object sender, EventArgs e)
+    {
+        PopupView.IsVisible = true;
+        await PopupView.FadeTo(1, 250, Easing.CubicInOut);
     }
 
+    private async void OnClosePopupClicked(object sender, EventArgs e)
+    {
+        minsize = Convert.ToDouble( MinSize.Text);
+        maxsize = Convert.ToDouble(MaxSize.Text);
+        await InitDsoAsync();
+        await PopupView.FadeTo(0, 250, Easing.CubicInOut);
+        PopupView.IsVisible = false;
+    }
+
+    private async void ClearPhotographed(object sender, EventArgs e)
+    {
+        
+        await DsoCalculator.UpdateYamlFileAsync("GaryImm.yaml", dsoList =>
+        {
+            foreach (var dso in dsoList)
+            {
+                dso.photo = false;
+            }
+        });
+        await InitDsoAsync();
+        await PopupView.FadeTo(0, 250, Easing.CubicInOut);
+        PopupView.IsVisible = false;
+    }
     private async void DSOListView_ItemTapped(object sender, SelectionChangedEventArgs e)
     {
         if (e.CurrentSelection?.FirstOrDefault() is DsoObject selectedItem)

@@ -34,7 +34,7 @@ namespace AstroWeather.Helpers
                 string latStr = lat.ToString(CultureInfo.InvariantCulture);
                 string lonStr = lon.ToString(CultureInfo.InvariantCulture);
 
-                string jsonResponse = await ReadResponseFromUrlAsync($"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{latStr}%2C{lonStr}?unitGroup=metric&elements=datetime%2CdatetimeEpoch%2Ctemp%2Cdew%2Chumidity%2Cprecip%2Cprecipprob%2Cwindspeed%2Cpressure%2Ccloudcover%2Cvisibility&include=days%2Chours%2Cfcst%2Cobs&key={apiKey}&contentType=json");
+                string jsonResponse = await WeatherRouter.ReadResponseFromUrlAsync($"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{latStr}%2C{lonStr}?unitGroup=metric&elements=datetime%2CdatetimeEpoch%2Ctemp%2Cdew%2Chumidity%2Cprecip%2Cprecipprob%2Cwindspeed%2Cpressure%2Ccloudcover%2Cvisibility&include=days%2Chours%2Cfcst%2Cobs&key={apiKey}&contentType=json");
                 jsonResponse = jsonResponse.Replace("null", "0");
 
                 weatherData = JsonSerializer.Deserialize<WeatherAPI>(jsonResponse);
@@ -84,6 +84,7 @@ namespace AstroWeather.Helpers
                     IllumInfo illum = Astronomy.Illumination(Body.Moon, time);
                     var astroTimes = GetAstroTimes(currentdate, true);
 
+                    
                     var day = new DayWithHours
                     {
                         moonrise = astroTimes[5].ToString("dd.MM HH:mm"),
@@ -93,7 +94,7 @@ namespace AstroWeather.Helpers
                         astrostart = astroTimes[2].ToString("dd.MM HH:mm"),
                         astroend = astroTimes[3].ToString("dd.MM HH:mm"),
                         moonilum = Math.Round(100.0 * illum.phase_fraction).ToString(),
-                        condition = dailyData[i].astrocond.ToString(),
+                        condition = dailyData[i].astrocond?.ToString() ?? "0",
                         DayOfWeek = GetPolishDayOfWeek(currentdate),
                         Date = currentdate.ToString("dd.MM"),
                         Hours = ss[i]
@@ -307,14 +308,14 @@ namespace AstroWeather.Helpers
 
             if (precipitationProbability < 50)
             {
-                if (precipitation == 0 && riskOfDew == 0)
+                if (precipitation <= 0 && riskOfDew <= 0)
                 {
                     if (cloudCover < 10)
                     {
                         astroNight = 10;
                     }
                 }
-                else if (precipitation == 0 && riskOfDew < 20)
+                else if (precipitation <= 0 && riskOfDew < 20)
                 {
                     if (cloudCover < 10)
                     {
@@ -378,7 +379,7 @@ namespace AstroWeather.Helpers
         public async Task<List<Day>> GetCalculatedDailyAsync(List<List<Hour>> inputList)
         {
             var dailyOut = new List<Day>();
-            var astronight = CalculateAstroNight(inputList);
+            CalculateAstroNight(inputList);
             var weatherDataDays = weatherData?.days ?? new List<Day>();
             int i = 0;
 
@@ -400,7 +401,7 @@ namespace AstroWeather.Helpers
                 double score = 0;
                 foreach (var hour in result)
                 {
-                    numberOfNights = result.Count() * 10;
+                    numberOfNights = result.Count * 10;
                     score += Convert.ToDouble(hour.astroConditions);
                 }
 
@@ -420,7 +421,7 @@ namespace AstroWeather.Helpers
                 double score = 0;
                 foreach (var hour in result)
                 {
-                    numberOfNights = result.Count() * 10;
+                    numberOfNights = result.Count * 10;
                     score += Convert.ToDouble(hour.astroConditions);
                 }
                 var score1 = score / numberOfNights * 100;
@@ -432,12 +433,12 @@ namespace AstroWeather.Helpers
 
         public async Task<List<List<Hour>>> GetWeatherInfoAsync()
         {
-            var weatherData = await GetWeatherDataAsync();
+            var weatherDataa = await GetWeatherDataAsync();
             var listOfHoursPerDay = new List<List<Hour>>();
 
-            if (weatherData != null)
+            if (weatherDataa != null)
             {
-                listOfHoursPerDay = weatherData.days
+                listOfHoursPerDay = weatherDataa.days
                     .Select(day =>
                     {
                         var dayDate = DateTime.ParseExact(day.datetime, "yyyy-MM-dd", CultureInfo.InvariantCulture);
@@ -457,7 +458,7 @@ namespace AstroWeather.Helpers
             return listOfHoursPerDay;
         }
         
-        private async Task<string> ReadResponseFromUrlAsync(string url)
+        private static async Task<string> ReadResponseFromUrlAsync(string url)
         {
             using (var httpClient = new HttpClient())
             {

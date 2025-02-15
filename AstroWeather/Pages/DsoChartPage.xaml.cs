@@ -28,22 +28,27 @@ namespace AstroWeather.Pages
             base.OnAppearing();
             canvasView.InvalidateSurface();
         }
-
+        private async void OnComputeClicked(object sender, EventArgs e)
+        {
+            
+            await DsoCalculator.UpdateYamlFileAsync("GaryImm.yaml", dsoList =>
+            {
+                var dsoToUpdate = dsoList.FirstOrDefault(d => d.Name == _selectedDSO.Name);
+                if (dsoToUpdate != null)
+                {
+                    dsoToUpdate.photo = true;
+                }
+            });
+        }
         private void OnCanvasPaint(object sender, SKPaintSurfaceEventArgs e)
         {
             var canvas = e.Surface.Canvas;
             var info = e.Info;
             canvas.Clear(SKColors.Black);
 
-            var paint = new SKPaint
-            {
-                Color = SKColors.Red,
-                IsAntialias = true,
-                Style = SKPaintStyle.Fill
-            };
 
-            float centerX = info.Width / 2;
-            float centerY = info.Height / 2;
+            float centerX = Convert.ToSingle( info.Width / 2);
+            float centerY = Convert.ToSingle(info.Height / 2);
             float scale = Math.Min(info.Width, info.Height) / 2.2f;
 
             DrawAzimuthalGrid(canvas, centerX, centerY, scale);

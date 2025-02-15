@@ -12,9 +12,8 @@ namespace AstroWeather
         public App()
         {
             InitializeComponent();
-            RequestStoragePermissionAsync();
+            Task<bool> task = RequestStoragePermissionAsync();
             MainPage = new AppShell();
-            
         }
 
         protected override Window CreateWindow(IActivationState? activationState)
@@ -22,8 +21,8 @@ namespace AstroWeather
             Window window = base.CreateWindow(activationState);
             window.Activated += Window_Activated;
             return window;
-            //return new Window(new AppShell());
         }
+
         public async Task<bool> RequestStoragePermissionAsync()
         {
             var status = await Permissions.CheckStatusAsync<Permissions.StorageWrite>();
@@ -33,26 +32,28 @@ namespace AstroWeather
             }
             return status == PermissionStatus.Granted;
         }
-        private async void Window_Activated(object sender, EventArgs e)
+
+        private async void Window_Activated(object? sender, EventArgs e)
         {
 #if WINDOWS
-            const int DefaultWidth = 600;
-            const int DefaultHeight = 800;
+                const int DefaultWidth = 600;
+                const int DefaultHeight = 800;
 
-            var window = sender as Window;
+                if (sender is Window window)
+                {
+                    // change window size.
+                    window.Width = DefaultWidth;
+                    window.Height = DefaultHeight;
 
-            // change window size.
-            window.Width = DefaultWidth;
-            window.Height = DefaultHeight;
+                    // give it some time to complete window resizing task.
+                    await Task.Run(() => window.Dispatcher.Dispatch(() => { }));
 
-            // give it some time to complete window resizing task.
-            await window.Dispatcher.DispatchAsync(() => { });
+                    var disp = DeviceDisplay.Current.MainDisplayInfo;
 
-            var disp = DeviceDisplay.Current.MainDisplayInfo;
-
-            // move to screen center
-            window.X = (disp.Width / disp.Density - window.Width) / 2;
-            window.Y = (disp.Height / disp.Density - window.Height) / 2;
+                    // move to screen center
+                    window.X = (disp.Width / disp.Density - window.Width) / 2;
+                    window.Y = (disp.Height / disp.Density - window.Height) / 2;
+                }
 #endif
         }
     }
