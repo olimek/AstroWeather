@@ -80,6 +80,7 @@
 
             <!--  Prognoza na kolejne godziny  -->
             <CollectionView
+               
                 ItemsLayout="HorizontalList"
                 ItemsSource="{Binding weather}"
                 Scrolled="OnCollectionViewScrolled"

@@ -19,7 +19,7 @@
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-
+		<NoWarn>$(NoWarn);XC0022</NoWarn>
 		<!-- Display name -->
 		<ApplicationTitle>AstroWeather</ApplicationTitle>
 
@@ -79,12 +79,12 @@
 		<PackageReference Include="BenMakesGames.MoonMath" Version="1.0.0" />
 		<PackageReference Include="CosineKitty.AstronomyEngine" Version="2.1.19" />
 		<PackageReference Include="Microcharts.Maui" Version="1.0.0" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.30" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.1" />
-		<PackageReference Include="Microsoft.Maui.Controls.Core" Version="9.0.30" />
-		<PackageReference Include="Microsoft.Maui.Controls.Xaml" Version="9.0.30" />
-		<PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.30" />
-		<PackageReference Include="SkiaSharp" Version="2.88.3" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.40" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.2" />
+		<PackageReference Include="Microsoft.Maui.Controls.Core" Version="9.0.40" />
+		<PackageReference Include="Microsoft.Maui.Controls.Xaml" Version="9.0.40" />
+		<PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.40" />
+		<PackageReference Include="SkiaSharp" Version="3.116.1" />
 		<PackageReference Include="SolarCalculator" Version="3.5.0" />
 		<PackageReference Include="SolCalc" Version="1.0.0" />
 		<PackageReference Include="YamlDotNet" Version="16.3.0" />

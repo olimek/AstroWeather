@@ -11,7 +11,7 @@ namespace AstroWeather
 {
     public partial class MainPage : ContentPage
     {
-        public static List<AstroWeather.Helpers.Day> GlobalWeatherList = new();
+        public static List<AstroWeather.Helpers.Day> GlobalWeatherList = [];
         private static DateTime LastWeatherUpdateTime = DateTime.MinValue;
         
 
@@ -25,7 +25,7 @@ namespace AstroWeather
         {
             base.OnAppearing();
             await RefreshWeatherIfNeeded();
-            await drawMoonGraph(0);
+            await DrawMoonGraph(0);
         }
 
         private async Task RefreshWeatherIfNeeded()
@@ -46,20 +46,20 @@ namespace AstroWeather
         private void OnCollectionViewScrolled(object sender, ItemsViewScrolledEventArgs e)
         {
             int firstVisibleIndex = e.FirstVisibleItemIndex;
-            _ = drawMoonGraph(firstVisibleIndex);
+            _ = DrawMoonGraph(firstVisibleIndex);
 
         }
-        private async Task drawMoonGraph(int firstVisibleIndex)
+        private async Task DrawMoonGraph(int firstVisibleIndex)
         {
-            DateTime parsedDate;
-            if (GlobalWeatherList.Count <= 3) {
-               
+            if (GlobalWeatherList.Count <= 3)
+            {
+
                 await Shell.Current.GoToAsync("//SettingsPage");
-               
+
             }
             else
             {
-                DateTime.TryParseExact(GlobalWeatherList[firstVisibleIndex].datetime, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out parsedDate);
+                DateTime.TryParseExact(GlobalWeatherList[firstVisibleIndex].datetime, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime parsedDate);
 
                 var time = new AstroTime(parsedDate);
                 double phase = Astronomy.MoonPhase(time);
@@ -70,8 +70,8 @@ namespace AstroWeather
                 var moonSet = moontimes[4];
                 var moonrise = moontimes[5];
                 TimeSpan nightDuration = moontimes[3] - moontimes[2];
-                ActualTemp.Text = $"Data: {parsedDate.ToString("dd-MM")}, Długość nocy: {Math.Round(nightDuration.TotalHours, 1)}";
-                ActualHum.Text = $"Moonrise: {moonrise.ToString("HH:mm dd-MM")}, Moonset: {moonSet.ToString("HH:mm dd-MM")}";
+                ActualTemp.Text = $"Data: {parsedDate:dd-MM}, Długość nocy: {Math.Round(nightDuration.TotalHours, 1)}";
+                ActualHum.Text = $"Moonrise: {moonrise:HH:mm dd-MM}, Moonset: {moonSet:HH:mm dd-MM}";
                 Actualpress.Text = $"Moon illumination: {Math.Round(100.0 * illum.phase_fraction, 1)} %";
             }
         }
@@ -106,7 +106,7 @@ namespace AstroWeather
 
         private static async void WeatherListView_ItemTapped(object sender, SelectionChangedEventArgs e)
         {
-            if (e.CurrentSelection?.FirstOrDefault() is AstroWeather.Helpers.Day selectedItem)
+            if (e.CurrentSelection?[0] is AstroWeather.Helpers.Day selectedItem)
             {
                 var parameters = new Dictionary<string, object>
                 {

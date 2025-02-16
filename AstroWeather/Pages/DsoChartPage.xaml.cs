@@ -58,6 +58,7 @@ namespace AstroWeather.Pages
 
         private void DrawAzimuthalGrid(SKCanvas canvas, float cx, float cy, float scale)
         {
+            // Grid Paint for circles and lines
             var gridPaint = new SKPaint
             {
                 Color = SKColors.Gray,
@@ -65,42 +66,54 @@ namespace AstroWeather.Pages
                 IsAntialias = true,
                 Style = SKPaintStyle.Stroke
             };
+
+            // Draw outer circle
             float radius = (70 / 90f) * scale;
             canvas.DrawCircle(cx, cy, radius, gridPaint);
 
+            // Draw altitude circles
             for (int alt = 30; alt <= 90; alt += 30)
             {
                 radius = (alt / 90f) * scale;
                 canvas.DrawCircle(cx, cy, radius, gridPaint);
             }
 
+            // Draw azimuth lines
             for (int az = 0; az < 360; az += 45)
             {
                 float angleRad = MathF.PI * az / 180f;
                 float x = cx + MathF.Cos(angleRad) * scale;
                 float y = cy + MathF.Sin(angleRad) * scale;
-
                 canvas.DrawLine(cx, cy, x, y, gridPaint);
             }
 
+            // Text Paint for labels
             var textPaint = new SKPaint
             {
                 Color = SKColors.Gray,
-                TextSize = 20,
-                IsAntialias = true,
-                TextAlign = SKTextAlign.Center
+                IsAntialias = true
             };
 
-            canvas.DrawText("N", cx, cy - scale - 5, textPaint);
-            canvas.DrawText("S", cx, cy + scale + 20, textPaint);
-            canvas.DrawText("E", cx + scale + 20, cy + 5, textPaint);
-            canvas.DrawText("W", cx - scale - 20, cy + 5, textPaint);
+            // Use SKFont for text rendering
+            var font = new SKFont
+            {
+                Size = 20 // Set initial font size
+            };
 
-            textPaint.TextSize = 12;
+            // Draw cardinal directions
+            canvas.DrawText("N", cx, cy - scale - 5, font, textPaint);
+            canvas.DrawText("S", cx, cy + scale + 20, font, textPaint);
+            canvas.DrawText("E", cx + scale + 20, cy + 5, font, textPaint);
+            canvas.DrawText("W", cx - scale - 20, cy + 5, font, textPaint);
+
+            // Adjust font size for altitude labels
+            font.Size = 12;
+
+            // Draw altitude labels
             for (int alt = 30; alt <= 90; alt += 30)
             {
                 radius = (alt / 90f) * scale;
-                canvas.DrawText($"{90 - alt}°", cx - 15, cy - radius, textPaint);
+                canvas.DrawText($"{90 - alt}°", cx - 15, cy - radius, font, textPaint);
             }
         }
         private void DrawPolaris(SKCanvas canvas, float cx, float cy, float scale)
@@ -126,11 +139,15 @@ namespace AstroWeather.Pages
             var textPaint = new SKPaint
             {
                 Color = SKColors.Yellow,
-                TextSize = 20,
+                
                 IsAntialias = true,
-                TextAlign = SKTextAlign.Center
+                
             };
-            canvas.DrawText("Polaris", x, y - 10, textPaint);
+            var font = new SKFont
+            {
+                Size = 20 
+            };
+            canvas.DrawText("Polaris", x, y - 10, font, textPaint);
         }
 
         private void DrawDsoTrajectory(SKCanvas canvas, float cx, float cy, float scale)

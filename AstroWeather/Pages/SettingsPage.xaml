@@ -26,15 +26,12 @@
                             TextDecorations="Underline">
                             <Span.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding TapCommand}" CommandParameter="https://www.visualcrossing.com/weather-api" />
-
                             </Span.GestureRecognizers>
-
                         </Span>
-
                     </FormattedString>
                 </Label.FormattedText>
             </Label>
-           
+
             <Button
                 x:Name="locButton"
                 Clicked="OnComputeClicked"
@@ -58,8 +55,6 @@
                     </VisualStateGroupList>
                 </VisualStateManager.VisualStateGroups>
             </Button>
-
-
         </VerticalStackLayout>
 
         <ContentView
