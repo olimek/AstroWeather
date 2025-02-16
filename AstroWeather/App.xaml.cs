@@ -12,28 +12,20 @@ namespace AstroWeather
         public App()
         {
             InitializeComponent();
-            Task<bool> task = RequestStoragePermissionAsync();
-            MainPage = new AppShell();
         }
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            Window window = base.CreateWindow(activationState);
+
+            var window = new Window(new AppShell());
+
             window.Activated += Window_Activated;
+
             return window;
         }
 
-        public async Task<bool> RequestStoragePermissionAsync()
-        {
-            var status = await Permissions.CheckStatusAsync<Permissions.StorageWrite>();
-            if (status != PermissionStatus.Granted)
-            {
-                status = await Permissions.RequestAsync<Permissions.StorageWrite>();
-            }
-            return status == PermissionStatus.Granted;
-        }
 
-        private static async void Window_Activated(object? sender, EventArgs e)
+        private static void Window_Activated(object? sender, EventArgs e)
         {
 #if WINDOWS
             const int DefaultWidth = 600;
@@ -41,16 +33,16 @@ namespace AstroWeather
 
             if (sender is Window window)
             {
-                // change window size.
+                // zmiana rozmiaru okna
                 window.Width = DefaultWidth;
                 window.Height = DefaultHeight;
 
-                // give it some time to complete window resizing task.
-                await Task.Run(() => window.Dispatcher.Dispatch(() => { }));
+                // daj trochę czasu na zakończenie zadania zmiany rozmiaru okna
+                window.Dispatcher.Dispatch(() => { });
 
                 var disp = DeviceDisplay.Current.MainDisplayInfo;
 
-                // move to screen center
+                // przeniesienie okna do centrum ekranu
                 window.X = (disp.Width / disp.Density - window.Width) / 2;
                 window.Y = (disp.Height / disp.Density - window.Height) / 2;
             }

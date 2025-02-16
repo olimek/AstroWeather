@@ -7,17 +7,17 @@ namespace AstroWeather.Pages
 {
     public partial class SettingsPage : ContentPage
     {
-        public ICommand TapCommand => new Command<string>(async (url) => await Launcher.OpenAsync(url));
+        public static ICommand TapCommand => new Command<string>(async (url) => await Launcher.OpenAsync(url));
         private readonly LogFileGetSet _logFileGetSet = new LogFileGetSet(); 
 
         public SettingsPage()
         {
             InitializeComponent();
-            LoadApiKeys();
+            _ = LoadApiKeys();
             BindingContext = this;
         }
 
-        private async void LoadApiKeys()
+        private async Task LoadApiKeys()
         {
             var apiKeys = await LogFileGetSet.LoadDataAsync("APIkey", () => new List<string>());
             string test = apiKeys != null && apiKeys.Count > 0 ? apiKeys[0] : string.Empty;

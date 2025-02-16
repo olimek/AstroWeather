@@ -66,7 +66,7 @@ public partial class TargetsList : ContentPage
     {
         if (e.CurrentSelection?.FirstOrDefault() is DsoObject selectedItem)
         {
-            var parameters = new Dictionary<string, object>
+            _ = new Dictionary<string, object>
                 {
                     { "selectedDSO", selectedItem }
                 };

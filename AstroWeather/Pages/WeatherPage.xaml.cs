@@ -15,10 +15,10 @@ namespace AstroWeather.Pages
     {
         private static List<DayWithHours>? carouselDATA = new();
         private static DateTime LastcarouselUpdateTime = DateTime.MinValue;
-        private AstroWeather.Helpers.Day _selectedDay;
+        private AstroWeather.Helpers.Day? _selectedDay;
         public AstroWeather.Helpers.Day SelectedDay
         {
-            get => _selectedDay;
+            get => _selectedDay!;
             set
             {
                 _selectedDay = value;
@@ -41,7 +41,8 @@ namespace AstroWeather.Pages
         {
             if ((DateTime.UtcNow - LastcarouselUpdateTime).TotalHours >= 1)
             {
-                await LoadWeatherData();
+                await LoadWeatherData(
+            carouselDATA);
             }
             else
             {
@@ -49,18 +50,17 @@ namespace AstroWeather.Pages
             }
         }
 
-        private async Task LoadWeatherData()
+        private async Task LoadWeatherData(List<DayWithHours>? carouselDATA)
         {
             var weatherRouter = new WeatherRouter();
             var carousel = await weatherRouter.GetCarouselViewAsync();
-
             carouselDATA = carousel?.ToList() ?? new List<DayWithHours>();
 
             weatherCarousel.ItemsSource = carouselDATA;
 
             int selectedIndex;
             DateTime targetDate;
-            if (!DateTime.TryParse(SelectedDay?.datetime, out targetDate))
+            if (!DateTime.TryParse(SelectedDay?.datetime, CultureInfo.InvariantCulture, DateTimeStyles.None, out targetDate))
             {
                 targetDate = DateTime.UtcNow;
                 selectedIndex = 0;

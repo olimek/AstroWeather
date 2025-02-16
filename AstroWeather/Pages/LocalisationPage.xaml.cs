@@ -5,7 +5,7 @@ namespace AstroWeather.Pages
 {
     public partial class LocalisationPage : ContentPage
     {
-        private SelectionChangedEventArgs _selectedEventArgs;
+        private SelectionChangedEventArgs? _selectedEventArgs;
         private readonly LogFileGetSet _logFileGetSet = new LogFileGetSet();
 
         public LocalisationPage()
@@ -13,7 +13,7 @@ namespace AstroWeather.Pages
 
             InitializeComponent();
             BindingContext = this;
-            CheckDefaultLocAsync();
+            _ = CheckDefaultLocAsync();
 
         }
         protected override async void OnAppearing()
@@ -28,7 +28,7 @@ namespace AstroWeather.Pages
 
             var filteredData = jsonData
                  .Where(kvp => kvp.Key.Contains("Localisation_"))
-                 .ToDictionary(kvp => kvp.Key.Replace("Localisation_", ""), kvp =>
+                 .ToDictionary(kvp => kvp.Key.Replace("Localisation_", ""), static kvp =>
                  {
                      if (kvp.Value is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.Array)
                      {
@@ -46,7 +46,7 @@ namespace AstroWeather.Pages
                                  return (double?)null;
                              })
                              .Where(v => v.HasValue)
-                             .Select(v => v.Value)
+                             .Select(static v => v!.Value)
                              .ToList();
                      }
                      return new List<double>();
@@ -65,7 +65,7 @@ namespace AstroWeather.Pages
             {
                 var selectedItem = e.CurrentSelection.FirstOrDefault() as dynamic;
 
-                SelectedLabel.Text = $"Selected Localisation: {selectedItem.Key} ({selectedItem.Value})";
+                SelectedLabel.Text = $"Selected Localisation: {selectedItem!.Key} ({selectedItem!.Value})";
                 _selectedEventArgs = e;
                 string[] parts = selectedItem.Value.Split(',');
                 nameInput.Text = selectedItem.Key;
@@ -90,7 +90,7 @@ namespace AstroWeather.Pages
             if (_selectedEventArgs?.CurrentSelection.FirstOrDefault() is not null)
             {
                 var selectedItem = _selectedEventArgs.CurrentSelection.FirstOrDefault() as dynamic;
-                string key = $"Localisation_{selectedItem.Key}";
+                string key = $"Localisation_{selectedItem!.Key}";
 
                 await _logFileGetSet.RemoveDataAsync<List<string>>(key);
                 await _logFileGetSet.RemoveDataAsync<List<string>>($"Info_{selectedItem.Key}");
@@ -98,7 +98,7 @@ namespace AstroWeather.Pages
                 await PopupView.FadeTo(1, 250, Easing.CubicInOut);
                 PopupView.IsVisible = false;
                 LocalisationCollectionView.SelectedItem = null;
-                LoadJsonDataAsync();
+                _ = LoadJsonDataAsync();
                 await Shell.Current.GoToAsync("//LocalisationPage");
             }
         }
@@ -119,17 +119,17 @@ namespace AstroWeather.Pages
 
             await PopupView.FadeTo(0, 250, Easing.CubicInOut);
             LocalisationCollectionView.SelectedItem = null;
-            LoadJsonDataAsync();
+            _ = LoadJsonDataAsync();
             await Shell.Current.GoToAsync("//LocalisationPage");
 
             PopupView.IsVisible = false;
         }
 
-        private async void CheckDefaultLocAsync()
+        private async Task CheckDefaultLocAsync()
         {
             var defaultLatLon = await LogFileGetSet.LoadDefaultLocAsync();
 
-            if (defaultLatLon != null && defaultLatLon.Count() > 1)
+            if (defaultLatLon != null && defaultLatLon.Count > 1)
             {
                 SelectedLabel.Text = $"Default Localisation: ({defaultLatLon[0]}, {defaultLatLon[1]})";
             }

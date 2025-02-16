@@ -11,9 +11,9 @@ namespace AstroWeather
 {
     public partial class MainPage : ContentPage
     {
-        public static List<AstroWeather.Helpers.Day> GlobalWeatherList = new List<AstroWeather.Helpers.Day>();
+        public static List<AstroWeather.Helpers.Day> GlobalWeatherList = new();
         private static DateTime LastWeatherUpdateTime = DateTime.MinValue;
-        private readonly LogFileGetSet _logFileGetSet = new LogFileGetSet();
+        
 
         public MainPage()
         {
@@ -30,12 +30,12 @@ namespace AstroWeather
 
         private async Task RefreshWeatherIfNeeded()
         {
-            if ((DateTime.Now - LastWeatherUpdateTime).TotalHours >= 1)
+            if ((DateTime.UtcNow - LastWeatherUpdateTime).TotalHours >= 1)
             {
                 await MainInit();
             }
             else
-            {   if (GlobalWeatherList.Count <= 3) { await MainInit(); }
+            {   if (GlobalWeatherList!.Count <= 3) { await MainInit(); }
                 else
                 {
                     BindingContext = new { weather = GlobalWeatherList };
@@ -46,7 +46,7 @@ namespace AstroWeather
         private void OnCollectionViewScrolled(object sender, ItemsViewScrolledEventArgs e)
         {
             int firstVisibleIndex = e.FirstVisibleItemIndex;
-            drawMoonGraph(firstVisibleIndex);
+            _ = drawMoonGraph(firstVisibleIndex);
 
         }
         private async Task drawMoonGraph(int firstVisibleIndex)
@@ -91,10 +91,9 @@ namespace AstroWeather
             {
 
 
-                var pogodaDzienna = await WeatherRouter.SetWeatherBindingContextAsync();
-                GlobalWeatherList = pogodaDzienna.ToList();
-
-                LastWeatherUpdateTime = DateTime.Now;
+                var pogodaDzienna = await WeatherRouter.SetWeatherBindingContextAsync()!;
+                GlobalWeatherList = pogodaDzienna!.ToList()!;
+                LastWeatherUpdateTime = DateTime.UtcNow!;
                 BindingContext = new { weather = GlobalWeatherList };
 
 
@@ -105,7 +104,7 @@ namespace AstroWeather
             }
         }
 
-        private async void WeatherListView_ItemTapped(object sender, SelectionChangedEventArgs e)
+        private static async void WeatherListView_ItemTapped(object sender, SelectionChangedEventArgs e)
         {
             if (e.CurrentSelection?.FirstOrDefault() is AstroWeather.Helpers.Day selectedItem)
             {
