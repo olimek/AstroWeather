@@ -13,7 +13,7 @@ namespace AstroWeather.Pages
     [QueryProperty(nameof(SelectedDay), "selectedDay")]
     public partial class WeatherPage : ContentPage
     {
-        private static List<DayWithHours>? carouselDATA = new();
+        private List<DayWithHours>? carouselDATA = new List<DayWithHours>();
         private static DateTime LastcarouselUpdateTime = DateTime.MinValue;
         private AstroWeather.Helpers.Day? _selectedDay;
         public AstroWeather.Helpers.Day SelectedDay
@@ -41,16 +41,16 @@ namespace AstroWeather.Pages
         {
             if ((DateTime.UtcNow - LastcarouselUpdateTime).TotalHours >= 1)
             {
-                await LoadWeatherData(
-            carouselDATA);
+                await LoadWeatherData();
             }
             else
             {
+                // Tutaj przypisujemy odpowiedni BindingContext
                 BindingContext = new { weather = carouselDATA };
             }
         }
 
-        private async Task LoadWeatherData(List<DayWithHours>? carouselDATA)
+        private async Task LoadWeatherData()
         {
             var weatherRouter = new WeatherRouter();
             var carousel = await weatherRouter.GetCarouselViewAsync();
@@ -83,12 +83,10 @@ namespace AstroWeather.Pages
                     }
                 }
             }
-            await Task.Delay(100);
             weatherCarousel.Loaded += (s, e) =>
             {
                 var targetItem = carouselDATA[selectedIndex];
                 weatherCarousel.ScrollTo(targetItem, ScrollToPosition.Center, animate: false);
-                Task.Delay(10);
                 indicatorView.Position = selectedIndex;
             };
         }

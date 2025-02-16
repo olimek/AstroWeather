@@ -3,6 +3,7 @@
     x:Class="AstroWeather.Pages.TargetsList"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:AstroWeather"
     Title="Targets List"
     BackgroundColor="{StaticResource BackgroundColor}">
 
@@ -48,7 +49,8 @@
                     SelectionMode="Single"
                     VerticalOptions="FillAndExpand">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="local:DsoObject">
+
                             <StackLayout Padding="10">
                                 <Label
                                     FontSize="16"

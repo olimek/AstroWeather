@@ -61,17 +61,17 @@
                             x:Name="ActualTemp"
                             FontAttributes="Bold"
                             FontSize="16"
-                            Text="Nie wiem co tu wstawić"
+                            Text=""
                             TextColor="{DynamicResource PrimaryTextColor}" />
                         <Label
                             x:Name="ActualHum"
                             FontSize="16"
-                            Text="tu też nie"
+                            Text=""
                             TextColor="{DynamicResource SecondaryTextColor}" />
                         <Label
                             x:Name="Actualpress"
                             FontSize="16"
-                            Text="w sumie nie mam pomysłu na tę sekcję, ale ikonka księżyca jest super"
+                            Text=""
                             TextColor="{DynamicResource SecondaryTextColor}" />
 
                     </VerticalStackLayout>
@@ -86,7 +86,7 @@
                 SelectionChanged="WeatherListView_ItemTapped"
                 SelectionMode="Single">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="local:Day">
                         <Border
                             Padding="10"
                             BackgroundColor="{DynamicResource SecondaryColor}"

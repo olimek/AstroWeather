@@ -9,20 +9,20 @@
     <StackLayout>
         <CarouselView
             x:Name="weatherCarousel"
+            x:DataType="local:DayWithHours"
             HeightRequest="600"
             IndicatorView="indicatorView"
             IsScrollAnimated="True">
             <CarouselView.ItemTemplate>
 
-                <DataTemplate>
+                <DataTemplate x:DataType="local:DayWithHours">
                     <StackLayout>
-                        <Frame
+                        <Border
+                            Padding="5"
                             BackgroundColor="{DynamicResource SecondaryColor}"
-                            BorderColor="DarkGray"
-                            CornerRadius="5"
-                            HasShadow="True"
                             HeightRequest="200"
                             HorizontalOptions="Center">
+
                             <Grid Padding="5">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="*" />
@@ -89,15 +89,14 @@
                                     Text="{Binding astroend, StringFormat='Astro night: {0:dd.MM HH:mm}'}" />
 
                             </Grid>
-                        </Frame>
-                        <Frame
-                            Margin="10"
+                        </Border>
+                        <Border
+                            Padding="5"
                             BackgroundColor="{DynamicResource SecondaryColor}"
-                            BorderColor="DarkGray"
-                            CornerRadius="5"
-                            HasShadow="True"
+                            
                             HeightRequest="400"
                             HorizontalOptions="Center">
+
 
 
                             <CollectionView ItemsSource="{Binding Hours}">
@@ -152,7 +151,7 @@
                                     </Grid>
                                 </CollectionView.Header>
                                 <CollectionView.ItemTemplate>
-                                    <DataTemplate>
+                                    <DataTemplate x:DataType="local:Hour">
                                         <Grid Padding="5" ColumnSpacing="10">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="40" />
@@ -193,7 +192,7 @@
                                 </CollectionView.ItemTemplate>
                             </CollectionView>
 
-                        </Frame>
+                        </Border>
                     </StackLayout>
                 </DataTemplate>
             </CarouselView.ItemTemplate>

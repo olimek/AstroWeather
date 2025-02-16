@@ -3,6 +3,11 @@ using AstroWeather.Helpers;
 
 namespace AstroWeather.Pages
 {
+    public class LocalisationItem
+    {
+        public string? Key { get; set; }
+        public string? Value { get; set; }
+    }
     public partial class LocalisationPage : ContentPage
     {
         private SelectionChangedEventArgs? _selectedEventArgs;
