@@ -31,7 +31,7 @@ namespace AstroWeather.Pages
         private async void OnComputeClicked(object sender, EventArgs e)
         {
             
-            await DsoCalculator.UpdateYamlFileAsync("GaryImm.yaml", dsoList =>
+            await AstroWeather.Helpers.DsoCalculator.UpdateYamlFileAsync("GaryImm.yaml", dsoList =>
             {
                 var dsoToUpdate = dsoList.FirstOrDefault(d => d.Name == _selectedDSO.Name);
                 if (dsoToUpdate != null)
@@ -112,7 +112,7 @@ namespace AstroWeather.Pages
                 Style = SKPaintStyle.Fill
             };
 
-            double lat = Helpers.WeatherRouter.lat;
+            double lat = Helpers.WeatherRouter.Lat;
             float azPolaris = 0f;
             float altPolaris = Convert.ToSingle(lat);
 
@@ -144,10 +144,10 @@ namespace AstroWeather.Pages
 
             DateTime now = DateTime.UtcNow;
             var astroTimes = Helpers.WeatherRouter.GetAstroTimes(now, false);
-            var lat = Helpers.WeatherRouter.lat;
-            var lon = Helpers.WeatherRouter.lon;
+            var lat = Helpers.WeatherRouter.Lat;
+            var lon = Helpers.WeatherRouter.Lon;
 
-            List<Tuple<float, float>> trajectory = DsoCalculator.calculateDSOpath(
+            List<Tuple<float, float>> trajectory = AstroWeather.Helpers.DsoCalculator.calculateDSOpath(
                 _selectedDSO, DateTime.UtcNow, astroTimes, lat, lon
             );
             trajectory = trajectory.OrderBy(t => t.Item1).ToList();

@@ -24,7 +24,7 @@ namespace AstroWeather.Pages
         private async Task LoadJsonDataAsync()
         {
 
-            var jsonData = await _logFileGetSet.LoadAllDataAsync();
+            var jsonData = await LogFileGetSet.LoadAllDataAsync();
 
             var filteredData = jsonData
                  .Where(kvp => kvp.Key.Contains("Localisation_"))
@@ -127,7 +127,7 @@ namespace AstroWeather.Pages
 
         private async void CheckDefaultLocAsync()
         {
-            var defaultLatLon = await _logFileGetSet.LoadDefaultLocAsync();
+            var defaultLatLon = await LogFileGetSet.LoadDefaultLocAsync();
 
             if (defaultLatLon != null && defaultLatLon.Count() > 1)
             {

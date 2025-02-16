@@ -11,30 +11,30 @@ namespace AstroWeather.Helpers
 {
     public class LogFileGetSet
     {
-        public string GetFilePath(string fileName)
+        public static string GetFilePath(string fileName)
         {
             string documentsPath = FileSystem.AppDataDirectory;
             return Path.Combine(documentsPath, fileName);
         }
 
-        public bool FileExists(string fileName)
+        public static bool FileExists(string fileName)
         {
-            string filePath = GetFilePath(fileName);
+            string filePath = LogFileGetSet.GetFilePath(fileName);
             return File.Exists(filePath);
         }
 
-        public async Task SaveFileAsync(string content, string fileName)
+        public static async Task SaveFileAsync(string content, string fileName)
         {
-            string filePath = GetFilePath(fileName);
+            string filePath = LogFileGetSet.GetFilePath(fileName);
             using (var writer = new StreamWriter(filePath, false))
             {
                 await writer.WriteAsync(content);
             }
         }
 
-        public async Task<string> ReadFileAsync(string fileName)
+        public static async Task<string?> ReadFileAsync(string fileName)
         {
-            string filePath = GetFilePath(fileName);
+            string filePath = LogFileGetSet.GetFilePath(fileName);
             if (File.Exists(filePath))
             {
                 using (var reader = new StreamReader(filePath))
@@ -50,16 +50,17 @@ namespace AstroWeather.Helpers
             try
             {
                 if (string.IsNullOrEmpty(key)) throw new ArgumentException("Key cannot be null or empty.");
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (EqualityComparer<T>.Default.Equals(value, default(T))) throw new ArgumentNullException(nameof(value));
 
                 string fileName = "data.json";
-                string filePath = GetFilePath(fileName);
+                string filePath = LogFileGetSet.GetFilePath(fileName);
 
                 Dictionary<string, T> data;
-                if (FileExists(fileName))
+                if (LogFileGetSet.FileExists(fileName))
                 {
-                    string existingJson = await ReadFileAsync(fileName);
-                    data = JsonSerializer.Deserialize<Dictionary<string, T>>(existingJson) ?? new Dictionary<string, T>();
+                    string? v = await LogFileGetSet.ReadFileAsync(fileName!);
+                    string existingJson = v!;
+                    data = JsonSerializer.Deserialize<Dictionary<string, T>>(existingJson!) ?? new Dictionary<string, T>();
                 }
                 else
                 {
@@ -89,16 +90,17 @@ namespace AstroWeather.Helpers
                 if (string.IsNullOrEmpty(key)) throw new ArgumentException("Key cannot be null or empty.");
 
                 string fileName = "data.json";
-                string filePath = GetFilePath(fileName);
+                string filePath = LogFileGetSet.GetFilePath(fileName);
 
-                if (!FileExists(fileName))
+                if (!LogFileGetSet.FileExists(fileName))
                 {
                     Console.WriteLine("Data file not found.");
                     return;
                 }
 
-                string existingJson = await ReadFileAsync(fileName);
-                var data = JsonSerializer.Deserialize<Dictionary<string, T>>(existingJson) ?? new Dictionary<string, T>();
+                string? v = await LogFileGetSet.ReadFileAsync(fileName!);
+                string existingJson = v!;
+                var data = JsonSerializer.Deserialize<Dictionary<string, T>>(existingJson!) ?? new Dictionary<string, T>();
 
                 if (data.ContainsKey(key))
                 {
@@ -117,16 +119,16 @@ namespace AstroWeather.Helpers
             }
         }
 
-        public async Task<T> LoadDataAsync<T>(string key, Func<T> defaultFactory)
+        public static async Task<T?> LoadDataAsync<T>(string key, Func<T> defaultFactory)
         {
             try
             {
                 string fileName = "data.json";
-                string filePath = GetFilePath(fileName);
 
-                if (FileExists(fileName))
+                if (LogFileGetSet.FileExists(fileName))
                 {
-                    string json = await ReadFileAsync(fileName);
+                    string? v = await LogFileGetSet.ReadFileAsync(fileName!);
+                    string json = v!;
                     var rootObject = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
                     if (rootObject != null && rootObject.TryGetValue(key, out JsonElement valueElement))
@@ -151,16 +153,15 @@ namespace AstroWeather.Helpers
             }
         }
 
-        public async Task<Dictionary<string, object>> LoadAllDataAsync()
+        public static async Task<Dictionary<string, object>> LoadAllDataAsync()
         {
             try
             {
                 string fileName = "data.json";
-                string filePath = GetFilePath(fileName);
-
-                if (FileExists(fileName))
+                if (LogFileGetSet.FileExists(fileName))
                 {
-                    string json = await ReadFileAsync(fileName);
+                    string? v = await LogFileGetSet.ReadFileAsync(fileName!);
+                    string json = v!;
                     var data = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
 
                     return data ?? new Dictionary<string, object>();
@@ -175,27 +176,30 @@ namespace AstroWeather.Helpers
             }
         }
 
-        public async Task<List<double>?> LoadDefaultLocAsync()
+        public static async Task<List<double>?> LoadDefaultLocAsync()
         {
-            var defaultLoc = await LoadDataAsync("DefaultLoc", () => new List<string>());
+            var defaultLoc = await LogFileGetSet.LoadDataAsync("DefaultLoc", () => new List<string>());
 
             if (defaultLoc != null && defaultLoc.Count > 0)
             {
-                var rawData = await LoadDataAsync($"Localisation_{defaultLoc[0]}", () => new List<string>());
-                var locloc = rawData
-                    .Select(item => item.Replace(',', '.'))
-                    .Where(item => double.TryParse(item, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out _))
-                    .Select(item => double.Parse(item, System.Globalization.CultureInfo.InvariantCulture))
-                    .ToList();
-                return locloc;
+                var rawData = await LogFileGetSet.LoadDataAsync($"Localisation_{defaultLoc[0]}", () => new List<string>());
+                if (rawData != null)
+                {
+                    var locloc = rawData
+                        .Select(item => item.Replace(',', '.'))
+                        .Where(item => double.TryParse(item, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out _))
+                        .Select(item => double.Parse(item, System.Globalization.CultureInfo.InvariantCulture))
+                        .ToList();
+                    return locloc;
+                }
             }
 
             return null;
         }
 
-        public async Task<string?> LoadDefaultLocNameAsync()
+        public static async Task<string?> LoadDefaultLocNameAsync()
         {
-            var defaultLoc = await LoadDataAsync("DefaultLoc", () => new List<string>());
+            var defaultLoc = await LogFileGetSet.LoadDataAsync("DefaultLoc", () => new List<string>());
 
             if (defaultLoc != null && defaultLoc.Count > 0)
             {
@@ -205,28 +209,16 @@ namespace AstroWeather.Helpers
             return null;
         }
 
-        public async Task<string?> GetAPIKeyAsync(string which)
+        public static async Task<string?> GetAPIKeyAsync()
         {
-            var keyMap = new Dictionary<string, string>
-            {
-                { "astro", "MOONAPIkey" },
-                { "weather", "APIkey" }
-            };
-
-            if (!keyMap.TryGetValue(which, out string? dataKey))
-            {
-                Console.WriteLine($"Invalid API type: {which}");
-                return null;
-            }
-
-            var apiKeys = await LoadDataAsync(dataKey, () => new List<string>());
+            var apiKeys = await LogFileGetSet.LoadDataAsync("APIkey", () => new List<string>());
 
             if (apiKeys != null && apiKeys.Count > 0)
             {
                 return apiKeys[0];
             }
 
-            Console.WriteLine($"No API key found for {which}");
+            Console.WriteLine("No API key found for weather");
             return null;
         }
     }

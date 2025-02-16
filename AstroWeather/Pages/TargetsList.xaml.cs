@@ -26,8 +26,8 @@ public partial class TargetsList : ContentPage
         DsoCalculator dsoCalculator = await DsoCalculator.CreateAsync(fileName);
         DateTime now = DateTime.UtcNow;
         var astroTimes = WeatherRouter.GetAstroTimes(now, true);
-        var lat = WeatherRouter.lat;
-        var lon = WeatherRouter.lon;
+        var lat = WeatherRouter.Lat;
+        var lon = WeatherRouter.Lon;
 
         List<DsoObject> calculatedDSO = dsoCalculator.GetTopVisibleObjects(now, astroTimes, lat, lon);
 

@@ -33,27 +33,27 @@ namespace AstroWeather
             return status == PermissionStatus.Granted;
         }
 
-        private async void Window_Activated(object? sender, EventArgs e)
+        private static async void Window_Activated(object? sender, EventArgs e)
         {
 #if WINDOWS
-                const int DefaultWidth = 600;
-                const int DefaultHeight = 800;
+            const int DefaultWidth = 600;
+            const int DefaultHeight = 800;
 
-                if (sender is Window window)
-                {
-                    // change window size.
-                    window.Width = DefaultWidth;
-                    window.Height = DefaultHeight;
+            if (sender is Window window)
+            {
+                // change window size.
+                window.Width = DefaultWidth;
+                window.Height = DefaultHeight;
 
-                    // give it some time to complete window resizing task.
-                    await Task.Run(() => window.Dispatcher.Dispatch(() => { }));
+                // give it some time to complete window resizing task.
+                await Task.Run(() => window.Dispatcher.Dispatch(() => { }));
 
-                    var disp = DeviceDisplay.Current.MainDisplayInfo;
+                var disp = DeviceDisplay.Current.MainDisplayInfo;
 
-                    // move to screen center
-                    window.X = (disp.Width / disp.Density - window.Width) / 2;
-                    window.Y = (disp.Height / disp.Density - window.Height) / 2;
-                }
+                // move to screen center
+                window.X = (disp.Width / disp.Density - window.Width) / 2;
+                window.Y = (disp.Height / disp.Density - window.Height) / 2;
+            }
 #endif
         }
     }

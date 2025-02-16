@@ -18,26 +18,28 @@ namespace AstroWeather.Helpers
     public class WeatherRouter
     {
         
-        private static WeatherAPI? weatherData = null;
-        public static double lat = 0;
-        public static double lon = 0;
-        private readonly LogFileGetSet logFileGetSet = new LogFileGetSet();
+        private static WeatherApi? weatherData = null;
+        private static double lat;
+        private static double lon;
 
-        private async Task<WeatherAPI?> GetWeatherDataAsync()
+        public static double Lat => lat;
+        public static double Lon => lon;
+
+        private static async Task<WeatherApi?> GetWeatherDataAsync()
         {
-            var defaultLatLon = await logFileGetSet.LoadDefaultLocAsync();
-            if (defaultLatLon != null && defaultLatLon.Count() > 1)
+            var defaultLatLon = await LogFileGetSet.LoadDefaultLocAsync();
+            if (defaultLatLon != null && defaultLatLon.Count > 1)
             {
                 lat = defaultLatLon[0];
                 lon = defaultLatLon[1];
-                string apiKey = await logFileGetSet.GetAPIKeyAsync("weather");
+                string? apiKey = await LogFileGetSet.GetAPIKeyAsync();
                 string latStr = lat.ToString(CultureInfo.InvariantCulture);
                 string lonStr = lon.ToString(CultureInfo.InvariantCulture);
 
                 string jsonResponse = await WeatherRouter.ReadResponseFromUrlAsync($"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{latStr}%2C{lonStr}?unitGroup=metric&elements=datetime%2CdatetimeEpoch%2Ctemp%2Cdew%2Chumidity%2Cprecip%2Cprecipprob%2Cwindspeed%2Cpressure%2Ccloudcover%2Cvisibility&include=days%2Chours%2Cfcst%2Cobs&key={apiKey}&contentType=json");
                 jsonResponse = jsonResponse.Replace("null", "0");
 
-                weatherData = JsonSerializer.Deserialize<WeatherAPI>(jsonResponse);
+                weatherData = JsonSerializer.Deserialize<WeatherApi>(jsonResponse);
                 return weatherData;
             }
             else
@@ -45,46 +47,44 @@ namespace AstroWeather.Helpers
                 return null;
             }
         }
-        public static async Task<List<Day>> SetWeatherBindingContextAsync()
+        public static async Task<List<Day>>? SetWeatherBindingContextAsync()
         {
-            var daysWithHours = new List<DayWithHours>();
-            var weatherRouter = new WeatherRouter();
-            var weatherInfo = await weatherRouter.GetWeatherInfoAsync();
+            var weatherInfo = await WeatherRouter.GetWeatherInfoAsync();
             var result2 = weatherInfo.SelectMany(i => i).Distinct();
             var ss = SetWeatherData(result2.ToList());
-            var hourlyConditions = CalculateWeatherData(ss);
-            var dailyConditions = CalculateAstroNight(ss);
-            var dailyData = await weatherRouter.GetCalculatedDailyAsync(ss);
-            if (dailyData != null){ 
+            CalculateWeatherData(ss);
+            CalculateAstroNight(ss);
+
+            var dailyData = await WeatherRouter.GetCalculatedDailyAsync(ss);
+            if (dailyData != null)
+            {
                 return dailyData;
             }
-            return null;
+            return new List<Day>(); 
         }
         
-        public static async Task<List<DayWithHours>?> GetCarouselViewAsync()
+        public async Task<List<DayWithHours>?> GetCarouselViewAsync()
         {
-            var daysWithHours = new List<DayWithHours>();
-            var weatherRouter = new WeatherRouter();
-            var weatherInfo = await weatherRouter.GetWeatherInfoAsync();
+            var weatherInfo = await WeatherRouter.GetWeatherInfoAsync();
             var result2 = weatherInfo.SelectMany(i => i).Distinct();
             var ss = SetWeatherData(result2.ToList());
-            var hourlyConditions = CalculateWeatherData(ss);
-            var dailyConditions = CalculateAstroNight(ss);
-            var dailyData = await weatherRouter.GetCalculatedDailyAsync(ss);
-            
+            CalculateWeatherData(ss);
+            CalculateAstroNight(ss);
+
+            var dailyData = await WeatherRouter.GetCalculatedDailyAsync(ss);
+
             if (ss.Count != 0)
             {
-                
+                var daysWithHours = new List<DayWithHours>(); 
 
                 for (int i = 0; i < ss.Count; i++)
                 {
-                    DateTime currentdate = DateTime.ParseExact(ss[i][0].date, "dd.MM.yyyy", CultureInfo.InvariantCulture);
-                    
+                    DateTime currentdate = DateTime.ParseExact(ss[i][0].date!, "dd.MM.yyyy", CultureInfo.InvariantCulture);
+
                     var time = new AstroTime(currentdate);
                     IllumInfo illum = Astronomy.Illumination(Body.Moon, time);
                     var astroTimes = GetAstroTimes(currentdate, true);
 
-                    
                     var day = new DayWithHours
                     {
                         moonrise = astroTimes[5].ToString("dd.MM HH:mm"),
@@ -113,11 +113,9 @@ namespace AstroWeather.Helpers
             return dniTygodnia[(int)date.DayOfWeek];
         }
 
-
-
         public static string GetWeatherImage(double phase)
         {
-            if (phase == 0)
+            if (phase <= 0)
                 return "sun.png";
             else if (phase < 0.22)
                 return "night.png";
@@ -135,13 +133,13 @@ namespace AstroWeather.Helpers
 
         public static string GetMoonImage(double moonIllumination, double phaseAngle)
         {
-            moonIllumination = Math.Clamp(moonIllumination, 0, 100); // Ensure illumination is between 0-100
-            phaseAngle = phaseAngle % 360; // Ensure angle is between 0-360
+            moonIllumination = Math.Clamp(moonIllumination, 0, 100); 
+            phaseAngle = phaseAngle % 360;
 
             if (moonIllumination <= 10)
-                return "new_moon.png";  // New Moon
+                return "new_moon.png";  
             else if (moonIllumination >= 90)
-                return "full_moon.png";  // Full Moon
+                return "full_moon.png";  
 
             if (phaseAngle >= 0 && phaseAngle < 180)
             {
@@ -162,7 +160,7 @@ namespace AstroWeather.Helpers
                     return "waning_crescent.png";
             }
 
-            return "new_moon.png"; // Default case
+            return "new_moon.png"; 
         }
 
         private static string RoundHours(string dateTime, string round)
@@ -176,7 +174,7 @@ namespace AstroWeather.Helpers
             string time = parts[0];
             string date = parts[1];
 
-            if (TimeSpan.TryParse(time, out TimeSpan parsedTime))
+            if (TimeSpan.TryParse(time, CultureInfo.InvariantCulture, out TimeSpan parsedTime))
             {
                 TimeSpan roundedTime;
                 if (round == "UP")
@@ -376,7 +374,7 @@ namespace AstroWeather.Helpers
             return Convert.ToInt32(Math.Round(ocena * 100));
         }
 
-        public async Task<List<Day>> GetCalculatedDailyAsync(List<List<Hour>> inputList)
+        public static Task<List<Day>> GetCalculatedDailyAsync(List<List<Hour>> inputList)
         {
             var dailyOut = new List<Day>();
             CalculateAstroNight(inputList);
@@ -385,7 +383,7 @@ namespace AstroWeather.Helpers
 
             foreach (var day in weatherDataDays)
             {
-                DateTime dateTime = DateTime.ParseExact(day.datetime, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                DateTime dateTime = DateTime.ParseExact(day.datetime!, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 var time = new AstroTime(dateTime);
                 List<DateTime> astroTimes = GetAstroTimes(dateTime, true);
                 IllumInfo illum = Astronomy.Illumination(Body.Moon, time);
@@ -409,7 +407,7 @@ namespace AstroWeather.Helpers
                 i++;
             }
 
-            return dailyOut;
+            return Task.FromResult(dailyOut);
         }
 
         public static List<double> CalculateAstroNight(List<List<Hour>> inputList)
@@ -431,25 +429,25 @@ namespace AstroWeather.Helpers
             return calculatedAstroPerNight;
         }
 
-        public async Task<List<List<Hour>>> GetWeatherInfoAsync()
+        public static async Task<List<List<Hour>>> GetWeatherInfoAsync()
         {
-            var weatherDataa = await GetWeatherDataAsync();
+            var weatherDataa = await WeatherRouter.GetWeatherDataAsync();
             var listOfHoursPerDay = new List<List<Hour>>();
 
             if (weatherDataa != null)
             {
-                listOfHoursPerDay = weatherDataa.days
+                listOfHoursPerDay = weatherDataa.days!
                     .Select(day =>
                     {
-                        var dayDate = DateTime.ParseExact(day.datetime, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                        var dayDate = DateTime.ParseExact(day.datetime!, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                         var dateWithoutTime = dayDate.ToString("dd.MM.yyyy");
 
-                        foreach (var hour in day.hours)
+                        foreach (var hour in day.hours!)
                         {
                             hour.precip = hour.precip ?? 0;
                             hour.cloudcover = hour.cloudcover ?? 0;
                             hour.date = dateWithoutTime;
-                            hour.hour = hour.datetime.ToString().Substring(0, 2);
+                            hour.hour = hour.datetime!.ToString().Substring(0, 2);
                         }
 
                         return day.hours.ToList();

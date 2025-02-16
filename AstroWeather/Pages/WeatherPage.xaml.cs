@@ -51,13 +51,14 @@ namespace AstroWeather.Pages
 
         private async Task LoadWeatherData()
         {
-            var carousel = await Helpers.WeatherRouter.GetCarouselViewAsync();
+            var weatherRouter = new WeatherRouter();
+            var carousel = await weatherRouter.GetCarouselViewAsync();
 
             carouselDATA = carousel?.ToList() ?? new List<DayWithHours>();
 
             weatherCarousel.ItemsSource = carouselDATA;
 
-            int selectedIndex = 0;
+            int selectedIndex;
             DateTime targetDate;
             if (!DateTime.TryParse(SelectedDay?.datetime, out targetDate))
             {
@@ -81,7 +82,6 @@ namespace AstroWeather.Pages
                         selectedIndex = i;
                     }
                 }
-
             }
             await Task.Delay(100);
             weatherCarousel.Loaded += (s, e) =>
@@ -91,7 +91,6 @@ namespace AstroWeather.Pages
                 Task.Delay(10);
                 indicatorView.Position = selectedIndex;
             };
-            
         }
     }
 }

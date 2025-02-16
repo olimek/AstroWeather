@@ -19,7 +19,7 @@ namespace AstroWeather.Pages
 
         private async void LoadApiKeys()
         {
-            var apiKeys = await _logFileGetSet.LoadDataAsync("APIkey", () => new List<string>());
+            var apiKeys = await LogFileGetSet.LoadDataAsync("APIkey", () => new List<string>());
             string test = apiKeys != null && apiKeys.Count > 0 ? apiKeys[0] : string.Empty;
             APIkeyInput.Text = test;
         }

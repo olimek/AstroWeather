@@ -77,8 +77,8 @@ namespace AstroWeather
         }
         private async Task MainInit()
         {
-            var isAPI = await _logFileGetSet.GetAPIKeyAsync("weather");
-            var isDefLoc = await _logFileGetSet.LoadDefaultLocAsync();
+            var isAPI = await LogFileGetSet.GetAPIKeyAsync();
+            var isDefLoc = await LogFileGetSet.LoadDefaultLocAsync();
 
             if (isAPI == null || isDefLoc == null)
             {
@@ -98,7 +98,7 @@ namespace AstroWeather
                 BindingContext = new { weather = GlobalWeatherList };
 
 
-                var defaultLocName = await _logFileGetSet.LoadDefaultLocNameAsync();
+                var defaultLocName = await LogFileGetSet.LoadDefaultLocNameAsync();
                 SecondLabel.Text = defaultLocName ?? "Default location name not found";
 
                 await Shell.Current.GoToAsync("//MainPage");
