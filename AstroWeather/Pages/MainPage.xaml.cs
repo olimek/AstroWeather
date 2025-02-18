@@ -106,7 +106,7 @@ namespace AstroWeather
 
         private static async void WeatherListView_ItemTapped(object sender, SelectionChangedEventArgs e)
         {
-            if (e.CurrentSelection?[0] is AstroWeather.Helpers.Day selectedItem)
+            if (e.CurrentSelection!.FirstOrDefault() is AstroWeather.Helpers.Day selectedItem)
             {
                 var parameters = new Dictionary<string, object>
                 {

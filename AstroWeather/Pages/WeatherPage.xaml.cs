@@ -59,8 +59,7 @@ namespace AstroWeather.Pages
             weatherCarousel.ItemsSource = carouselDATA;
 
             int selectedIndex;
-            DateTime targetDate;
-            if (!DateTime.TryParse(SelectedDay?.datetime, CultureInfo.InvariantCulture, DateTimeStyles.None, out targetDate))
+            if (!DateTime.TryParse(SelectedDay?.datetime, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime targetDate))
             {
                 targetDate = DateTime.UtcNow;
                 selectedIndex = 0;
@@ -71,8 +70,7 @@ namespace AstroWeather.Pages
 
             for (int i = 0; i < carouselDATA.Count; i++)
             {
-                DateTime itemDate;
-                if (DateTime.TryParseExact(carouselDATA[i].Date, "dd.MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out itemDate))
+                if (DateTime.TryParseExact(carouselDATA[i].Date, "dd.MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime itemDate))
                 {
                     TimeSpan delta = (itemDate - targetDate).Duration();
 

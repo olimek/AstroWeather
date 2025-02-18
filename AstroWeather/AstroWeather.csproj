@@ -84,7 +84,7 @@
 		<PackageReference Include="Microsoft.Maui.Controls.Core" Version="9.0.40" />
 		<PackageReference Include="Microsoft.Maui.Controls.Xaml" Version="9.0.40" />
 		<PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.40" />
-		<PackageReference Include="SkiaSharp" Version="3.116.1" />
+		<PackageReference Include="SkiaSharp" Version="2.88.6" />
 		<PackageReference Include="SolarCalculator" Version="3.5.0" />
 		<PackageReference Include="SolCalc" Version="1.0.0" />
 		<PackageReference Include="YamlDotNet" Version="16.3.0" />
