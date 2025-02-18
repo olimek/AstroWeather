@@ -94,12 +94,18 @@ namespace AstroWeather.Helpers
                 throw new ArgumentNullException(nameof(raStr), "RA string cannot be null or empty.");
 
             var parts = raStr.Split(' ');
-            if (parts.Length != 3)
-                throw new FormatException("RA should be in the format HH:MM:SS");
+            if (parts.Length < 2 || parts.Length > 3)
+                throw new FormatException("RA should be in the format HH MM, HH MM SS, or HH MM.m");
 
-            int hours = int.Parse(parts[0]);
-            int minutes = int.Parse(parts[1]);
-            int seconds = int.Parse(parts[2]);
+            double hours = double.Parse(parts[0], System.Globalization.CultureInfo.InvariantCulture);
+            double minutes = 0.0;
+            double seconds = 0.0;
+
+            if (parts.Length >= 2)
+                minutes = double.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture);
+
+            if (parts.Length == 3)
+                seconds = double.Parse(parts[2], System.Globalization.CultureInfo.InvariantCulture);
 
             return hours + (minutes / 60.0) + (seconds / 3600.0);
         }
@@ -110,18 +116,25 @@ namespace AstroWeather.Helpers
                 throw new ArgumentNullException(nameof(decStr), "Dec string cannot be null or empty.");
 
             var parts = decStr.Split(' ');
-            if (parts.Length != 3)
-                throw new FormatException("Dec should be in the format ±DD:MM:SS");
+            if (parts.Length < 2 || parts.Length > 3)
+                throw new FormatException("Dec should be in the format ±DD MM, ±DD MM SS, or ±DD MM.m");
 
-            int degrees = int.Parse(parts[0]);
-            int minutes = int.Parse(parts[1]);
-            int seconds = int.Parse(parts[2]);
+            int degrees = int.Parse(parts[0], System.Globalization.CultureInfo.InvariantCulture);
+            double minutes = 0.0;
+            double seconds = 0.0;
+
+            if (parts.Length >= 2)
+                minutes = double.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture);
+
+            if (parts.Length == 3)
+                seconds = double.Parse(parts[2], System.Globalization.CultureInfo.InvariantCulture);
 
             double sign = degrees < 0 ? -1 : 1;
             double absDegrees = Math.Abs(degrees) + (minutes / 60.0) + (seconds / 3600.0);
 
             return sign * absDegrees;
         }
+
 
         public static List<Tuple<float, float>> calculateDSOpath(AstroWeather.DsoObject dso, DateTime dateUtc, List<DateTime> astrotimes, double lat, double lon)
         {
@@ -209,7 +222,7 @@ namespace AstroWeather.Helpers
 
                 .Select(dso => CalculateVisibilityAndAltitude(dso, dateUtc, astrotimes, lat, lon))
                 .ToList();
-
+           
             return calculatedDsoObjects
          .Where(dso => !dso.photo)
          .OrderByDescending(dso => dso.SumAlitude)

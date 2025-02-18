@@ -22,7 +22,8 @@ public partial class TargetsList : ContentPage
 
     private async Task InitDsoAsync()
     {
-        string fileName = "GaryImm.yaml";
+        string fileName = "Herschel400.yaml";
+        //string fileName = "GaryImm.yaml";
         DsoCalculator dsoCalculator = await DsoCalculator.CreateAsync(fileName);
         DateTime now = DateTime.UtcNow;
         var astroTimes = WeatherRouter.GetAstroTimes(now, true);
@@ -51,13 +52,20 @@ public partial class TargetsList : ContentPage
     private async void ClearPhotographed(object sender, EventArgs e)
     {
         
-        await DsoCalculator.UpdateYamlFileAsync("GaryImm.yaml", dsoList =>
+            await DsoCalculator.UpdateYamlFileAsync("Herschel400.yaml", dsoList =>
+            {
+                foreach (var dso in dsoList)
+                {
+                    dso.photo = false;
+                }
+            });
+        /*await DsoCalculator.UpdateYamlFileAsync("GaryImm.yaml", dsoList =>
         {
             foreach (var dso in dsoList)
             {
                 dso.photo = false;
             }
-        });
+        });*/
         await InitDsoAsync();
         await PopupView.FadeTo(0, 250, Easing.CubicInOut);
         PopupView.IsVisible = false;
