@@ -9,6 +9,7 @@ public partial class TargetsList : ContentPage
 {
     double minsize = 0;
     double maxsize = 9999;
+    private string _selectedDSO;
     public TargetsList()
     {
         InitializeComponent();
@@ -19,11 +20,17 @@ public partial class TargetsList : ContentPage
         base.OnAppearing();
         await InitDsoAsync();
     }
+    private string PickerToFile()
+    {
+        if (_selectedDSO == "Herschel(400)") return "Herschel400.yaml";
+        else if(_selectedDSO == "Messier") return "Messier.yaml";
+        else return "GaryImm.yaml";
 
+    }
     private async Task InitDsoAsync()
     {
-        string fileName = "Herschel400.yaml";
-        //string fileName = "GaryImm.yaml";
+        string fileName = PickerToFile();
+        
         DsoCalculator dsoCalculator = await DsoCalculator.CreateAsync(fileName);
         DateTime now = DateTime.UtcNow;
         var astroTimes = WeatherRouter.GetAstroTimes(now, true);
@@ -42,30 +49,36 @@ public partial class TargetsList : ContentPage
 
     private async void OnClosePopupClicked(object sender, EventArgs e)
     {
-        minsize = Convert.ToDouble( MinSize.Text);
-        maxsize = Convert.ToDouble(MaxSize.Text);
+        minsize = double.TryParse(MinSize.Text, out double min) ? min : 0.0;
+        maxsize = double.TryParse(MaxSize.Text, out double max) ? max : 9999.0;
         await InitDsoAsync();
         await PopupView.FadeTo(0, 250, Easing.CubicInOut);
         PopupView.IsVisible = false;
     }
+    void OnPickerSelectedIndexChanged(object sender, EventArgs e)
+    {
+        var picker = (Picker)sender;
+        int selectedIndex = picker.SelectedIndex;
 
+        if (selectedIndex != -1)
+        {
+            _selectedDSO = picker.Items[selectedIndex];
+            Debug.WriteLine("_selectedDSO");
+            Debug.WriteLine(_selectedDSO);
+        }
+        _ = InitDsoAsync();
+    }
     private async void ClearPhotographed(object sender, EventArgs e)
     {
-        
-            await DsoCalculator.UpdateYamlFileAsync("Herschel400.yaml", dsoList =>
+        string fileName = PickerToFile();
+        await DsoCalculator.UpdateYamlFileAsync(fileName, dsoList =>
             {
                 foreach (var dso in dsoList)
                 {
                     dso.photo = false;
                 }
             });
-        /*await DsoCalculator.UpdateYamlFileAsync("GaryImm.yaml", dsoList =>
-        {
-            foreach (var dso in dsoList)
-            {
-                dso.photo = false;
-            }
-        });*/
+        
         await InitDsoAsync();
         await PopupView.FadeTo(0, 250, Easing.CubicInOut);
         PopupView.IsVisible = false;

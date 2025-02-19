@@ -34,14 +34,14 @@
                         </VisualStateGroupList>
                     </VisualStateManager.VisualStateGroups>
                 </Button>
+                <Picker Title="Select DSO database" SelectedIndexChanged="OnPickerSelectedIndexChanged">
+                    <Picker.Items>
+                        <x:String>GaryImm_default_(200)</x:String>
+                        <x:String>Herschel(400)</x:String>
+                        <x:String>Messier</x:String>
 
-                <Label
-                    x:Name="SelectedLabel"
-                    FontSize="16"
-                    HorizontalOptions="Center"
-                    Text="Top 200 obiektów DSO:"
-                    VerticalOptions="Center" />
-
+                    </Picker.Items>
+                </Picker>
                 <CollectionView
                     x:Name="DsoCollectionView"
                     HorizontalOptions="FillAndExpand"

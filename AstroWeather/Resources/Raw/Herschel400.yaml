@@ -1361,7 +1361,7 @@
 - constellation: Ursa Major
   dec: +58 0
   description: UGC 6323
-  mag: -9999
+  mag: 11.2
   name: NGC 3613
   ra: 11 18.6
   size: 3.6
@@ -1369,7 +1369,7 @@
 - constellation: Ursa Major
   dec: +57 46
   description: UGC 6330
-  mag: -9999
+  mag: 10.8
   name: NGC 3619
   ra: 11 19.4
   size: 3.1
@@ -1385,7 +1385,7 @@
 - constellation: Leo
   dec: +18 21
   description: NGC 3632
-  mag: -9999
+  mag: 11.0
   name: NGC 3626
   ra: 11 20.1
   size: 3.1
@@ -1401,7 +1401,7 @@
 - constellation: Ursa Major
   dec: +53 10
   description: UGC 6360
-  mag: -9999
+  mag: 10.4
   name: NGC 3631
   ra: 11 21
   size: 4.6
@@ -1433,7 +1433,7 @@
 - constellation: Ursa Major
   dec: +43 35
   description: UGC 6439
-  mag: -9999
+  mag: 12.1
   name: NGC 3675
   ra: 11 26.1
   size: 5.9
@@ -1441,7 +1441,7 @@
 - constellation: Leo
   dec: +17 13
   description: UGC 6460
-  mag: -9999
+  mag: 11.9
   name: NGC 3686
   ra: 11 27.7
   size: 3.3
@@ -1449,7 +1449,7 @@
 - constellation: Ursa Major
   dec: +47 2
   description: UGC 6537
-  mag: -9999
+  mag: 11.4
   name: NGC 3726
   ra: 11 33.3
   size: 6.0
@@ -1457,7 +1457,7 @@
 - constellation: Ursa Major
   dec: +53 8
   description: UGC 6547
-  mag: -9999
+  mag: 12.5
   name: NGC 3729
   ra: 11 33.8
   size: 3.1
@@ -1465,7 +1465,7 @@
 - constellation: Leo
   dec: +11 28
   description: UGC 6644
-  mag: -9999
+  mag: 10.0
   name: NGC 3810
   ra: 11 41
   size: 4.3
@@ -1473,7 +1473,7 @@
 - constellation: Ursa Major
   dec: +36 33
   description: UGC 6651
-  mag: -9999
+  mag: 13.4
   name: NGC 3813
   ra: 11 41.3
   size: 2.3
@@ -1481,7 +1481,7 @@
 - constellation: Ursa Major
   dec: +47 30
   description: UGC 6745
-  mag: -9999
+  mag: 11.7
   name: NGC 3877
   ra: 11 46.1
   size: 5.4
@@ -1497,7 +1497,7 @@
 - constellation: Ursa Major
   dec: +56 5
   description: UGC 6787
-  mag: -9999
+  mag: 11.6
   name: NGC 3898
   ra: 11 49.2
   size: 4.4
@@ -1505,7 +1505,7 @@
 - constellation: Leo
   dec: +27 1
   description: UGC 6786
-  mag: -9999
+  mag: 11.4
   name: NGC 3900
   ra: 11 49.2
   size: 3.5
@@ -1513,7 +1513,7 @@
 - constellation: Leo
   dec: +26 29
   description: NGC 3899
-  mag: -9999
+  mag: 12.3
   name: NGC 3912
   ra: 11 50.1
   size: 1.7
@@ -1537,7 +1537,7 @@
 - constellation: Ursa Major
   dec: +60 41
   description: UGC 6860
-  mag: -9999
+  mag: 12.2
   name: NGC 3945
   ra: 11 53.2
   size: 5.5
@@ -1545,7 +1545,7 @@
 - constellation: Ursa Major
   dec: +47 52
   description: UGC 6869
-  mag: -9999
+  mag: 12.5
   name: NGC 3949
   ra: 11 53.7
   size: 3.0
@@ -1553,7 +1553,7 @@
 - constellation: Ursa Major
   dec: +52 20
   description: UGC 6870
-  mag: -9999
+  mag: 11.5
   name: NGC 3953
   ra: 11 53.8
   size: 6.6
@@ -1577,7 +1577,7 @@
 - constellation: Ursa Major
   dec: +53 23
   description: M 109
-  mag: -9999
+  mag: 10.3
   name: NGC 3992
   ra: 11 57.6
   size: 7.6
@@ -1593,7 +1593,7 @@
 - constellation: Ursa Major
   dec: +50 58
   description: UGC 6985
-  mag: -9999
+  mag: 12.1
   name: NGC 4026
   ra: 11 59.4
   size: 5.1
@@ -1609,7 +1609,7 @@
 - constellation: Virgo
   dec: -1 6
   description: UGC 6993
-  mag: -9999
+  mag: 12.7
   name: NGC 4030
   ra: 12 0.4
   size: 4.3
@@ -1625,7 +1625,7 @@
 - constellation: Corvus
   dec: -18 52
   description: ESO 572-47
-  mag: -9999
+  mag: 11.3
   name: NGC 4038
   ra: 12 1.9
   size: 2.6
@@ -1633,7 +1633,7 @@
 - constellation: Ursa Major
   dec: +62 8
   description: UGC 7014
-  mag: -9999
+  mag: 12.8
   name: NGC 4041
   ra: 12 2.2
   size: 2.8
@@ -1657,7 +1657,7 @@
 - constellation: Ursa Major
   dec: +50 33
   description: UGC 7081
-  mag: -9999
+  mag: 10.5
   name: NGC 4088
   ra: 12 5.6
   size: 5.8
@@ -1665,7 +1665,7 @@
 - constellation: Ursa Major
   dec: +52 43
   description: UGC 7096
-  mag: -9999
+  mag: 11.5
   name: NGC 4102
   ra: 12 6.4
   size: 3.2
@@ -1713,7 +1713,7 @@
 - constellation: Virgo
   dec: +1 18
   description: UGC 7214
-  mag: -9999
+  mag: 13.3
   name: NGC 4179
   ra: 12 12.9
   size: 4.2
@@ -1745,7 +1745,7 @@
 - constellation: Coma Berenices
   dec: +29 36
   description: UGC 7328
-  mag: -9999
+  mag: 12.0
   name: NGC 4245
   ra: 12 17.6
   size: 3.3
@@ -1753,7 +1753,7 @@
 - constellation: Coma Berenices
   dec: +28 10
   description: UGC 7338
-  mag: -9999
+  mag: 11.9
   name: NGC 4251
   ra: 12 18.1
   size: 4.2
@@ -1777,7 +1777,7 @@
 - constellation: Virgo
   dec: +5 21
   description: UGC 7380
-  mag: -9999
+  mag: 11.8
   name: NGC 4273
   ra: 12 19.9
   size: 2.3
@@ -1801,7 +1801,7 @@
 - constellation: Virgo
   dec: +5 23
   description: UGC 7389
-  mag: -9999
+  mag: 12.8
   name: NGC 4281
   ra: 12 20.4
   size: 3.1
@@ -1809,7 +1809,7 @@
 - constellation: Coma Berenices
   dec: +18 23
   description: UGC 7405
-  mag: -9999
+  mag: 11.1
   name: NGC 4293
   ra: 12 21.2
   size: 6.0
@@ -1833,7 +1833,7 @@
 - constellation: Canes Venatici
   dec: +47 0
   description: UGC 7463
-  mag: -9999
+  mag: 10.7
   name: NGC 4346
   ra: 12 23.5
   size: 3.5
@@ -1857,7 +1857,7 @@
 - constellation: Virgo
   dec: +7 19
   description: UGC 7488
-  mag: -9999
+  mag: 12.9
   name: NGC 4365
   ra: 12 24.5
   size: 6.2
@@ -1873,7 +1873,7 @@
 - constellation: Coma Berenices
   dec: +18 13
   description: UGC 7523
-  mag: -9999
+  mag: 10.4
   name: NGC 4394
   ra: 12 25.9
   size: 3.9
@@ -1897,7 +1897,7 @@
 - constellation: Virgo
   dec: +11 7
   description: UGC 7568
-  mag: -9999
+  mag: 11.7
   name: NGC 4429
   ra: 12 27.4
   size: 5.5
@@ -1921,7 +1921,7 @@
 - constellation: Virgo
   dec: +9 48
   description: UGC 7583
-  mag: -9999
+  mag: 12.8
   name: NGC 4442
   ra: 12 28.1
   size: 4.6
@@ -1929,7 +1929,7 @@
 - constellation: Coma Berenices
   dec: +28 37
   description: UGC 7591
-  mag: -9999
+  mag: 12.4
   name: NGC 4448
   ra: 12 28.2
   size: 4.0
@@ -1953,7 +1953,7 @@
 - constellation: Coma Berenices
   dec: +13 59
   description: UGC 7614
-  mag: -9999
+  mag: 10.8
   name: NGC 4459
   ra: 12 29
   size: 3.8
@@ -2009,7 +2009,7 @@
 - constellation: Virgo
   dec: +7 42
   description: NGC 4560
-  mag: -9999
+  mag: 11.2
   name: NGC 4526
   ra: 12 34
   size: 7.2
@@ -2017,7 +2017,7 @@
 - constellation: Virgo
   dec: +2 39
   description: UGC 7721
-  mag: -9999
+  mag: 13.3
   name: NGC 4527
   ra: 12 34.1
   size: 6.3
@@ -2025,7 +2025,7 @@
 - constellation: Virgo
   dec: +8 12
   description: UGC 7727
-  mag: -9999
+  mag: 10.2
   name: NGC 4535
   ra: 12 34.3
   size: 6.8
@@ -2081,7 +2081,7 @@
 - constellation: Virgo
   dec: +7 15
   description: UGC 7785
-  mag: -9999
+  mag: 11.4
   name: NGC 4570
   ra: 12 36.9
   size: 4.1
@@ -2097,7 +2097,7 @@
 - constellation: Virgo
   dec: +10 11
   description: UGC 7828
-  mag: -9999
+  mag: 12.7
   name: NGC 4596
   ra: 12 39.9
   size: 3.9
@@ -2129,7 +2129,7 @@
 - constellation: Virgo
   dec: +1 59
   description: UGC 7895
-  mag: -9999
+  mag: 10.6
   name: NGC 4643
   ra: 12 43.3
   size: 3.4
@@ -2137,7 +2137,7 @@
 - constellation: Virgo
   dec: +13 8
   description: IC 3708
-  mag: -9999
+  mag: 10.8
   name: NGC 4654
   ra: 12 44
   size: 4.7
@@ -2153,7 +2153,7 @@
 - constellation: Virgo
   dec: +11 11
   description: UGC 7914
-  mag: -9999
+  mag: 10.6
   name: NGC 4660
   ra: 12 44.5
   size: 2.8
@@ -2169,7 +2169,7 @@
 - constellation: Virgo
   dec: -0 28
   description: UGC 7926
-  mag: -9999
+  mag: 12.3
   name: NGC 4666
   ra: 12 45.1
   size: 4.5
@@ -2177,7 +2177,7 @@
 - constellation: Coma Berenices
   dec: +13 46
   description: UGC 7965
-  mag: -9999
+  mag: 12.0
   name: NGC 4689
   ra: 12 47.8
   size: 4.0
@@ -2185,7 +2185,7 @@
 - constellation: Virgo
   dec: -5 48
   description: MCG 1-33-10
-  mag: -9999
+  mag: 12.8
   name: NGC 4697
   ra: 12 48.6
   size: 6.0
@@ -2201,7 +2201,7 @@
 - constellation: Virgo
   dec: -8 40
   description: MCG 1-33-13
-  mag: -9999
+  mag: 10.3
   name: NGC 4699
   ra: 12 49
   size: 3.5
@@ -2225,7 +2225,7 @@
 - constellation: Virgo
   dec: +11 19
   description: UGC 8010
-  mag: -9999
+  mag: 12.3
   name: NGC 4754
   ra: 12 52.3
   size: 4.7
@@ -2233,7 +2233,7 @@
 - constellation: Virgo
   dec: +11 14
   description: UGC 8016
-  mag: -9999
+  mag: 12.5
   name: NGC 4762
   ra: 12 52.9
   size: 8.7
@@ -2241,7 +2241,7 @@
 - constellation: Virgo
   dec: -10 32
   description: MCG 2-33-49
-  mag: -9999
+  mag: 12.8
   name: NGC 4781
   ra: 12 54.4
   size: 3.5
@@ -2249,7 +2249,7 @@
 - constellation: Canes Venatici
   dec: +46 32
   description: UGC 8035
-  mag: -9999
+  mag: 12.0
   name: NGC 4800
   ra: 12 54.6
   size: 1.8
@@ -2265,7 +2265,7 @@
 - constellation: Virgo
   dec: -15 2
   description: MCG 2-33-78
-  mag: -9999
+  mag: 12.3
   name: NGC 4856
   ra: 12 59.3
   size: 4.6
@@ -2273,7 +2273,7 @@
 - constellation: Virgo
   dec: +14 10
   description: UGC 8102
-  mag: -9999
+  mag: 13.1
   name: NGC 4866
   ra: 12 59.5
   size: 6.5
@@ -2281,7 +2281,7 @@
 - constellation: Virgo
   dec: +2 30
   description: UGC 8116
-  mag: -9999
+  mag: 12.2
   name: NGC 4900
   ra: 13 0.6
   size: 2.3
@@ -2289,7 +2289,7 @@
 - constellation: Virgo
   dec: -8 1
   description: MCG 1-33-84
-  mag: -9999
+  mag: 12.1
   name: NGC 4958
   ra: 13 5.8
   size: 4.1
@@ -2297,7 +2297,7 @@
 - constellation: Virgo
   dec: -7 50
   description: MCG 1-34-7
-  mag: -9999
+  mag: 12.7
   name: NGC 4995
   ra: 13 9.7
   size: 2.5
@@ -2321,7 +2321,7 @@
 - constellation: Virgo
   dec: -16 38
   description: MCG 3-34-39
-  mag: -9999
+  mag: 11.6
   name: NGC 5054
   ra: 13 17
   size: 5.0
@@ -2337,7 +2337,7 @@
 - constellation: "Bo\xF6tes"
   dec: +8 53
   description: UGC 8616
-  mag: -9999
+  mag: 12.7
   name: NGC 5248
   ra: 13 37.5
   size: 6.5
@@ -2353,7 +2353,7 @@
 - constellation: Ursa Major
   dec: +60 12
   description: UGC 8745
-  mag: -9999
+  mag: 12.6
   name: NGC 5322
   ra: 13 49.3
   size: 5.5
@@ -2369,7 +2369,7 @@
 - constellation: Virgo
   dec: +5 1
   description: NGC 5317
-  mag: -9999
+  mag: 12.3
   name: NGC 5364
   ra: 13 56.2
   size: 7.1
@@ -2385,7 +2385,7 @@
 - constellation: Ursa Major
   dec: +54 54
   description: UGC 9011
-  mag: -9999
+  mag: 12.5
   name: NGC 5473
   ra: 14 4.7
   size: 2.6
@@ -2401,7 +2401,7 @@
 - constellation: "Bo\xF6tes"
   dec: +36 30
   description: UGC 9161
-  mag: -9999
+  mag: 11.8
   name: NGC 5557
   ra: 14 18.4
   size: 2.4
@@ -2441,7 +2441,7 @@
 - constellation: "Bo\xF6tes"
   dec: +49 28
   description: UGC 9366
-  mag: -9999
+  mag: 12.9
   name: NGC 5676
   ra: 14 32.8
   size: 3.9
@@ -2449,7 +2449,7 @@
 - constellation: "Bo\xF6tes"
   dec: +48 45
   description: UGC 9399
-  mag: -9999
+  mag: 13.2
   name: NGC 5689
   ra: 14 35.5
   size: 3.7
@@ -2457,7 +2457,7 @@
 - constellation: Hydra
   dec: -26 32
   description: GCL 29
-  mag: -9999
+  mag: 8.7
   name: NGC 5694
   ra: 14 39.6
   size: 3.6
@@ -2465,7 +2465,7 @@
 - constellation: Virgo
   dec: +1 57
   description: UGC 9499
-  mag: -9999
+  mag: 11.8
   name: NGC 5746
   ra: 14 44.9
   size: 7.9
@@ -2473,7 +2473,7 @@
 - constellation: Virgo
   dec: +1 36
   description: UGC 9706
-  mag: -9999
+  mag: 11.5
   name: NGC 5846
   ra: 15 6.4
   size: 3.4
@@ -2497,7 +2497,7 @@
 - constellation: Draco
   dec: +56 19
   description: NGC 5906
-  mag: -9999
+  mag: 11.8
   name: NGC 5907
   ra: 15 15.9
   size: 12.3
@@ -2505,7 +2505,7 @@
 - constellation: Draco
   dec: +59 21
   description: UGC 9961
-  mag: -9999
+  mag: 13.4
   name: NGC 5982
   ra: 15 38.7
   size: 2.9
@@ -2513,7 +2513,7 @@
 - constellation: Serpens
   dec: -2 17
   description: UGC 10350
-  mag: -9999
+  mag: 12.8
   name: NGC 6118
   ra: 16 21.8
   size: 4.7
@@ -2521,7 +2521,7 @@
 - constellation: Scorpius
   dec: -26 2
   description: GCL 42
-  mag: -9999
+  mag: 8.6
   name: NGC 6144
   ra: 16 27.3
   size: 9.3
@@ -2529,7 +2529,7 @@
 - constellation: Ophiuchus
   dec: -13 3
   description: M 107
-  mag: -9999
+  mag: 7.9
   name: NGC 6171
   ra: 16 32.5
   size: 10.0
@@ -2585,7 +2585,7 @@
 - constellation: Ophiuchus
   dec: -26 35
   description: GCL 55
-  mag: -9999
+  mag: 9.0
   name: NGC 6293
   ra: 17 10.2
   size: 7.9
@@ -2593,7 +2593,7 @@
 - constellation: Ophiuchus
   dec: -29 28
   description: GCL 56
-  mag: -9999
+  mag: 9.5
   name: NGC 6304
   ra: 17 14.5
   size: 6.8
@@ -2649,7 +2649,7 @@
 - constellation: Ophiuchus
   dec: +3 0
   description: GCL 76
-  mag: -9999
+  mag: 11.1
   name: NGC 6426
   ra: 17 44.9
   size: 3.2
@@ -2657,7 +2657,7 @@
 - constellation: Sagittarius
   dec: -20 22
   description: GCL 77
-  mag: -9999
+  mag: 9.5
   name: NGC 6440
   ra: 17 48.9
   size: 5.4
@@ -2665,7 +2665,7 @@
 - constellation: Sagittarius
   dec: -20 1
   description: PK 8+3.1 or H II 586
-  mag: -9999
+  mag: 12.0
   name: NGC 6445
   ra: 17 49.2
   size: 0.6
@@ -2681,7 +2681,7 @@
 - constellation: Sagittarius
   dec: -23 2
   description: M 20
-  mag: -9999
+  mag: 8.0
   name: NGC 6514
   ra: 18 2.3
   size: 29.0
@@ -2689,7 +2689,7 @@
 - constellation: Ophiuchus
   dec: -8 58
   description: GCL 81
-  mag: -9999
+  mag: 10.1
   name: NGC 6517
   ra: 18 1.8
   size: 4.3
@@ -2705,7 +2705,7 @@
 - constellation: Sagittarius
   dec: -30 2
   description: GCL 82
-  mag: -9999
+  mag: 10.3
   name: NGC 6522
   ra: 18 3.6
   size: 5.6
@@ -2721,7 +2721,7 @@
 - constellation: Sagittarius
   dec: -27 49
   description: NGC 6540
-  mag: -9999
+  mag: 8.7
   name: NGC 6540
   ra: 18 6.3
   size: 1.0
@@ -2745,7 +2745,7 @@
 - constellation: Sagittarius
   dec: -25 54
   description: GCL 88
-  mag: -9999
+  mag: 9.9
   name: NGC 6553
   ra: 18 9.3
   size: 8.1
@@ -2777,7 +2777,7 @@
 - constellation: Sagittarius
   dec: -30 22
   description: GCL 93
-  mag: -9999
+  mag: 9.5
   name: NGC 6624
   ra: 18 23.7
   size: 5.9
@@ -2793,7 +2793,7 @@
 - constellation: Ophiuchus
   dec: +6 34
   description: OCL 90
-  mag: -9999
+  mag: 5.1
   name: NGC 6633
   ra: 18 27.7
   size: 27.0
@@ -2833,7 +2833,7 @@
 - constellation: Scutum
   dec: -8 42
   description: GCL 103
-  mag: -9999
+  mag: 8.9
   name: NGC 6712
   ra: 18 53.1
   size: 7.2
@@ -2945,7 +2945,7 @@
 - constellation: Cygnus
   dec: +40 47
   description: OCL 181
-  mag: -9999
+  mag: 6.1
   name: NGC 6910
   ra: 20 23.1
   size: 8.0
@@ -2953,7 +2953,7 @@
 - constellation: Delphinus
   dec: +7 24
   description: GCL 117
-  mag: -9999
+  mag: 9.7
   name: NGC 6934
   ra: 20 34.2
   size: 5.9
@@ -2969,7 +2969,7 @@
 - constellation: Vulpecula
   dec: +28 18
   description: OCL 141
-  mag: -9999
+  mag: 7.5
   name: NGC 6940
   ra: 20 34.6
   size: 31.0
@@ -2977,7 +2977,7 @@
 - constellation: Cepheus
   dec: +60 9
   description: UGC 11597
-  mag: -9999
+  mag: 9.6
   name: NGC 6946
   ra: 20 34.8
   size: 11.0
@@ -2985,7 +2985,7 @@
 - constellation: Cygnus
   dec: +44 20
   description: LBN 373
-  mag: -9999
+  mag: 4.0
   name: NGC 7000
   ra: 20 58.8
   size: 120.0
@@ -3001,7 +3001,7 @@
 - constellation: Cygnus
   dec: +54 33
   description: PK 93+5.2
-  mag: -9999
+  mag: 12.3
   name: NGC 7008
   ra: 21 0.6
   size: 1.4
@@ -3105,7 +3105,7 @@
 - constellation: Cepheus
   dec: +58 6
   description: OCL 244
-  mag: -9999
+  mag: 7.2
   name: NGC 7380
   ra: 22 47
   size: 25.0
@@ -3113,7 +3113,7 @@
 - constellation: Pegasus
   dec: +15 59
   description: UGC 12294
-  mag: -9999
+  mag: 12.7
   name: NGC 7448
   ra: 23 0.1
   size: 2.7
@@ -3137,7 +3137,7 @@
 - constellation: Aquarius
   dec: -8 29
   description: MCG 2-59-12
-  mag: -9999
+  mag: 11.2
   name: NGC 7606
   ra: 23 19.1
   size: 5.8
@@ -3145,7 +3145,7 @@
 - constellation: Andromeda
   dec: +42 33
   description: PK 106-17.1
-  mag: -9999
+  mag: 8.1
   name: NGC 7662
   ra: 23 25.9
   size: 2.2
@@ -3161,7 +3161,7 @@
 - constellation: Aquarius
   dec: -12 58
   description: MCG 2-60-5
-  mag: -9999
+  mag: 12.1
   name: NGC 7723
   ra: 23 38.9
   size: 3.6
@@ -3169,7 +3169,7 @@
 - constellation: Aquarius
   dec: -12 18
   description: MCG 2-60-8
-  mag: -9999
+  mag: 12.2
   name: NGC 7727
   ra: 23 39.9
   size: 4.2
@@ -3193,7 +3193,7 @@
 - constellation: Pegasus
   dec: +16 9
   description: UGC 8
-  mag: -9999
+  mag: 10.9
   name: NGC 7814
   ra: 0 3.3
   size: 6.3

@@ -4,11 +4,13 @@ using Microsoft.Maui.Controls;
 using System.Xml.Linq;
 using SkiaSharp.Views.Maui;
 using System.Diagnostics;
+using System.Web;
 
 namespace AstroWeather.Pages
 {
     public partial class DsoChartPage : ContentPage
     {
+        private const string SimbadUrl = "http://simbad.u-strasbg.fr/simbad/sim-coo";
         DsoObject _selectedDSO;
         public DsoChartPage(DsoObject selectedDso)
         {
@@ -21,8 +23,34 @@ namespace AstroWeather.Pages
             DsotypeLabel.Text = "Type: " + selectedDso.Type;
             DsoDescriptionLabel.Text = selectedDso.Description;
             DsoconstellationLabel.Text = "Constellation: " + selectedDso.Constellation;
+            
+            Debug.WriteLine(GenerateSimbadLink(selectedDso.Ra, selectedDso.Dec, Convert.ToUInt16(selectedDso.Size)));
         }
 
+        static string FormatCoordinates(string ra, string dec)
+        {
+            // Format Right Ascension (RA)
+            string formattedRa = ra.PadLeft(8);  // Ensures that RA is in 'hh mm ss.s' format
+
+            // Format Declination (Dec)
+            string formattedDec = dec.PadLeft(8);  // Ensures that Dec is in 'dd mm ss.s' format
+
+            return formattedRa + " " + formattedDec;
+        }
+        static string GenerateSimbadLink(string ra, string dec, int sizeD)
+        {
+            // Formatowanie współrzędnych RA i Dec
+            string coordinates = FormatCoordinates(ra, dec);
+            string size = (sizeD).ToString();
+            // Generowanie linku do 'sim-coo' z wymaganymi parametrami
+            string baseUrl = SimbadUrl;
+            string encodedCoordinates = HttpUtility.UrlEncode(coordinates);
+
+            // Sklejamy URL z dodatkowymi parametrami
+            string url = $"{baseUrl}?Coord={encodedCoordinates}&CooFrame=FK5&CooEpoch=2000&CooEqui=2000&CooDefinedFrames=none&Radius={size}&Radius.unit=arcmin&submit=submit+query&CoordList=";
+
+            return url;
+        }
         protected override void OnAppearing()
         {
             base.OnAppearing();
@@ -39,6 +67,14 @@ namespace AstroWeather.Pages
                     dsoToUpdate.photo = true;
                 }
             });
+        }
+
+        private async void OnComputeClickedSimbad(object sender, EventArgs e)
+        {
+            string simbadLink = GenerateSimbadLink(_selectedDSO.Ra!, _selectedDSO.Dec!, Convert.ToUInt16(_selectedDSO.Size));
+
+            await Launcher.OpenAsync(new Uri(simbadLink));
+
         }
         private void OnCanvasPaint(object sender, SKPaintSurfaceEventArgs e)
         {

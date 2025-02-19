@@ -77,10 +77,8 @@ namespace AstroWeather
         }
         private async Task MainInit()
         {
-            var isAPI = await LogFileGetSet.GetAPIKeyAsync();
-            var isDefLoc = await LogFileGetSet.LoadDefaultLocAsync();
-
-            if (isAPI == null || isDefLoc == null)
+            
+            if (!WeatherRouter.IsApiVariables())
             {
                 await Dispatcher.DispatchAsync(async () =>
                 {

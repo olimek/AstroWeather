@@ -47,6 +47,14 @@ namespace AstroWeather.Helpers
                 return null;
             }
         }
+
+        public static bool IsApiVariables()
+        {
+            var isAPI =  LogFileGetSet.GetAPIKeyAsync();
+            var isDefLoc =  LogFileGetSet.LoadDefaultLocAsync();
+            if (isAPI == null || isDefLoc == null) return false;
+            else return true;        
+        }
         public static async Task<List<Day>>? SetWeatherBindingContextAsync()
         {
             var weatherInfo = await WeatherRouter.GetWeatherInfoAsync();

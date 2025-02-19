@@ -52,41 +52,54 @@ namespace AstroWeather.Pages
 
         private async Task LoadWeatherData()
         {
+
             var weatherRouter = new WeatherRouter();
-            var carousel = await weatherRouter.GetCarouselViewAsync();
-            carouselDATA = carousel?.ToList() ?? new List<DayWithHours>();
 
-            weatherCarousel.ItemsSource = carouselDATA;
 
-            int selectedIndex;
-            if (!DateTime.TryParse(SelectedDay?.datetime, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime targetDate))
+            if (!WeatherRouter.IsApiVariables())
             {
-                targetDate = DateTime.UtcNow;
-                selectedIndex = 0;
-            }
-
-            selectedIndex = 0;
-            TimeSpan minDelta = TimeSpan.MaxValue;
-
-            for (int i = 0; i < carouselDATA.Count; i++)
-            {
-                if (DateTime.TryParseExact(carouselDATA[i].Date, "dd.MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime itemDate))
+                await Dispatcher.DispatchAsync(async () =>
                 {
-                    TimeSpan delta = (itemDate - targetDate).Duration();
+                    await Shell.Current.GoToAsync("//SettingsPage");
+                });
+            }
+            else
+            {
+                var carousel = await weatherRouter.GetCarouselViewAsync();
+                carouselDATA = carousel?.ToList() ?? new List<DayWithHours>();
 
-                    if (delta < minDelta)
+                weatherCarousel.ItemsSource = carouselDATA;
+
+                int selectedIndex;
+                if (!DateTime.TryParse(SelectedDay?.datetime, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime targetDate))
+                {
+                    targetDate = DateTime.UtcNow;
+                    selectedIndex = 0;
+                }
+
+                selectedIndex = 0;
+                TimeSpan minDelta = TimeSpan.MaxValue;
+
+                for (int i = 0; i < carouselDATA.Count; i++)
+                {
+                    if (DateTime.TryParseExact(carouselDATA[i].Date, "dd.MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime itemDate))
                     {
-                        minDelta = delta;
-                        selectedIndex = i;
+                        TimeSpan delta = (itemDate - targetDate).Duration();
+
+                        if (delta < minDelta)
+                        {
+                            minDelta = delta;
+                            selectedIndex = i;
+                        }
                     }
                 }
+                weatherCarousel.Loaded += (s, e) =>
+                {
+                    var targetItem = carouselDATA[selectedIndex];
+                    weatherCarousel.ScrollTo(targetItem, ScrollToPosition.Center, animate: false);
+                    indicatorView.Position = selectedIndex;
+                };
             }
-            weatherCarousel.Loaded += (s, e) =>
-            {
-                var targetItem = carouselDATA[selectedIndex];
-                weatherCarousel.ScrollTo(targetItem, ScrollToPosition.Center, animate: false);
-                indicatorView.Position = selectedIndex;
-            };
         }
     }
 }
