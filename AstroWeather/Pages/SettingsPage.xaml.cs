@@ -15,6 +15,8 @@ namespace AstroWeather.Pages
             InitializeComponent();
             _ = LoadApiKeys();
             BindingContext = this;
+            
+
         }
 
         private async Task LoadApiKeys()
@@ -22,12 +24,14 @@ namespace AstroWeather.Pages
             var apiKeys = await LogFileGetSet.LoadDataAsync("APIkey", () => new List<string>());
             string test = apiKeys != null && apiKeys.Count > 0 ? apiKeys[0] : string.Empty;
             APIkeyInput.Text = test;
+         
         }
 
         private async void OnEntryTextChanged(object sender, TextChangedEventArgs e)
         {
             string myText = APIkeyInput.Text;
             await _logFileGetSet.StoreDataAsync("APIkey", new List<string> { myText });
+            await Navigation.PushModalAsync(new AstroWeather.Pages.PopUp("Klucz API zapisany"));
         }
 
         private async void OnComputeClicked(object sender, EventArgs e)
@@ -50,6 +54,7 @@ namespace AstroWeather.Pages
 
             await PopupView.FadeTo(0, 250, Easing.CubicInOut);
             PopupView.IsVisible = false;
+            await Navigation.PushModalAsync(new AstroWeather.Pages.PopUp("Dodano nową lokalizację"));
         }
     }
 }

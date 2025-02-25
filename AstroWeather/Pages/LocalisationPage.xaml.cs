@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics;
+using System.Text.Json;
 using AstroWeather.Helpers;
 
 namespace AstroWeather.Pages
@@ -28,7 +29,6 @@ namespace AstroWeather.Pages
         }
         private async Task LoadJsonDataAsync()
         {
-
             var jsonData = await LogFileGetSet.LoadAllDataAsync();
 
             var filteredData = jsonData
@@ -56,6 +56,11 @@ namespace AstroWeather.Pages
                      }
                      return new List<double>();
                  });
+
+            foreach (var kvp in filteredData)
+            {
+                Debug.WriteLine($"Key: {kvp.Key}, Value: {string.Join(", ", kvp.Value)}");
+            }
 
             LocalisationCollectionView.ItemsSource = filteredData.Select(kvp => new
             {

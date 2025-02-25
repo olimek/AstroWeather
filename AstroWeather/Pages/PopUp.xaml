@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="AstroWeather.Pages.PopUp"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:AstroWeather.Pages"
+    Title="PopUp"
+    BackgroundColor="#aa000000">
+
+    <Grid>
+        <Grid.GestureRecognizers>
+            <TapGestureRecognizer Tapped="TapGestureRecognizer_OnTapped" />
+        </Grid.GestureRecognizers>
+
+        <Border
+            Margin="30"
+            Padding="30"
+            Background="White"
+            StrokeShape="{RoundRectangle CornerRadius=20}"
+            VerticalOptions="End">
+            <Label
+                x:Name="popupLabel"
+                Text="This is a popup!"
+                TextColor="Black" />
+        </Border>
+    </Grid>
+</ContentPage>

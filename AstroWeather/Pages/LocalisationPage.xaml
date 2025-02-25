@@ -17,18 +17,17 @@
 
             <CollectionView
                 x:Name="LocalisationCollectionView"
-                x:DataType="local:LocalisationItem"
                 HorizontalOptions="FillAndExpand"
                 SelectionChanged="OnItemSelected"
                 SelectionMode="Single"
                 VerticalOptions="FillAndExpand">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="local:LocalisationItem">
+                    <DataTemplate>
                         <StackLayout Padding="10">
                             <Label
                                 FontSize="16"
                                 Text="{Binding Key}"
-                                TextColor="Black" />
+                                TextColor="LightGray" />
                             <Label
                                 FontSize="14"
                                 Text="{Binding Value}"

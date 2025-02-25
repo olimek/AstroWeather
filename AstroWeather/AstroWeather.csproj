@@ -131,6 +131,9 @@
 	  <MauiXaml Update="Pages\DsoChartPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Pages\PopUp.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Pages\TargetsList.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

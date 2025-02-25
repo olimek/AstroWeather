@@ -26,6 +26,7 @@ namespace AstroWeather
             base.OnAppearing();
             await RefreshWeatherIfNeeded();
             await DrawMoonGraph(0);
+            
         }
 
         private async Task RefreshWeatherIfNeeded()

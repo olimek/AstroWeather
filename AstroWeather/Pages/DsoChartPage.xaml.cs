@@ -24,7 +24,7 @@ namespace AstroWeather.Pages
             DsoDescriptionLabel.Text = selectedDso.Description;
             DsoconstellationLabel.Text = "Constellation: " + selectedDso.Constellation;
             
-            Debug.WriteLine(GenerateSimbadLink(selectedDso.Ra, selectedDso.Dec, Convert.ToUInt16(selectedDso.Size)));
+            Debug.WriteLine(GenerateSimbadLink(selectedDso.Ra!, selectedDso.Dec!, Convert.ToUInt16(selectedDso.Size)));
         }
 
         static string FormatCoordinates(string ra, string dec)
