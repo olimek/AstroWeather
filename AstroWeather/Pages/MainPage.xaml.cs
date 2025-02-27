@@ -29,7 +29,7 @@ namespace AstroWeather
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-
+           
             // === TUTAJ NOWY KOD: Inicjalizacja timera co 3h ===
             weatherTimer = new System.Timers.Timer(TimeSpan.FromHours(3).TotalMilliseconds);
             weatherTimer.Elapsed += async (s, e) =>
@@ -174,6 +174,7 @@ namespace AstroWeather
             }
             else
             {
+                await Navigation.PushModalAsync(new AstroWeather.Pages.PopUp("Pobieranie pogody"));
                 var pogodaDzienna = await WeatherRouter.SetWeatherBindingContextAsync()!;
                 GlobalWeatherList = pogodaDzienna!.ToList()!;
                 LastWeatherUpdateTime = DateTime.UtcNow!;

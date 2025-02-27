@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 
@@ -58,42 +58,81 @@ namespace AstroWeather.Pages
                 finished: (v, k) => this.Content.TranslationY = 0);
         }
 
-        [Obsolete]
+
         public Task PoppingOut()
         {
-            var done = new TaskCompletionSource();
+            // Najlepiej użyć TaskCompletionSource<bool>, aby zwrócić Task<bool>
+            var done = new TaskCompletionSource<bool>();
 
-            // Measure the content size so we know how much to translate
-            var contentSize = this.Content.Measure(Window.Width, Window.Height, MeasureFlags.IncludeMargins);
-            var windowHeight = contentSize.Request.Height;
+            // Jeśli Content jest null, przerywamy animację, by uniknąć NullReferenceException
+            if (this.Content == null)
+            {
+                done.TrySetResult(true);
+                return done.Task;
+            }
 
-            // Start fading out the background
-            this.Animate("Background",
+            // Pobieramy wymiary bieżącej strony (lub kontrolki)
+            double pageWidth = this.Width;
+            double pageHeight = this.Height;
+
+            // Jeśli strona nie została jeszcze zmierzona, wymiary mogą być 0 lub NaN
+            // Ustawiamy awaryjnie np. 300x600
+            if (double.IsNaN(pageWidth) || double.IsNaN(pageHeight) || pageWidth <= 0 || pageHeight <= 0)
+            {
+                pageWidth = 300;
+                pageHeight = 600;
+            }
+
+            // Mierzymy rozmiar Content
+            var contentSize = this.Content.Measure(pageWidth, pageHeight, MeasureFlags.IncludeMargins);
+            double windowHeight = contentSize.Request.Height;
+
+            // Jeśli pomiar dał 0, ustaw awaryjnie na wysokość strony
+            if (windowHeight <= 0)
+            {
+                windowHeight = pageHeight;
+            }
+
+            // Animacja "Background": wygaszanie tła
+            this.Animate(
+                name: "Background",
                 callback: v => this.Background = new SolidColorBrush(Colors.Black.WithAlpha((float)v)),
                 start: 0.7d,
                 end: 0d,
                 rate: 32,
                 length: 350,
                 easing: Easing.CubicIn,
-                finished: (v, k) => this.Background = new SolidColorBrush(Colors.Black.WithAlpha(0.0f)));
+                finished: (v, k) => this.Background = new SolidColorBrush(Colors.Black.WithAlpha(0.0f))
+            );
 
-            // Start sliding the content down below the bottom of the screen
-            this.Animate("Content",
-                callback: v => this.Content.TranslationY = (int)(windowHeight - v),
+            // Animacja "Content": przesuwanie zawartości w dół
+            this.Animate(
+                name: "Content",
+                callback: v =>
+                {
+                    if (this.Content != null)
+                    {
+                        // (windowHeight - v) będzie zmniejszać się od windowHeight do 0
+                        this.Content.TranslationY = (int)(windowHeight - v);
+                    }
+                },
                 start: windowHeight,
                 end: 0,
                 length: 500,
                 easing: Easing.CubicInOut,
                 finished: (v, k) =>
                 {
-                    this.Content.TranslationY = windowHeight;
-                    // Important: Set our completion source to done!
-                    done.TrySetResult();
-                });
+                    if (this.Content != null)
+                        this.Content.TranslationY = windowHeight;
 
-            // We return the task so we can wait for the animation to finish
+                    // Zwracamy kontrolę – animacja się skończyła
+                    done.TrySetResult(true);
+                }
+            );
+
             return done.Task;
         }
+
 
         private async void TapGestureRecognizer_OnTapped(object sender, TappedEventArgs e)
         {
