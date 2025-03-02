@@ -29,4 +29,5 @@
         Title="Settings"
         ContentTemplate="{DataTemplate local:Pages.SettingsPage}"
         Route="SettingsPage" />
+
 </Shell>

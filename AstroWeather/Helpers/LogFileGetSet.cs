@@ -175,7 +175,7 @@ namespace AstroWeather.Helpers
                 return new Dictionary<string, object>();
             }
         }
-
+   
         public static async Task<List<double>?> LoadDefaultLocAsync()
         {
             var defaultLoc = await LogFileGetSet.LoadDataAsync("DefaultLoc", () => new List<string>());

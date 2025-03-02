@@ -128,6 +128,7 @@ namespace AstroWeather
 
         public async Task ShowNotification(string title, string message)
         {
+            await Task.Delay(1000*60); 
             try
             {
 #if ANDROID

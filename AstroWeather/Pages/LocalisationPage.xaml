@@ -36,6 +36,7 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
+            <Button Clicked="OnGetLocationClicked" Text="Pobierz lokalizację z GPS" />
         </StackLayout>
 
         <ContentView
