@@ -1,23 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Net.Http;
+﻿using System.Globalization;
 using System.Text.Json;
-using System.Threading.Tasks;
 using CosineKitty;
-using Innovative.Geometry;
 using NodaTime;
-using NodaTime.Extensions;
 using SolCalc;
 using SolCalc.Data;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AstroWeather.Helpers
 {
     public class WeatherRouter
     {
-        
         private static WeatherApi? weatherData = null;
         private static double lat;
         private static double lon;
@@ -50,11 +41,12 @@ namespace AstroWeather.Helpers
 
         public static bool IsApiVariables()
         {
-            var isAPI =  LogFileGetSet.GetAPIKeyAsync();
-            var isDefLoc =  LogFileGetSet.LoadDefaultLocAsync();
+            var isAPI = LogFileGetSet.GetAPIKeyAsync();
+            var isDefLoc = LogFileGetSet.LoadDefaultLocAsync();
             if (isAPI == null || isDefLoc == null) return false;
-            else return true;        
+            else return true;
         }
+
         public static async Task<List<Day>>? SetWeatherBindingContextAsync()
         {
             var weatherInfo = await WeatherRouter.GetWeatherInfoAsync();
@@ -68,9 +60,9 @@ namespace AstroWeather.Helpers
             {
                 return dailyData;
             }
-            return new List<Day>(); 
+            return new List<Day>();
         }
-        
+
         public async Task<List<DayWithHours>?> GetCarouselViewAsync()
         {
             var weatherInfo = await WeatherRouter.GetWeatherInfoAsync();
@@ -83,7 +75,7 @@ namespace AstroWeather.Helpers
 
             if (ss.Count != 0)
             {
-                var daysWithHours = new List<DayWithHours>(); 
+                var daysWithHours = new List<DayWithHours>();
 
                 for (int i = 0; i < ss.Count; i++)
                 {
@@ -115,6 +107,7 @@ namespace AstroWeather.Helpers
 
             return null;
         }
+
         private static string GetPolishDayOfWeek(DateTime date)
         {
             string[] dniTygodnia = { "Niedziela", "Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota" };
@@ -141,13 +134,13 @@ namespace AstroWeather.Helpers
 
         public static string GetMoonImage(double moonIllumination, double phaseAngle)
         {
-            moonIllumination = Math.Clamp(moonIllumination, 0, 100); 
+            moonIllumination = Math.Clamp(moonIllumination, 0, 100);
             phaseAngle = phaseAngle % 360;
 
             if (moonIllumination <= 10)
-                return "new_moon.png";  
+                return "new_moon.png";
             else if (moonIllumination >= 90)
-                return "full_moon.png";  
+                return "full_moon.png";
 
             if (phaseAngle >= 0 && phaseAngle < 180)
             {
@@ -168,7 +161,7 @@ namespace AstroWeather.Helpers
                     return "waning_crescent.png";
             }
 
-            return "new_moon.png"; 
+            return "new_moon.png";
         }
 
         private static string RoundHours(string dateTime, string round)
@@ -463,7 +456,7 @@ namespace AstroWeather.Helpers
             }
             return listOfHoursPerDay;
         }
-        
+
         private static async Task<string> ReadResponseFromUrlAsync(string url)
         {
             using (var httpClient = new HttpClient())
@@ -473,7 +466,5 @@ namespace AstroWeather.Helpers
                 return await response.Content.ReadAsStringAsync();
             }
         }
-
-
     }
 }

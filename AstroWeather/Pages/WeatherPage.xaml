@@ -30,12 +30,10 @@
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="*" />
-
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
-
                                 </Grid.ColumnDefinitions>
                                 <Label
                                     Grid.Row="0"
@@ -87,17 +85,14 @@
                                     Grid.Column="1"
                                     Padding="5"
                                     Text="{Binding astroend, StringFormat='Astro night: {0:dd.MM HH:mm}'}" />
-
                             </Grid>
                         </Border>
                         <Border
                             Padding="5"
                             BackgroundColor="{DynamicResource SecondaryColor}"
-                            
+
                             HeightRequest="400"
                             HorizontalOptions="Center">
-
-
 
                             <CollectionView ItemsSource="{Binding Hours}">
 
@@ -191,7 +186,6 @@
                                     </DataTemplate>
                                 </CollectionView.ItemTemplate>
                             </CollectionView>
-
                         </Border>
                     </StackLayout>
                 </DataTemplate>

@@ -73,14 +73,13 @@
                             FontSize="16"
                             Text=""
                             TextColor="{DynamicResource SecondaryTextColor}" />
-
                     </VerticalStackLayout>
                 </Grid>
             </Border>
 
             <!--  Prognoza na kolejne godziny  -->
             <CollectionView
-               
+
                 ItemsLayout="HorizontalList"
                 ItemsSource="{Binding weather}"
                 Scrolled="OnCollectionViewScrolled"
@@ -94,11 +93,9 @@
                             Stroke="{Binding astrocond, Converter={StaticResource AstroCondToColorConverter}}"
                             StrokeThickness="3">
 
-
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="20,0,0,20" />
                             </Border.StrokeShape>
-
 
                             <Grid Padding="15">
                                 <Grid.RowDefinitions>
@@ -114,7 +111,6 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
-
                                 </Grid.ColumnDefinitions>
                                 <Label
                                     Grid.Row="0"
@@ -198,16 +194,11 @@
                                     HorizontalTextAlignment="End"
                                     Text="{Binding AstroTimes[4], StringFormat='{0:dd.MM HH:mm}'}"
                                     VerticalTextAlignment="Start" />
-
                             </Grid>
-
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-
-
         </VerticalStackLayout>
     </ScrollView>
-
 </ContentPage>

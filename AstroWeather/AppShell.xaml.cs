@@ -5,10 +5,10 @@ namespace AstroWeather
     {
         public AppShell()
         {
-            
+
             InitializeComponent();
-          
-            
+
+
         }
     }
 }

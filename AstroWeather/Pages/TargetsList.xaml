@@ -39,7 +39,6 @@
                         <x:String>GaryImm_default_(200)</x:String>
                         <x:String>Herschel(400)</x:String>
                         <x:String>Messier</x:String>
-
                     </Picker.Items>
                 </Picker>
                 <CollectionView
@@ -101,7 +100,6 @@
                 VerticalOptions="Center">
                 <VerticalStackLayout Spacing="20">
 
-
                     <Entry
                         x:Name="MinSize"
                         Placeholder="MinSize '"
@@ -114,7 +112,6 @@
                         WidthRequest="200" />
                     <Button Clicked="ClearPhotographed" Text="Clear Photographed" />
                     <Button Clicked="OnClosePopupClicked" Text="Close" />
-
                 </VerticalStackLayout>
             </Border>
         </ContentView>

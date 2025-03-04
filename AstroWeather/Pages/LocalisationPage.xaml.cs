@@ -1,11 +1,14 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json;
-#if ANDROID
-using Android.Gms.Common.Util;
-#endif
-using AstroWeather.Helpers;
 
+#if ANDROID
+
+using Android.Gms.Common.Util;
+
+#endif
+
+using AstroWeather.Helpers;
 
 namespace AstroWeather.Pages
 {
@@ -14,6 +17,7 @@ namespace AstroWeather.Pages
         public string? Key { get; set; }
         public string? Value { get; set; }
     }
+
     public partial class LocalisationPage : ContentPage
     {
         private SelectionChangedEventArgs? _selectedEventArgs;
@@ -21,12 +25,11 @@ namespace AstroWeather.Pages
 
         public LocalisationPage()
         {
-
             InitializeComponent();
             BindingContext = this;
             _ = CheckDefaultLocAsync();
-
         }
+
         protected override async void OnAppearing()
         {
             base.OnAppearing();
@@ -55,12 +58,10 @@ namespace AstroWeather.Pages
                         double latitude = location.Latitude;
                         double longitude = location.Longitude;
 
-                        // Wyświetlamy komunikat z aktualną lokalizacją
                         await DisplayAlert("Lokalizacja pobrana",
                             $"Szerokość: {latitude}, Długość: {longitude}",
                             "OK");
 
-                        // Pytamy, czy zapisać
                         bool shouldSave = await DisplayAlert(
                             "Zapisz lokalizację?",
                             "Czy chcesz zapisać tę lokalizację w aplikacji?",
@@ -69,21 +70,17 @@ namespace AstroWeather.Pages
 
                         if (shouldSave)
                         {
-                            // Podstawiamy domyślnie odczytane współrzędne do pól
                             LatitudeInput.Text = latitude.ToString(CultureInfo.InvariantCulture);
                             LongitudeInput.Text = longitude.ToString(CultureInfo.InvariantCulture);
 
-                            // Możesz ustawić również domyślną nazwę, np. "GPS_20250301_1200"
                             nameInput.Text = $"GPS_{DateTime.Now:yyyyMMdd_HHmm}";
 
-                            // Otwieramy istniejący popup
                             PopupView.IsVisible = true;
                             await PopupView.FadeTo(1, 250, Easing.CubicInOut);
                         }
                     }
                     else
                     {
-                        // location == null
                         await DisplayAlert("Błąd", "Nie udało się pobrać lokalizacji.", "OK");
                     }
                 }
@@ -110,6 +107,7 @@ namespace AstroWeather.Pages
                 await DisplayAlert("Brak uprawnień", "Nie przyznano uprawnień do lokalizacji.", "OK");
             }
         }
+
         private async Task LoadJsonDataAsync()
         {
             var jsonData = await LogFileGetSet.LoadAllDataAsync();
@@ -196,7 +194,6 @@ namespace AstroWeather.Pages
                 _ = LoadJsonDataAsync();
                 if (isDefault)
                 {
-                    // Czy są jeszcze jakieś lokalizacje w bazie?
                     var allData = await LogFileGetSet.LoadAllDataAsync();
                     var localisationsLeft = allData
                         .Where(kvp => kvp.Key.StartsWith("Localisation_"))
@@ -205,14 +202,12 @@ namespace AstroWeather.Pages
 
                     if (localisationsLeft.Any())
                     {
-                        // Ustaw pierwszą z pozostałych jako domyślną
                         string newDefaultName = localisationsLeft.First();
                         await _logFileGetSet.StoreDataAsync("DefaultLoc", new List<string> { newDefaultName });
                         await DisplayAlert("Info", $"Lokalizacja '{newDefaultName}' została nową lokalizacją domyślną.", "OK");
                     }
                     else
                     {
-                        // Nie ma żadnej lokalizacji – pytamy, czy dodać nową
                         bool shouldAdd = await DisplayAlert(
                             "Brak lokalizacji",
                             "Usunięto ostatnią lokalizację. Czy chcesz dodać nową?",
@@ -221,7 +216,6 @@ namespace AstroWeather.Pages
 
                         if (shouldAdd)
                         {
-                            // Otwieramy popup z pustymi polami
                             nameInput.Text = "";
                             LatitudeInput.Text = "";
                             LongitudeInput.Text = "";
@@ -234,7 +228,6 @@ namespace AstroWeather.Pages
                 }
                 _ = LoadJsonDataAsync();
                 _ = CheckDefaultLocAsync();
-                // Odśwież widok / cofnięcie
                 await Shell.Current.GoToAsync("//LocalisationPage");
             }
         }
@@ -255,7 +248,6 @@ namespace AstroWeather.Pages
             var defaultLatLon = await LogFileGetSet.LoadDefaultLocAsync();
             if (defaultLatLon == null || defaultLatLon.Count == 0)
             {
-                // Jeśli nie było, ustaw nowo zapisaną lokalizację jako domyślną
                 await _logFileGetSet.StoreDataAsync("DefaultLoc", new List<string> { name });
                 await DisplayAlert("Info", $"Lokalizacja '{name}' została ustawiona jako domyślna.", "OK");
             }
@@ -275,7 +267,6 @@ namespace AstroWeather.Pages
             if (defaultLatLon != null && defaultLatLon.Count > 1)
             {
                 SelectedLabel.Text = $"Selected Localisation: {defaultLatLonName} ({defaultLatLon[0]}, {defaultLatLon[1]})";
-                
             }
         }
     }

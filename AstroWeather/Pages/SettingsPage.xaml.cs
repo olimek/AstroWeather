@@ -1,22 +1,18 @@
-﻿using System.Collections.Generic;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using AstroWeather.Helpers;
-using Microsoft.Maui.Controls;
 
 namespace AstroWeather.Pages
 {
     public partial class SettingsPage : ContentPage
     {
         public static ICommand TapCommand => new Command<string>(async (url) => await Launcher.OpenAsync(url));
-        private readonly LogFileGetSet _logFileGetSet = new LogFileGetSet(); 
+        private readonly LogFileGetSet _logFileGetSet = new LogFileGetSet();
 
         public SettingsPage()
         {
             InitializeComponent();
             _ = LoadApiKeys();
             BindingContext = this;
-            
-
         }
 
         private async Task LoadApiKeys()
@@ -24,14 +20,13 @@ namespace AstroWeather.Pages
             var apiKeys = await LogFileGetSet.LoadDataAsync("APIkey", () => new List<string>());
             string test = apiKeys != null && apiKeys.Count > 0 ? apiKeys[0] : string.Empty;
             APIkeyInput.Text = test;
-         
         }
 
         private async void OnEntryTextChanged(object sender, TextChangedEventArgs e)
         {
             string myText = APIkeyInput.Text;
             await _logFileGetSet.StoreDataAsync("APIkey", new List<string> { myText });
-            if(myText.Length == 25) await Navigation.PushModalAsync(new AstroWeather.Pages.PopUp("Klucz API zapisany"));
+            if (myText.Length == 25) await Navigation.PushModalAsync(new AstroWeather.Pages.PopUp("Klucz API zapisany"));
         }
 
         private async void OnComputeClicked(object sender, EventArgs e)

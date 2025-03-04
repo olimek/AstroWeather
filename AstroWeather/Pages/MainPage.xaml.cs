@@ -1,14 +1,8 @@
-﻿using AstroWeather.Helpers;
-using Microsoft.Maui.Controls;
+﻿using System.Diagnostics;
+using AstroWeather.Helpers;
 using CosineKitty;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Diagnostics;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.EventArgs;
-using System.Timers; // Dodaj using dla System.Timers
 
 namespace AstroWeather
 {
@@ -17,7 +11,6 @@ namespace AstroWeather
         public static List<AstroWeather.Helpers.Day> GlobalWeatherList = [];
         private static DateTime LastWeatherUpdateTime = DateTime.MinValue;
 
-        // === TUTAJ NOWY KOD ===
         private System.Timers.Timer weatherTimer;
 
         public MainPage()
@@ -29,8 +22,7 @@ namespace AstroWeather
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-           
-            // === TUTAJ NOWY KOD: Inicjalizacja timera co 3h ===
+
             weatherTimer = new System.Timers.Timer(TimeSpan.FromHours(3).TotalMilliseconds);
             weatherTimer.Elapsed += async (s, e) =>
             {
@@ -41,8 +33,6 @@ namespace AstroWeather
             };
             weatherTimer.AutoReset = true;
             weatherTimer.Start();
-
-            // Jednorazowe odświeżenie przy starcie
             await RefreshWeatherIfNeeded();
             await DrawMoonGraph(0);
         }
@@ -51,15 +41,12 @@ namespace AstroWeather
         {
             base.OnDisappearing();
 
-            // === TUTAJ NOWY KOD: zatrzymanie timera ===
             if (weatherTimer != null)
             {
                 weatherTimer.Stop();
                 weatherTimer.Dispose();
                 weatherTimer = null;
             }
-
-            // Wyrejestrowanie zdarzenia, by uniknąć wielokrotnej subskrypcji
             LocalNotificationCenter.Current.NotificationActionTapped -= OnNotificationTapped;
         }
 
@@ -128,7 +115,7 @@ namespace AstroWeather
 
         public async Task ShowNotification(string title, string message)
         {
-            await Task.Delay(1000*60); 
+            await Task.Delay(1000 * 60);
             try
             {
 #if ANDROID

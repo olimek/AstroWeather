@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.Maui.Storage;
-using Microsoft.Maui.Controls;
+﻿using System.Text.Json;
 
 namespace AstroWeather.Helpers
 {
@@ -175,7 +168,7 @@ namespace AstroWeather.Helpers
                 return new Dictionary<string, object>();
             }
         }
-   
+
         public static async Task<List<double>?> LoadDefaultLocAsync()
         {
             var defaultLoc = await LogFileGetSet.LoadDataAsync("DefaultLoc", () => new List<string>());

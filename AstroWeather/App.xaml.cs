@@ -1,10 +1,4 @@
-﻿using System.ComponentModel.Design;
-using AstroWeather.Helpers;
-using AstroWeather.Pages;
-using CosineKitty;
-
-
-namespace AstroWeather
+﻿namespace AstroWeather
 
 {
     public partial class App : Application

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using CosineKitty;
+﻿using CosineKitty;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
+
 namespace AstroWeather
 {
     public class DsoObject
@@ -22,14 +20,15 @@ namespace AstroWeather
         public bool photo { get; set; }
     }
 }
+
 namespace AstroWeather.Helpers
 {
     public class DsoCalculator
     {
         private readonly List<AstroWeather.DsoObject> _dsoObjects;
+
         private static async Task<string?> ReadYamlFileAsync(string fileName)
         {
-
             var streamhh = await FileSystem.AppPackageFileExistsAsync(fileName);
             if (streamhh)
             {
@@ -40,6 +39,7 @@ namespace AstroWeather.Helpers
             }
             else { return null; }
         }
+
         private DsoCalculator(List<AstroWeather.DsoObject> dsoObjects)
         {
             _dsoObjects = dsoObjects;
@@ -135,7 +135,6 @@ namespace AstroWeather.Helpers
             return sign * absDegrees;
         }
 
-
         public static List<Tuple<float, float>> calculateDSOpath(AstroWeather.DsoObject dso, DateTime dateUtc, List<DateTime> astrotimes, double lat, double lon)
         {
             List<Tuple<float, float>> trajectory = new List<Tuple<float, float>>();
@@ -167,7 +166,6 @@ namespace AstroWeather.Helpers
                         Convert.ToSingle(topo.altitude)
                     ));
                 }
-
             }
             return trajectory;
         }
@@ -180,7 +178,6 @@ namespace AstroWeather.Helpers
 
             double raRad = ParseRA(dso.Ra!);
             double decRad = ParseDec(dso.Dec!);
-
 
             Astronomy.DefineStar(Body.Star1, raRad, decRad, 1000);
 
@@ -209,7 +206,6 @@ namespace AstroWeather.Helpers
                 }
             }
 
-
             double totalNight = (sunrise - sunset).TotalHours;
             dso.Visible = Math.Min((visibleTime / totalNight) * 100.0, 100.0);
             dso.MaxAlt = maxAlt;
@@ -222,7 +218,7 @@ namespace AstroWeather.Helpers
 
                 .Select(dso => CalculateVisibilityAndAltitude(dso, dateUtc, astrotimes, lat, lon))
                 .ToList();
-           
+
             return calculatedDsoObjects
          .Where(dso => !dso.photo)
          .OrderByDescending(dso => dso.SumAlitude)

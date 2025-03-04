@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AstroWeather.Helpers
+﻿namespace AstroWeather.Helpers
 {
     public class Hour
     {
@@ -55,9 +49,7 @@ namespace AstroWeather.Helpers
         public string? address { get; set; }
         public string? timezone { get; set; }
         public double tzoffset { get; set; }
-        
+
         public IList<Day>? days { get; set; }
     }
-
-
 }

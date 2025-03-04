@@ -1,7 +1,7 @@
-﻿using Microsoft.Maui.Controls;
-using System;
-using System.Globalization;
+﻿using System.Globalization;
+
 namespace AstroWeather.Helpers;
+
 public class AstroCondToColorConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)

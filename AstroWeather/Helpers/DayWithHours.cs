@@ -13,6 +13,5 @@
         public string? astroend { get; set; }
         public string? moonilum { get; set; }
         public string? condition { get; set; }
-
     }
 }

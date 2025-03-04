@@ -1,36 +1,36 @@
 ﻿using System.Diagnostics;
-using System.Security.Cryptography;
 using AstroWeather.Helpers;
-using Microsoft.Maui.Storage;
 
 namespace AstroWeather.Pages;
 
 public partial class TargetsList : ContentPage
 {
-    double minsize = 0;
-    double maxsize = 9999;
+    private double minsize = 0;
+    private double maxsize = 9999;
     private string _selectedDSO;
+
     public TargetsList()
     {
         InitializeComponent();
-        
     }
+
     protected override async void OnAppearing()
     {
         base.OnAppearing();
         await InitDsoAsync();
     }
+
     private string PickerToFile()
     {
         if (_selectedDSO == "Herschel(400)") return "Herschel400.yaml";
-        else if(_selectedDSO == "Messier") return "Messier.yaml";
+        else if (_selectedDSO == "Messier") return "Messier.yaml";
         else return "GaryImm.yaml";
-
     }
+
     private async Task InitDsoAsync()
     {
         string fileName = PickerToFile();
-        
+
         DsoCalculator dsoCalculator = await DsoCalculator.CreateAsync(fileName);
         DateTime now = DateTime.UtcNow;
         var astroTimes = WeatherRouter.GetAstroTimes(now, true);
@@ -41,6 +41,7 @@ public partial class TargetsList : ContentPage
 
         DsoCollectionView.ItemsSource = calculatedDSO.Where(dso => dso.Size >= minsize && dso.Size <= maxsize);
     }
+
     private async void OnComputeClicked2(object sender, EventArgs e)
     {
         PopupView.IsVisible = true;
@@ -55,7 +56,8 @@ public partial class TargetsList : ContentPage
         await PopupView.FadeTo(0, 250, Easing.CubicInOut);
         PopupView.IsVisible = false;
     }
-    void OnPickerSelectedIndexChanged(object sender, EventArgs e)
+
+    private void OnPickerSelectedIndexChanged(object sender, EventArgs e)
     {
         var picker = (Picker)sender;
         int selectedIndex = picker.SelectedIndex;
@@ -68,6 +70,7 @@ public partial class TargetsList : ContentPage
         }
         _ = InitDsoAsync();
     }
+
     private async void ClearPhotographed(object sender, EventArgs e)
     {
         string fileName = PickerToFile();
@@ -78,11 +81,12 @@ public partial class TargetsList : ContentPage
                     dso.photo = false;
                 }
             });
-        
+
         await InitDsoAsync();
         await PopupView.FadeTo(0, 250, Easing.CubicInOut);
         PopupView.IsVisible = false;
     }
+
     private async void DSOListView_ItemTapped(object sender, SelectionChangedEventArgs e)
     {
         if (e.CurrentSelection?.FirstOrDefault() is DsoObject selectedItem)
@@ -97,5 +101,4 @@ public partial class TargetsList : ContentPage
 
             ((CollectionView)sender).SelectedItem = null;
     }
-
 }
