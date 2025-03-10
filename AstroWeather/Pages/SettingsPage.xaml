@@ -3,65 +3,69 @@
     x:Class="AstroWeather.Pages.SettingsPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="SettingsPage"
+    Title="Settings"
     BackgroundColor="{StaticResource BackgroundColor}">
-    <AbsoluteLayout HorizontalOptions="Center" VerticalOptions="Center">
-        <VerticalStackLayout
-            HorizontalOptions="Center"
-            Spacing="20"
-            VerticalOptions="Center">
+    <AbsoluteLayout>
+        <ScrollView>
+            <VerticalStackLayout Padding="10" Spacing="20">
+                <!-- Sekcja ustawień API -->
+                <Frame BorderColor="Gray" CornerRadius="5" Padding="10">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="API Key Settings" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" />
+                        <Entry
+                            x:Name="APIkeyInput"
+                            Placeholder="Enter your API key"
+                            TextChanged="OnEntryTextChanged"
+                            WidthRequest="400" />
+                        <Label HorizontalOptions="Center">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Get your API key: " />
+                                    <Span
+                                        Text="here"
+                                        TextColor="Blue"
+                                        TextDecorations="Underline">
+                                        <Span.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding TapCommand}" CommandParameter="https://www.visualcrossing.com/weather-api" />
+                                        </Span.GestureRecognizers>
+                                    </Span>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </VerticalStackLayout>
+                </Frame>
+                <!-- Sekcja lokalizacji -->
+                <Frame BorderColor="Gray" CornerRadius="5" Padding="10">
+                    <VerticalStackLayout Spacing="10">
+                        <Label x:Name="SelectedLabel" Text="Selected Localisation: None" FontSize="16" HorizontalOptions="Center" />
+                        <CollectionView
+                            x:Name="LocalisationCollectionView"
+                            HorizontalOptions="FillAndExpand"
+                            SelectionChanged="OnItemSelected"
+                            SelectionMode="Single"
+                            HeightRequest="200">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackLayout Padding="10">
+                                        <Label FontSize="16" Text="{Binding Key}" TextColor="LightGray" />
+                                        <Label FontSize="14" Text="{Binding Value}" TextColor="Gray" />
+                                    </StackLayout>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                        <Button Text="Pobierz lokalizację z GPS" Clicked="OnGetLocationClicked" />
+                        <Button Text="Add new localisation" Clicked="OnComputeClicked" />
+                    </VerticalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+        </ScrollView>
 
-            <Entry
-                x:Name="APIkeyInput"
-                Placeholder="Enter your api key"
-                TextChanged="OnEntryTextChanged"
-                WidthRequest="400" />
-            <Label HorizontalOptions="Center">
-                <Label.FormattedText>
-                    <FormattedString>
-                        <Span Text="Get your API key: " />
-                        <Span
-                            Text="here"
-                            TextColor="Blue"
-                            TextDecorations="Underline">
-                            <Span.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding TapCommand}" CommandParameter="https://www.visualcrossing.com/weather-api" />
-                            </Span.GestureRecognizers>
-                        </Span>
-                    </FormattedString>
-                </Label.FormattedText>
-            </Label>
-
-            <Button
-                x:Name="locButton"
-                Clicked="OnComputeClicked"
-                Text="Add new localisation"
-                WidthRequest="200">
-                <VisualStateManager.VisualStateGroups>
-                    <VisualStateGroupList>
-                        <VisualStateGroup x:Name="CommonStates">
-                            <VisualState x:Name="Normal">
-                                <VisualState.Setters>
-                                    <Setter Property="Scale" Value="1" />
-                                </VisualState.Setters>
-                            </VisualState>
-                            <VisualState x:Name="Pressed">
-                                <VisualState.Setters>
-                                    <Setter Property="Scale" Value="0.95" />
-                                </VisualState.Setters>
-                            </VisualState>
-                            <VisualState x:Name="PointerOver" />
-                        </VisualStateGroup>
-                    </VisualStateGroupList>
-                </VisualStateManager.VisualStateGroups>
-            </Button>
-        </VerticalStackLayout>
-
+        <!-- Popup do dodawania/edycji lokalizacji -->
         <ContentView
             x:Name="PopupView"
             AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
             AbsoluteLayout.LayoutFlags="All"
-            BackgroundColor="Black"
+            BackgroundColor="#80000000"
             IsVisible="False"
             Opacity="0">
             <Border
@@ -85,7 +89,15 @@
                         Placeholder="Enter your Longitude"
                         TextColor="Black"
                         WidthRequest="200" />
-                    <Button Clicked="OnClosePopupClicked" Text="Close" />
+                    <Entry
+                        x:Name="Info"
+                        Placeholder="SQM etc."
+                        TextColor="Black"
+                        WidthRequest="200" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Button x:Name="DeleteButton" Clicked="DeleteEntity" Text="Delete" IsVisible="False" />
+                        <Button Clicked="OnClosePopupClicked" Text="Save" />
+                    </HorizontalStackLayout>
                 </VerticalStackLayout>
             </Border>
         </ContentView>

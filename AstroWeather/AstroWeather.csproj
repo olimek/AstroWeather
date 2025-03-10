@@ -65,7 +65,7 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\pogodakurwa.png"/>
+		<MauiIcon Include="Resources\AppIcon\pogodakurwa.png" />
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
@@ -107,9 +107,6 @@
 	    <SubType>Code</SubType>
 	    <DependentUpon>%(Filename)</DependentUpon>
 	  </Compile>
-	  <Compile Update="Pages\LocalisationPage.xaml.cs">
-	    <DependentUpon>LocalisationPage.xaml</DependentUpon>
-	  </Compile>
 	  <Compile Update="Pages\DsoChartPage.xaml.cs">
 	    <DependentUpon>DsoChartPage.xaml</DependentUpon>
 	  </Compile>
@@ -125,21 +122,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiAsset Update="Resources\Raw\Messier.yaml">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </MauiAsset>
-	  <MauiAsset Update="Resources\Raw\Herschel400.yaml">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </MauiAsset>
-	  <MauiAsset Update="Resources\Raw\GaryImm.yaml">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </MauiAsset>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <MauiXaml Update="Pages\LocalisationPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
 	  <MauiXaml Update="Pages\DsoChartPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

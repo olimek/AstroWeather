@@ -16,14 +16,6 @@
         Title="Weather"
         ContentTemplate="{DataTemplate local:Pages.WeatherPage}"
         Route="WeatherPage" />
-    <ShellContent
-        Title="TargetsList"
-        ContentTemplate="{DataTemplate local:Pages.TargetsList}"
-        Route="TargetsList" />
-    <ShellContent
-        Title="Localisation"
-        ContentTemplate="{DataTemplate local:Pages.LocalisationPage}"
-        Route="LocalisationPage" />
 
     <ShellContent
         Title="Settings"
