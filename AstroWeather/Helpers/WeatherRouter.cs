@@ -2,6 +2,7 @@
 using System.Text.Json;
 using CosineKitty;
 using NodaTime;
+using SkiaSharp;
 using SolCalc;
 using SolCalc.Data;
 
@@ -204,7 +205,6 @@ namespace AstroWeather.Helpers
         {
             var zone = DateTimeZoneProviders.Tzdb["Europe/Warsaw"];
             ZonedDateTime zonedDate = LocalDateTime.FromDateTime(date).InZoneLeniently(zone);
-
             ZonedDateTime now = zonedDate;
             ZonedDateTime tomorrow = now + Duration.FromDays(1);
 
@@ -220,31 +220,138 @@ namespace AstroWeather.Helpers
             var astroDawnChange = SunlightCalculator.GetSunlightChanges(first ? tomorrow : now, lat, lon)
                 .FirstOrDefault(change => change.Name == SolarTimeOfDay.AstronomicalDawn);
 
-            string nauticalDusk = nauticalDuskChange.Time.ToDateTimeUnspecified().ToString("HH:mm:ss") + " " + nauticalDuskChange.Time.ToDateTimeUnspecified().ToString("dd.MM.yyyy");
-            string nauticalDawn = nauticalDawnChange.Time.ToDateTimeUnspecified().ToString("HH:mm:ss") + " " + nauticalDawnChange.Time.ToDateTimeUnspecified().ToString("dd.MM.yyyy");
-
-            string astroDusk = astroDuskChange.Time.ToDateTimeUnspecified().ToString("HH:mm:ss") + " " + astroDuskChange.Time.ToDateTimeUnspecified().ToString("dd.MM.yyyy");
-            string astroDawn = astroDawnChange.Time.ToDateTimeUnspecified().ToString("HH:mm:ss") + " " + astroDawnChange.Time.ToDateTimeUnspecified().ToString("dd.MM.yyyy");
+            string nauticalDusk = nauticalDuskChange.Time.ToDateTimeUnspecified().ToString("HH:mm:ss dd.MM.yyyy");
+            string nauticalDawn = nauticalDawnChange.Time.ToDateTimeUnspecified().ToString("HH:mm:ss dd.MM.yyyy");
+            string astroDusk = astroDuskChange.Time.ToDateTimeUnspecified().ToString("HH:mm:ss dd.MM.yyyy");
+            string astroDawn = astroDawnChange.Time.ToDateTimeUnspecified().ToString("HH:mm:ss dd.MM.yyyy");
 
             string roundedDusk = RoundHours(nauticalDusk, "DOWN");
             string roundedDawn = RoundHours(nauticalDawn, "UP");
 
-            DateTime moonset = moon.DateTime + moon.Setting;
-            DateTime moonrise = moon.DateTime + moon.Rising;
+            var baseDate = date.Date;
+            DateTime? moonrise = null;
+            DateTime? moonset = null;
 
-            List<DateTime> astroTimes = new List<DateTime>();
+            if (!double.IsNaN(moon.Rising.TotalMinutes) && moon.Rising != TimeSpan.Zero)
+            {
+                moonrise = baseDate.Add(moon.Rising);
+                // Jeśli po północy (czyli np. 02:00), dodaj 1 dzień
+                if (moon.Rising.TotalHours < 12)
+                    moonrise = moonrise.Value.AddDays(1);
+            }
+
+            if (!double.IsNaN(moon.Setting.TotalMinutes) && moon.Setting != TimeSpan.Zero)
+                moonset = baseDate.Add(moon.Setting);
+
+            // Jeśli zachód jest wcześniej niż wschód → przesuwamy zachód
+            if (moonrise.HasValue && moonset.HasValue && moonset < moonrise)
+                moonset = moonset.Value.AddDays(1);
+
+            List<DateTime> astroTimes = new();
 
             if (!string.IsNullOrEmpty(roundedDusk)) astroTimes.Add(DateTime.ParseExact(roundedDusk, "HH:mm:ss dd.MM.yyyy", CultureInfo.InvariantCulture));
             if (!string.IsNullOrEmpty(roundedDawn)) astroTimes.Add(DateTime.ParseExact(roundedDawn, "HH:mm:ss dd.MM.yyyy", CultureInfo.InvariantCulture));
             if (!string.IsNullOrEmpty(astroDusk)) astroTimes.Add(DateTime.ParseExact(astroDusk, "HH:mm:ss dd.MM.yyyy", CultureInfo.InvariantCulture));
             if (!string.IsNullOrEmpty(astroDawn)) astroTimes.Add(DateTime.ParseExact(astroDawn, "HH:mm:ss dd.MM.yyyy", CultureInfo.InvariantCulture));
-
-            astroTimes.Add(moonset);
-            astroTimes.Add(moonrise);
+            if (moonset.HasValue) astroTimes.Add(moonset.Value);
+            if (moonrise.HasValue) astroTimes.Add(moonrise.Value);
             if (!string.IsNullOrEmpty(nauticalDusk)) astroTimes.Add(DateTime.ParseExact(nauticalDusk, "HH:mm:ss dd.MM.yyyy", CultureInfo.InvariantCulture));
             if (!string.IsNullOrEmpty(nauticalDawn)) astroTimes.Add(DateTime.ParseExact(nauticalDawn, "HH:mm:ss dd.MM.yyyy", CultureInfo.InvariantCulture));
+
             return astroTimes;
         }
+
+        public static void DrawNightTimeline(
+    SKCanvas canvas, SKImageInfo info, DateTime date, bool first, int moonIllumination)
+        {
+            var ev = GetAstroTimes(date, first);
+            if (ev.Count != 8) return;
+
+            DateTime nauticalStartRounded = ev[0];
+            DateTime nauticalEndRounded = ev[1];
+            DateTime astroDawn = ev[2];
+            DateTime astroDusk = ev[3];
+            DateTime moonSet = ev[4];
+            DateTime moonRise = ev[5];
+            DateTime nauticalEnd = ev[6];
+            DateTime nauticalStart = ev[7];
+
+            DateTime start = nauticalStartRounded.AddHours(-1);
+            DateTime end = nauticalEndRounded.AddHours(1);
+            double totalMin = (end - start).TotalMinutes;
+
+            float margin = info.Width * 0.05f;
+            float usableWidth = info.Width - 2 * margin;
+
+            float X(DateTime dt) => margin + (float)((dt - start).TotalMinutes / totalMin * usableWidth);
+
+            canvas.Clear(SKColors.Transparent);
+
+            float barY = info.Height * 0.3f;
+            float barH = info.Height * 0.25f;
+
+            using var gradPaint = new SKPaint
+            {
+                Shader = SKShader.CreateLinearGradient(
+                    new SKPoint(margin, 0),
+                    new SKPoint(margin + usableWidth, 0),
+                    new[]
+                    {
+                SKColors.LightSkyBlue,
+                SKColors.MidnightBlue,
+                SKColors.Black,
+                SKColors.MidnightBlue,
+                SKColors.LightSkyBlue
+                    },
+                    new float[] { 0f, 0.25f, 0.5f, 0.75f, 1f },
+                    SKShaderTileMode.Clamp
+                )
+            };
+            canvas.DrawRect(margin, barY, usableWidth, barH, gradPaint);
+
+            // Moonlight
+            DateTime lower = (moonRise < moonSet) ? moonRise : moonSet;
+            DateTime upper = (moonRise < moonSet) ? moonSet : moonRise;
+
+            var clippedLow = (lower < start) ? start : lower;
+            var clippedUp = (upper > end) ? end : upper;
+
+            if (clippedUp > clippedLow)
+            {
+                byte alpha = (byte)(255 * Math.Clamp(moonIllumination / 100.0, 0, 1));
+                var moonColor = new SKColor(180, 180, 255, alpha);
+                using var moonPaint = new SKPaint { Color = moonColor };
+                canvas.DrawRect(X(clippedLow), barY, X(clippedUp) - X(clippedLow), barH, moonPaint);
+            }
+
+            var markerPaint = new SKPaint { Color = SKColors.White, StrokeWidth = 2 };
+            var labelPaint = new SKPaint
+            {
+                Color = SKColors.White,
+                TextSize = info.Height * 0.06f,
+                IsAntialias = true
+            };
+
+            void Mark(DateTime dt, string label)
+            {
+                if (dt < start || dt > end) return;
+                float x = X(dt);
+                canvas.DrawLine(x, barY, x, barY + barH, markerPaint);
+                canvas.DrawText(label, x + 2, barY - 8, labelPaint);
+            }
+
+            Mark(nauticalStartRounded, "Naut");
+            Mark(astroDusk, "Astro");
+            Mark(astroDawn, "Astro");
+            Mark(nauticalEndRounded, "Naut");
+
+            // ➕ Moon markers
+            Mark(moonRise, "Moon");
+            Mark(moonSet, "Moon");
+        }
+
+
+
 
         public static List<List<Hour>> SetWeatherData(List<Hour> inputList)
         {

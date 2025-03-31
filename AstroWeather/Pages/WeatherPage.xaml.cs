@@ -1,5 +1,7 @@
 ﻿using System.Globalization;
 using AstroWeather.Helpers;
+using SkiaSharp.Views.Maui;
+using SkiaSharp.Views.Maui.Controls;
 
 namespace AstroWeather.Pages
 {
@@ -30,6 +32,13 @@ namespace AstroWeather.Pages
             base.OnAppearing();
             await RefrescarouselIfNeeded();
         }
+        private void OnCanvasPaintSurface(object s, SKPaintSurfaceEventArgs e)
+        {
+            var day = (DayWithHours)((SKCanvasView)s).BindingContext;
+            DateTime date = DateTime.ParseExact(day.Date, "dd.MM", CultureInfo.InvariantCulture);
+            WeatherRouter.DrawNightTimeline(e.Surface.Canvas, e.Info, date, true, int.Parse(day.moonilum));
+        }
+
 
         private async Task RefrescarouselIfNeeded()
         {
