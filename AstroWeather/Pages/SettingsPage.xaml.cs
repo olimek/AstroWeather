@@ -32,8 +32,8 @@ namespace AstroWeather.Pages
         {
             string myText = APIkeyInput.Text;
             await _logFileGetSet.StoreDataAsync("APIkey", new List<string> { myText });
-            if (myText.Length == 25)
-                await Navigation.PushModalAsync(new PopUp("Klucz API zapisany"));
+            /*if (myText.Length == 25)
+                await Navigation.PushModalAsync(new PopUp("Klucz API zapisany"));*/
         }
 
         private async void OnComputeClicked(object sender, EventArgs e)

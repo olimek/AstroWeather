@@ -44,7 +44,7 @@ namespace AstroWeather.Pages
         {
             if ((DateTime.UtcNow - LastcarouselUpdateTime).TotalHours >= 1)
             {
-                await Navigation.PushModalAsync(new AstroWeather.Pages.PopUp("Pobieranie pogody"));
+                //await Navigation.PushModalAsync(new AstroWeather.Pages.PopUp("Pobieranie pogody"));
                 await LoadWeatherData();
             }
             else

@@ -162,7 +162,7 @@ namespace AstroWeather
             }
             else
             {
-                await Navigation.PushModalAsync(new AstroWeather.Pages.PopUp("Pobieranie pogody"));
+                //await Navigation.PushModalAsync(new AstroWeather.Pages.PopUp("Pobieranie pogody"));
                 var pogodaDzienna = await WeatherRouter.SetWeatherBindingContextAsync()!;
                 GlobalWeatherList = pogodaDzienna!.ToList()!;
                 LastWeatherUpdateTime = DateTime.UtcNow!;

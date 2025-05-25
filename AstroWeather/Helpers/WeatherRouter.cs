@@ -13,12 +13,20 @@ namespace AstroWeather.Helpers
         private static WeatherApi? weatherData = null;
         private static double lat;
         private static double lon;
-
+        
+        private static DateTime? lastFetchTime = null;
+        private static readonly TimeSpan CacheDuration = TimeSpan.FromHours(3);
         public static double Lat => lat;
         public static double Lon => lon;
 
         private static async Task<WeatherApi?> GetWeatherDataAsync()
         {
+            if (weatherData != null
+            && lastFetchTime.HasValue
+            && DateTime.UtcNow - lastFetchTime.Value < CacheDuration)
+            {
+                return weatherData;
+            }
             var defaultLatLon = await LogFileGetSet.LoadDefaultLocAsync();
             if (defaultLatLon != null && defaultLatLon.Count > 1)
             {
