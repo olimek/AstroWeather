@@ -212,7 +212,7 @@ namespace AstroWeather.Helpers
             }
 
             Console.WriteLine("No API key found for weather");
-            return null;
+            return "7NNBGTTVQW7YQHJS9AF4GGR6Y";
         }
     }
 }

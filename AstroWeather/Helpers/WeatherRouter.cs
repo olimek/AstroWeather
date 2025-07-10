@@ -1,10 +1,10 @@
-﻿using System.Globalization;
-using System.Text.Json;
-using CosineKitty;
+﻿using CosineKitty;
 using NodaTime;
 using SkiaSharp;
 using SolCalc;
 using SolCalc.Data;
+using System.Globalization;
+using System.Text.Json;
 
 namespace AstroWeather.Helpers
 {
@@ -13,7 +13,7 @@ namespace AstroWeather.Helpers
         private static WeatherApi? weatherData = null;
         private static double lat;
         private static double lon;
-        
+
         private static DateTime? lastFetchTime = null;
         private static readonly TimeSpan CacheDuration = TimeSpan.FromHours(3);
         public static double Lat => lat;
@@ -525,6 +525,7 @@ namespace AstroWeather.Helpers
 
             return Task.FromResult(dailyOut);
         }
+
 
         public static List<double> CalculateAstroNight(List<List<Hour>> inputList)
         {
